@@ -14,19 +14,21 @@ In order to run the server Python __3.9__ and newer must be installed. To instal
 ## Setting up the virtual environment
 Now create a virtual environment where all the dependencies will be stored. 
 
-> 'python3 -m venv venv' (Linus/MacOS)
-> 'py -m venv venv' (Windows)
+> python3 -m venv venv (Linus/MacOS)<br/>
+> py -m venv venv (Windows)
 
 This will create a new directory in your with the name "venv". This directory will handle all the dependencies the backend will has and will have in the future.
 
 As a next step we will start the virtual environment:
 
-> '. venv/bin/activate' (Linux/MacOS)
-> 'venv/bin/activate.bat' (Windows)
+> . venv/bin/activate (Linux/MacOS)<br/>
+> venv/bin/activate.bat (Windows)
 
 As a last step, we will now install all the dependencies. Please make sure that you have the __requirement.txt__ file pulled:
 
 > python3 install -r requirement.txt (Linux/MacOS)
+
+## Running the server
 
 To run the server, use the following command:
 
