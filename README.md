@@ -32,7 +32,7 @@ To run the server, use the following command:
 
 > flask run
 
-This will start the server at 127.0.0.1:5000. If you are actively developing the server you have the possibility to use 
+This will start the server at 127.0.0.1:5000/index. If you are actively developing the server you have the possibility to use 
 
 > flask run --debug.
 
