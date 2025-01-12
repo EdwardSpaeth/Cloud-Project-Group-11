@@ -4,69 +4,79 @@
         "name": "Modern Sofa",
         "price": 999.99,
         "imageUrl": "/images/modern-sofa.webp",
-        "category": "sofas"
+        "category": "sofas",
+        "description": "A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation."
     },
     {
         "id": 2,
         "name": "Dining Table",
         "price": 499.99,
         "imageUrl": "/images/dining-table.webp",
-        "category": "tables"
+        "category": "tables",
+        "description": "A stylish and sturdy table designed for modern homes. Crafted from high-quality wood, it provides ample space for meals, game nights, and more."
     },
     {
         "id": 3,
         "name": "Lounge Chair",
         "price": 299.99,
         "imageUrl": "/images/lounge-chair.webp",
-        "category": "chairs"
+        "category": "chairs",
+        "description": "An inviting lounge chair with a curved backrest that supports your spine and cushions you in comfort. Ideal for cozy reading nooks or living rooms."
     },
     {
         "id": 4,
         "name": "Minimalist Bed Frame",
         "price": 799.99,
         "imageUrl": "/images/bed-frame.webp",
-        "category": "beds"
+        "category": "beds",
+        "description": "A sleek, low-profile bed frame that celebrates clean lines and open spaces. Crafted with robust materials for long-lasting support."
     },
     {
         "id": 5,
         "name": "Ergonomic Office Chair",
         "price": 249.99,
         "imageUrl": "/images/office-chair.webp",
-        "category": "chairs"
+        "category": "chairs",
+        "description": "Designed to keep you comfortable during long work sessions. Adjustable height, lumbar support, and padded armrests ensure proper posture."
     },
     {
         "id": 6,
         "name": "Coffee Table",
         "price": 199.99,
         "imageUrl": "/images/coffee-table.webp",
-        "category": "tables"
+        "category": "tables",
+        "description": "A functional centerpiece for your living room. Its smooth surface and compact shape provide the perfect spot for books, decor, and beverages."
     },
     {
         "id": 7,
         "name": "Bookshelf",
         "price": 349.99,
         "imageUrl": "/images/bookshelf.webp",
-        "category": "storage"
+        "category": "storage",
+        "description": "An elegant shelving unit that helps you organize books, decor, and more. Its clean design complements a variety of interior styles."
     },
     {
         "id": 8,
         "name": "Floor Lamp",
         "price": 129.99,
         "imageUrl": "/images/floor-lamp.webp",
-        "category": "lighting"
+        "category": "lighting",
+        "description": "A modern, slim-profile lamp that brightens any corner of your home. Features an adjustable neck so you can direct light where you need it."
     },
     {
         "id": 9,
         "name": "Dresser",
         "price": 599.99,
         "imageUrl": "/images/dresser.webp",
-        "category": "storage"
+        "category": "storage",
+        "description": "A spacious and sturdy dresser with ample drawers for organizing clothes and accessories. The timeless design pairs well with various bedroom decors."
     },
     {
         "id": 10,
         "name": "Accent Chair",
         "price": 279.99,
         "imageUrl": "/images/accent-chair.webp",
-        "category": "chairs"
+        "category": "chairs",
+        "description": "A chic and compact piece that adds a stylish flair to your living space. Its cushioned seat and supportive back make for a comfortable reading or conversation spot."
     }
 ]
