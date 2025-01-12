@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "name": "Modern Sofa",
+        "price": 999.99,
+        "imageUrl": "/images/modern-sofa.webp",
+        "category": "sofas"
+    },
+    {
+        "id": 2,
+        "name": "Dining Table",
+        "price": 499.99,
+        "imageUrl": "/images/dining-table.webp",
+        "category": "tables"
+    },
+    {
+        "id": 3,
+        "name": "Lounge Chair",
+        "price": 299.99,
+        "imageUrl": "/images/lounge-chair.webp",
+        "category": "chairs"
+    },
+    {
+        "id": 4,
+        "name": "Minimalist Bed Frame",
+        "price": 799.99,
+        "imageUrl": "/images/bed-frame.webp",
+        "category": "beds"
+    },
+    {
+        "id": 5,
+        "name": "Ergonomic Office Chair",
+        "price": 249.99,
+        "imageUrl": "/images/office-chair.webp",
+        "category": "chairs"
+    },
+    {
+        "id": 6,
+        "name": "Coffee Table",
+        "price": 199.99,
+        "imageUrl": "/images/coffee-table.webp",
+        "category": "tables"
+    },
+    {
+        "id": 7,
+        "name": "Bookshelf",
+        "price": 349.99,
+        "imageUrl": "/images/bookshelf.webp",
+        "category": "storage"
+    },
+    {
+        "id": 8,
+        "name": "Floor Lamp",
+        "price": 129.99,
+        "imageUrl": "/images/floor-lamp.webp",
+        "category": "lighting"
+    },
+    {
+        "id": 9,
+        "name": "Dresser",
+        "price": 599.99,
+        "imageUrl": "/images/dresser.webp",
+        "category": "storage"
+    },
+    {
+        "id": 10,
+        "name": "Accent Chair",
+        "price": 279.99,
+        "imageUrl": "/images/accent-chair.webp",
+        "category": "chairs"
+    }
+]

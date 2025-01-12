@@ -1,0 +1,46 @@
+.shopContainer {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: #0a0a0a;
+}
+
+.shopTitle {
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.shopContent {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 1.5rem;
+}
+
+.sidebar {
+    grid-column: span 1;
+}
+
+.mainContent {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .shopContent {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        grid-column: span 1;
+    }
+
+    .mainContent {
+        grid-column: span 1;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}

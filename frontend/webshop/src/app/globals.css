@@ -1,12 +1,24 @@
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  /* White background */
+  --foreground: #000000;
+  /* Black text */
+  --primary-color: #000000;
+  /* Primary color: Black */
+  --secondary-color: #c0c0c0;
+  /* Secondary color: Silver */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark background */
+    --foreground: #ffffff;
+    /* White text */
+    --primary-color: #ffffff;
+    /* White for dark mode */
+    --secondary-color: #c0c0c0;
+    /* Silver remains the same */
   }
 }
 
