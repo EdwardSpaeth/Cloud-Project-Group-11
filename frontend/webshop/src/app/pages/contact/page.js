@@ -13,9 +13,6 @@ export default function Contact() {
           <p>Phone: (123) 456-7890</p>
         </section>
       </main>
-      <footer className={styles.footer}>
-        <p>&copy; 2025 LowTech GmbH. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

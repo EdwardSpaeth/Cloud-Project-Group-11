@@ -43,9 +43,6 @@ export default function Home() {
           </Link>
         </section>
       </main>
-      <footer className={styles.footer}>
-        <p>&copy; 2025 LowTech GmbH. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

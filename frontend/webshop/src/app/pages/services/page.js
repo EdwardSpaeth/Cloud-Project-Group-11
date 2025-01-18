@@ -16,9 +16,6 @@ export default function Services() {
           </ul>
         </section>
       </main>
-      <footer className={styles.footer}>
-        <p>&copy; 2025 LowTech GmbH. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

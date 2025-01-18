@@ -8,7 +8,9 @@ export default function ShopPage() {
       <h1 className={styles.shopTitle}>Our Furniture Collection</h1>
       <div className={styles.shopContent}>
         <ProductFilters />
-        <ProductList />
+        <div className={styles.mainContent}>
+          <ProductList />
+        </div>
       </div>
     </div>
   );

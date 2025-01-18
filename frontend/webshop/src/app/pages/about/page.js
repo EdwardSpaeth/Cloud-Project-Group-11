@@ -12,9 +12,6 @@ export default function About() {
           <p>LowTech is dedicated to providing top-notch technology solutions that are both innovative and reliable.</p>
         </section>
       </main>
-      <footer className={styles.footer}>
-        <p>&copy; 2025 LowTech GmbH. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

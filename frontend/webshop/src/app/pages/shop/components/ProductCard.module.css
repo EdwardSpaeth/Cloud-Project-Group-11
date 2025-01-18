@@ -49,3 +49,28 @@
     color: var(--secondary-color);
     margin-top: auto;
 }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .card {
+        flex-direction: row;
+        padding: 0.5rem;
+    }
+
+    .imageContainer {
+        flex: 0 0 100px;
+        padding-top: 0;
+        width: 100px;
+        height: 100px;
+    }
+
+    .content {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .name,
+    .price {
+        font-size: 0.75rem;
+    }
+}

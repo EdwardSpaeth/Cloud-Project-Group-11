@@ -2,7 +2,7 @@
     max-width: 1500px;
     margin: 0 auto;
     padding: 1rem;
-    background-color: #0a0a0a;
+    background-color: #f7fafc;
 }
 
 .shopTitle {
@@ -14,33 +14,55 @@
 }
 
 .shopContent {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
+    display: flex;
+    flex-direction: column;
+    /* Default vertical layout for all screens */
     gap: 1.5rem;
 }
 
-.sidebar {
-    grid-column: span 1;
-}
-
-.mainContent {
-    grid-column: span 3;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
-@media (max-width: 768px) {
+/* For large screens (desktop, min-width: 1024px) */
+@media (min-width: 1024px) {
     .shopContent {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        grid-column: span 1;
+        flex-direction: row;
+        /* Sidebar and content side-by-side */
     }
 
     .mainContent {
-        grid-column: span 1;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        flex: 1;
+    }
+}
+
+/* For medium screens (tablets, max-width: 1024px) */
+@media (max-width: 1024px) {
+    .shopContent {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .sidebar {
+        width: 100%;
+        /* Sidebar spans full width */
+        margin-bottom: 1rem;
+    }
+
+    .mainContent {
+        flex: 1;
+    }
+}
+
+/* For small screens (mobile, max-width: 768px) */
+@media (max-width: 768px) {
+    .shopContent {
+        flex-direction: column;
+        /* Stack content vertically */
+    }
+
+    .sidebar {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .mainContent {
+        flex: 1;
     }
 }
