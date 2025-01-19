@@ -5,10 +5,10 @@ from sqlalchemy import create_engine, text
 # Load environment variables (including DB password) from the .env file located in "secrets" directory.
 load_dotenv(os.path.abspath(os.path.dirname(__file__)) + os.sep + "secrets" + os.sep + ".env")
 
-DB_HOST = os.getenv("LOWTECH_DB_HOST", "localhost")
-DB_PORT = os.getenv("LOWTECH_DB_PORT", 4687)
-DB_NAME = os.getenv("LOWTECH_DB_NAME", "lowtechwebshop")
-DB_USER = os.getenv("LOWTECH_DB_USER", "lowtechuser")
+DB_HOST = os.getenv("LOWTECH_DB_HOST")
+DB_PORT = os.getenv("LOWTECH_DB_PORT")
+DB_NAME = os.getenv("LOWTECH_DB_NAME")
+DB_USER = os.getenv("LOWTECH_DB_USER")
 DB_PASSWORD = os.getenv("LOWTECH_DB_PASSWORD")
 
 def test_connection():
