@@ -2,9 +2,7 @@ from dotenv import load_dotenv
 import os
 from sqlalchemy import create_engine, text
 
-# Load environment variables from .env file
-load_dotenv()
-# Load sensitive environment variables (DB password) from the .env file located in "secrets" directory.
+# Load environment variables (including DB password) from the .env file located in "secrets" directory.
 load_dotenv(os.path.abspath(os.path.dirname(__file__)) + os.sep + "secrets" + os.sep + ".env")
 
 DB_HOST = os.getenv("LOWTECH_DB_HOST", "localhost")
