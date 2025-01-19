@@ -1,5 +1,9 @@
 # Database Setup
 
+## Quickstart
+If you are using Windows, you can use the PowerShell script `database/start_database.ps1`.
+This script builds, runs and tests the database. If any errors occur, the script will output it.
+
 ## Starting the Database
 
 Navigate to the `database` directory.
