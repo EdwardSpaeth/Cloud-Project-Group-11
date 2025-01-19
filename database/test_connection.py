@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import sys
 from sqlalchemy import create_engine, text
 
 # Load environment variables (including DB password) from the .env file located in "secrets" directory.
@@ -28,6 +29,7 @@ def test_connection():
 
     except Exception as e:
         print("Error connecting to the database:", e)
+        sys.exit(1)
 
 if __name__ == "__main__":
     test_connection()
