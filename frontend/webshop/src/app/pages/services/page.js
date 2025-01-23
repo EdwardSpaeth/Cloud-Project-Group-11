@@ -7,10 +7,9 @@ export default function Services() {
       </header>
       <main className={styles.main}>
       <section className={styles.section}>
+        <center>
           <header> 
-            <center>
           <h2>Our Services</h2>
-          </center>
           </header>
           <div className={styles.servicesGrid}>
             <div className={styles.serviceItem}>
@@ -44,6 +43,7 @@ export default function Services() {
               <p>We are committed to sustainability and offer eco-friendly furniture options made from recycled and sustainable materials.</p>
             </div>
           </div>
+        </center>
         </section>
       </main>
     </div>

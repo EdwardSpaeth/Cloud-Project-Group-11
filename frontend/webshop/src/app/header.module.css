@@ -31,11 +31,11 @@
 }
 
 .bg-red-500 {
-  background-color: #f56565;
+  background-color: #db4a2b;
 }
 
 .text-white {
-  color: #fff;
+  color: #ffffff;
 }
 
 .rounded-full {
@@ -59,7 +59,7 @@
 }
 
 .cartBadge {
-  background-color: #f56565;
+  background-color: #db4a2b;
   color: #fff;
   border-radius: 9999px;
   width: 1.25rem;
