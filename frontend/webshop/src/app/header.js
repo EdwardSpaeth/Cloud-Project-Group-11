@@ -16,7 +16,7 @@ export default function Header() {
           <Image
             className={styles.logo}
             src="/images/Lowtech_Logo.png"
-            alt="LowTech logo"
+            alt="Logo"
             width={180}
             height={38}
             priority
@@ -25,7 +25,6 @@ export default function Header() {
         <nav className="flex items-center space-x-4">
           <Link href="/" className={`${styles.link} ${pathname === '/' ? styles.active : ''}`}>Home</Link>
           <Link href="/pages/shop" className={`${styles.link} ${pathname === '/pages/shop' ? styles.active : ''}`}>Products</Link>
-          <Link href="/pages/about" className={`${styles.link} ${pathname === '/pages/about' ? styles.active : ''}`}>About</Link>
           <Link href="/pages/services" className={`${styles.link} ${pathname === '/pages/services' ? styles.active : ''}`}>Services</Link>
           <Link href="/pages/contact" className={`${styles.link} ${pathname === '/pages/contact' ? styles.active : ''}`}>Contact</Link>
           <Link href="/pages/cart" className={`relative ${styles.link} ${pathname === '/pages/cart' ? styles.active : ''}`}>

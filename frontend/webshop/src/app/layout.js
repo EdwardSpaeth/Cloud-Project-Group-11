@@ -32,7 +32,6 @@ export default function RootLayout({ children }) {
             <nav className="flex items-center space-x-4">
               <Link href="/" className={`${styles.link} ${pathname === '/' ? styles.active : ''}`}>Home</Link>
               <Link href="/pages/shop" className={`${styles.link} ${pathname === '/pages/shop' ? styles.active : ''}`}>Products</Link>
-              <Link href="/pages/about" className={`${styles.link} ${pathname === '/pages/about' ? styles.active : ''}`}>About</Link>
               <Link href="/pages/services" className={`${styles.link} ${pathname === '/pages/services' ? styles.active : ''}`}>Services</Link>
               <Link href="/pages/contact" className={`${styles.link} ${pathname === '/pages/contact' ? styles.active : ''}`}>Contact</Link>
               <Link href="/pages/cart" className={`relative ${styles.link} ${pathname === '/pages/cart' ? styles.active : ''}`}>
@@ -46,9 +45,11 @@ export default function RootLayout({ children }) {
         </header>
         <main>{children}</main>
         <footer className="bg-gray-100 mt-8">
+          <center>
           <div className="container mx-auto px-4 py-8">
             <p>&copy; {currentYear} LowTech GmbH. All rights reserved.</p>
           </div>
+          </center>
         </footer>
       </body>
     </html>

@@ -10,7 +10,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
   background-color: #ffffff;
 }
 
@@ -25,10 +24,6 @@
   text-decoration: none;
 }
 
-.main {
-  padding: 20px;
-}
-
 .hero {
   text-align: center;
   padding: 50px 20px;
@@ -36,56 +31,51 @@
 }
 
 .hero h1 {
-  font-size: 3em;
+  font-size: 30px;
   color: #262626;
   margin-bottom: 50px;
 }
 
-.hero .quote {
-  margin: 20px 0;
-  font-size: 2em;
-  color: #262626;
-  font-style: italic;
-  padding-left: 15px;
-  quotes: "“" "”" "‘" "’";
+.landingImageContainer {
+  position: relative;
+  width: 100%;
+  height: 450px;
   margin-bottom: 50px;
-  margin-top: 50px;
 }
 
-.hero .quote p::before {
-  content: open-quote;
+.landingImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.hero .quote p::after {
-  content: close-quote;
-}
-
-.hero .imageContainer {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.hero .image {
-  width: 300px; 
-  height: 300px; 
-  object-fit: cover; 
-  border-radius: 8px;
+.landingText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  width: 80%;
+  font-family:Verdana, Geneva, Tahoma, sans-serif
 }
 
 .cta {
   display: inline-block;
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #1acb93;
+  background-color: #db4a2b;
   color: #fff;
   text-decoration: none;
   border-radius: 5px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .section {
-  padding: 40px 20px;
   background-color: #ffffff;
 }
 
@@ -102,7 +92,6 @@
 
 .footer {
   text-align: center;
-  padding: 20px;
   background-color: #f3f3f3;
 }
 

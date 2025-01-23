@@ -1,0 +1,101 @@
+.page {
+  color: #1e1e1e;
+  background-color: #f7fafc;
+  padding: 0;
+  margin: 0;
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+}
+
+.nav a {
+  color: #1e1e1e;
+  text-decoration: none;
+}
+
+.nav a.active {
+  color: #00ff00; /* Green color for active link */
+}
+
+.main {
+    padding: 10px;
+}
+
+.section {
+  padding: 0px 20px; /* Reduced padding */
+  background-color: #f7fafc;
+}
+
+.section h1 {
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-top: 0; /* Remove top margin */
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #1e1e1e;
+}
+
+.section h2 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #1e1e1e;
+}
+
+.section p, .section ul {
+  font-size: 1em;
+  color: #1e1e1e;
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  background-color: var(--background);
+  padding: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.serviceItem {
+  background-color: #eeeeee;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.serviceItem h3 {
+  font-size: 1.5em;
+  color: #db492d;
+  margin-bottom: 10px;
+}
+
+.serviceItem p {
+  font-size: 1em;
+  color: #2e2e2e;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #1e1e1e;
+}
+
+.footer p {
+  color: #fff;
+}
+
+@media (max-width: 1024px) {
+  .servicesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .servicesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+  }
+}
