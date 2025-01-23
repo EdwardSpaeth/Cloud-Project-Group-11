@@ -9,7 +9,7 @@ export default function Home() {
         <section className={styles.hero}>
           <div className={styles.landingImageContainer}>
             <Image
-              src="/images/landing.jpg"
+              src="/images/Landing.jpg"
               alt="Landing Image"
               layout="fill"
               objectFit="cover"
@@ -27,3 +27,5 @@ export default function Home() {
     </div>
   );
 }
+
+

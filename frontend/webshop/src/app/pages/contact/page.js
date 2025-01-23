@@ -106,9 +106,11 @@ export default function Contact() {
                   className={errors.message ? styles.errorInput : ''}
                 />
               </div>
+              <center>
               <button type="submit" className={styles.submitButton}>
                 Send Message
               </button>
+              </center>
             </form>
           </div>
         </section>
