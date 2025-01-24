@@ -5,27 +5,26 @@ import styles from "./page.module.css";
 export default function Home() {
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <section className={styles.hero}>
-          <div className={styles.landingImageContainer}>
-            <Image
-              src="/images/Landing.jpg"
-              alt="Landing Image"
-              layout="fill"
-              objectFit="cover"
-              className={styles.landingImage}
-            />
-            <div className={styles.landingText}>
-              <h2>Recreating living for a modern world. Vivendo.</h2>
-            </div>
-          </div>
+      <main className={styles.hero}>
+        <div className={styles.leftSide}>
+          <h1 className={styles.slogan}>
+            Recreating living for a modern world
+          </h1>
           <Link className={styles.cta} href="/pages/shop">
             View Our Collection
           </Link>
-        </section>
+        </div>
+
+        
+        <div className={styles.rightSide}>
+          <Image
+            src="/images/Landing.jpg"
+            alt="Landing Image"
+            fill
+            className={styles.landingImage}
+          />
+        </div>
       </main>
     </div>
   );
 }
-
-
