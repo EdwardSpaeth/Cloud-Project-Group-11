@@ -1,23 +1,19 @@
-import { CartItem } from './components/cart-items'
-import styles from './page.module.css'
+"use client"
 
-const cartItems = [
-  { id: '1', name: 'Modern Sofa', price: 999.99, quantity: 1, image: '/images/modern-sofa.webp' },
-  { id: '2', name: 'Coffee Table', price: 199.99, quantity: 2, image: '/images/coffee-table.webp' },
-  { id: '3', name: 'Floor Lamp', price: 129.99, quantity: 1, image: '/images/floor-lamp.webp' },
-]
+import { CartItem } from "./components/cart-items"
+import styles from "./page.module.css"
+import { useCart } from "../context/cart-context"
 
 export default function CartPage() {
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  const { items } = useCart()
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Your Shopping Cart</h1>
       <div className={styles.grid}>
         <div className={styles.items}>
-          {cartItems.map((item) => (
-            <CartItem key={item.id} {...item} />
-          ))}
+          {items.length === 0 ? <p>Your cart is empty</p> : items.map((item) => <CartItem key={item.id} {...item} />)}
         </div>
         <div className={styles.summary}>
           <h2 className={styles.summaryTitle}>Order Summary</h2>
@@ -34,11 +30,10 @@ export default function CartPage() {
             <span className={styles.total}>Total</span>
             <span className={styles.total}>${subtotal.toFixed(2)}</span>
           </div>
-          <button className={styles.checkoutButton}>
-            Proceed to Checkout
-          </button>
+          <button className={styles.checkoutButton}>Proceed to Checkout</button>
         </div>
       </div>
     </div>
   )
 }
+
