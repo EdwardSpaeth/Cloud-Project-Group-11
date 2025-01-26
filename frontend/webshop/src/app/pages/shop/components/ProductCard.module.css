@@ -40,15 +40,19 @@
 
 .producttitleWrapper {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
 }
 
 .cartIcon {
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: #4b5563;
     cursor: pointer;
     transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    margin-bottom: -2px;
 }
 
 .cartIcon:hover {
@@ -57,16 +61,18 @@
 }
 
 .producttitle {
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
     color: #1f2937;
+    display: flex;
+    align-items: center;
+    margin: 0;
 }
 
 .productprice {
     font-size: 0.9rem;
     color: #4b5563;
-    margin-top: auto;
+    margin-top: 0.5rem;
 }
 
 @media (max-width: 768px) {
