@@ -1,14 +1,19 @@
 # this file will have all the endpoints
-
 from . import app
-import uuid
+from . import db
+from .entities import Product, ProductColor, ProductMaterial, Customer, Order, OrderItem, Supplier, Inventory
 
-app.products("/products/<uuid:id>")
-def serve_home(id: uuid):
-
-    # if all products are requested
-    if id == uuid.UUID(0):
-        pass
-
-    # if a specific product is requested
-    pass
+@app.route("/products/<int:id>")
+def serve_home(id: int):
+    for x in [
+        Product.query.all(),
+        ProductColor.query.all(),
+        ProductMaterial.query.all(),
+        Customer.query.all(),
+        Order.query.all(),
+        OrderItem.query.all(),
+        Supplier.query.all(),
+        Inventory.query.all()
+    ]:
+        print(x)
+    return "Okay"
