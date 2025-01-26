@@ -16,7 +16,7 @@ CREATE TABLE PRODUCTS (
 );
 
 -- Table containing colors of the products.
--- Inside its own table to avoid multi-valued cells (a.k.a color = "red and green")
+-- Inside its own table to avoid multi-valued cells (a.k.a color = 'red and green')
 CREATE TABLE PRODUCTCOLORS (
     productID       SMALLINT NOT NULL,
     colorName       VARCHAR(50) NOT NULL,
@@ -46,8 +46,8 @@ CREATE TABLE ORDERS (
 );
 
 -- Table of subitems of orders
--- E.g., given an order "A", which buys 1x Product "P1" and 2x Product "P2",
--- The table would have these two entries: ("A", "P1", 1), and ("A", "P2", 2)
+-- E.g., given an order 'A', which buys 1x Product 'P1' and 2x Product 'P2',
+-- The table would have these two entries: ('A', 'P1', 1), and ('A', 'P2', 2)
 CREATE TABLE ORDERITEMS (
     orderID     SMALLINT NOT NULL,
     productID   SMALLINT NOT NULL,
@@ -76,43 +76,43 @@ CREATE TABLE INVENTORY (
 
 INSERT INTO PRODUCTS (productID, productName, productPicture, productCategory, productCurrency, productPrice, productBrand, productDescription, productInfo, productMaterial) 
 VALUES
-    (1, "Modern Sofa", "PICTURE_HERE", "sofas", "€", 999.99, "BRAND_HERE", "A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (2, "Dining Table", "PICTURE_HERE", "tables", "€", 499.99, "BRAND_HERE", "A stylish and sturdy table designed for modern homes. Crafted from high-quality wood, it provides ample space for meals, game nights, and more.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (3, "Lounge Chair", "PICTURE_HERE", "chairs", "€", 299.99, "BRAND_HERE", "An inviting lounge chair with a curved backrest that supports your spine and cushions you in comfort. Ideal for cozy reading nooks or living rooms.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (4, "Minimalist Bed Frame", "PICTURE_HERE", "beds", "€", 799.99, "BRAND_HERE", "A sleek, low-profile bed frame that celebrates clean lines and open spaces. Crafted with robust materials for long-lasting support.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (5, "Ergonomic Office Chair", "PICTURE_HERE", "chairs", "€", 249.99, "BRAND_HERE", "Designed to keep you comfortable during long work sessions. Adjustable height, lumbar support, and padded armrests ensure proper posture.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (6, "Coffee Table", "PICTURE_HERE", "tables", "€", 199.99, "BRAND_HERE", "A functional centerpiece for your living room. Its smooth surface and compact shape provide the perfect spot for books, decor, and beverages.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (7, "Bookshelf", "PICTURE_HERE", "storage", "€", 349.99, "BRAND_HERE", "An elegant shelving unit that helps you organize books, decor, and more. Its clean design complements a variety of interior styles.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (8, "Floor Lamp", "PICTURE_HERE", "lighting", "€", 129.99, "BRAND_HERE", "A modern, slim-profile lamp that brightens any corner of your home. Features an adjustable neck so you can direct light where you need it.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (9, "Dresser", "PICTURE_HERE", "storage", "€", 599.99, "BRAND_HERE", "A spacious and sturdy dresser with ample drawers for organizing clothes and accessories. The timeless design pairs well with various bedroom decors.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE"),
-    (10, "Accent Chair", "PICTURE_HERE", "chairs", "€", 279.99, "BRAND_HERE", "A chic and compact piece that adds a stylish flair to your living space. Its cushioned seat and supportive back make for a comfortable reading or conversation spot.", "PRODUCT_INFO_HERE", "PRODUCT_MATERIAL_HERE");
+    (1, 'Modern Sofa', 'PICTURE_HERE', 'sofas', '€', 999.99, 'BRAND_HERE', 'A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (2, 'Dining Table', 'PICTURE_HERE', 'tables', '€', 499.99, 'BRAND_HERE', 'A stylish and sturdy table designed for modern homes. Crafted from high-quality wood, it provides ample space for meals, game nights, and more.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (3, 'Lounge Chair', 'PICTURE_HERE', 'chairs', '€', 299.99, 'BRAND_HERE', 'An inviting lounge chair with a curved backrest that supports your spine and cushions you in comfort. Ideal for cozy reading nooks or living rooms.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (4, 'Minimalist Bed Frame', 'PICTURE_HERE', 'beds', '€', 799.99, 'BRAND_HERE', 'A sleek, low-profile bed frame that celebrates clean lines and open spaces. Crafted with robust materials for long-lasting support.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (5, 'Ergonomic Office Chair', 'PICTURE_HERE', 'chairs', '€', 249.99, 'BRAND_HERE', 'Designed to keep you comfortable during long work sessions. Adjustable height, lumbar support, and padded armrests ensure proper posture.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (6, 'Coffee Table', 'PICTURE_HERE', 'tables', '€', 199.99, 'BRAND_HERE', 'A functional centerpiece for your living room. Its smooth surface and compact shape provide the perfect spot for books, decor, and beverages.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (7, 'Bookshelf', 'PICTURE_HERE', 'storage', '€', 349.99, 'BRAND_HERE', 'An elegant shelving unit that helps you organize books, decor, and more. Its clean design complements a variety of interior styles.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (8, 'Floor Lamp', 'PICTURE_HERE', 'lighting', '€', 129.99, 'BRAND_HERE', 'A modern, slim-profile lamp that brightens any corner of your home. Features an adjustable neck so you can direct light where you need it.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (9, 'Dresser', 'PICTURE_HERE', 'storage', '€', 599.99, 'BRAND_HERE', 'A spacious and sturdy dresser with ample drawers for organizing clothes and accessories. The timeless design pairs well with various bedroom decors.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE'),
+    (10, 'Accent Chair', 'PICTURE_HERE', 'chairs', '€', 279.99, 'BRAND_HERE', 'A chic and compact piece that adds a stylish flair to your living space. Its cushioned seat and supportive back make for a comfortable reading or conversation spot.', 'PRODUCT_INFO_HERE', 'PRODUCT_MATERIAL_HERE');
 
 INSERT INTO PRODUCTCOLORS (productID, colorName)
 VALUES
-    (1, "Gray"),
-    (2, "Ash Wood Color"),
-    (3, "Beige"),
-    (4, "Beige"),
-    (4, "Black"),
-    (5, "Beige"),
-    (5, "Black"),
-    (6, "Ash Wood Color"),
-    (7, "Ash Wood Color"),
-    (8, "Beige"),
-    (8, "Bronze"),
-    (9, "Ash Wood Color"),
-    (10, "Green"),
-    (10, "Orange");
+    (1, 'Gray'),
+    (2, 'Ash Wood Color'),
+    (3, 'Beige'),
+    (4, 'Beige'),
+    (4, 'Black'),
+    (5, 'Beige'),
+    (5, 'Black'),
+    (6, 'Ash Wood Color'),
+    (7, 'Ash Wood Color'),
+    (8, 'Beige'),
+    (8, 'Bronze'),
+    (9, 'Ash Wood Color'),
+    (10, 'Green'),
+    (10, 'Orange');
 
 INSERT INTO CUSTOMERS(customerID, customerFirstName, customerLastName, customerAddress, customerEmail, customerPhoneNumber)
 VALUES
-    (1, "Max", "Mustermann", "Nibelungenplatz 1 60318 Frankfurt am Main", "max.mustermann@fictionalstudent.de", "+49 313 41413401"),
-    (2, "Joe", "Generic", "Genericstraße 5 60385 Frankfurt am Main", "joe.generic@fictional.de", "+49 612 34134141");
+    (1, 'Max', 'Mustermann', 'Nibelungenplatz 1 60318 Frankfurt am Main', 'max.mustermann@fictionalstudent.de', '+49 313 41413401'),
+    (2, 'Joe', 'Generic', 'Genericstraße 5 60385 Frankfurt am Main', 'joe.generic@fictional.de', '+49 612 34134141');
 
 INSERT INTO ORDERS(orderID, orderStatus, orderPaymentMethod, customerID)
 VALUES
-    (1, "DELIVERED", "PayPal", 1),
-    (2, "DELIVERY PENDING", "Bank Transfer", 2);
+    (1, 'DELIVERED', 'PayPal', 1),
+    (2, 'DELIVERY PENDING', 'Bank Transfer', 2);
 
 INSERT INTO ORDERITEMS(orderID, productID, quantity)
 VALUES
@@ -122,10 +122,10 @@ VALUES
 
 INSERT INTO SUPPLIERS(supplierID, supplierName, supplierAddress)
 VALUES
-    (1, "Büromöbel GmbH", "Bürostraße 1 23123 Bürostadt"),
-    (2, "Esszimmerexperten GmbH", "Esszimmerstraße 5 23163 Esszimmerstadt"),
-    (3, "Lampenexperten GmbH", "Lampenstraße 7 73167 Lampenstadt"),
-    (4, "Sonstige Möbel GmbH", "Möbelstraße 23 34141 Möbelheim");
+    (1, 'Büromöbel GmbH', 'Bürostraße 1 23123 Bürostadt'),
+    (2, 'Esszimmerexperten GmbH', 'Esszimmerstraße 5 23163 Esszimmerstadt'),
+    (3, 'Lampenexperten GmbH', 'Lampenstraße 7 73167 Lampenstadt'),
+    (4, 'Sonstige Möbel GmbH', 'Möbelstraße 23 34141 Möbelheim');
 
 INSERT INTO INVENTORY(productID, supplierID, stock)
 VALUES
