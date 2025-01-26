@@ -1,6 +1,6 @@
 # initializes all variables 
 
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from .database_login_handler import get_database_connection_string
 from flask_sqlalchemy import SQLAlchemy
