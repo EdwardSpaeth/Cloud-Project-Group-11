@@ -29,8 +29,8 @@ def get_description(id: int):
         })
         return product_info, 200
 
-@app.route("/products/<int:id>")
-def serve_home(id: int):
+@app.route("/dbtest")
+def serve_home():
     for x in [
         Product.query.all(),
         ProductColor.query.all(),
