@@ -1,13 +1,12 @@
-# this file will have all the endpoints
+# this file has all the endpoints
 
 from . import app
-import uuid
 
-app.products("/products/<uuid:id>")
-def serve_home(id: uuid):
+app.get("/products/<int:prod_id>")
+def serve_products(prod_id: int):
 
     # if all products are requested
-    if id == uuid.UUID(0):
+    if prod_id == 0:
         pass
 
     # if a specific product is requested
