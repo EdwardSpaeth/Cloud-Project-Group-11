@@ -6,11 +6,10 @@ CREATE TABLE PRODUCTS (
     productName         VARCHAR(100)  NOT NULL,
     productPicture      VARCHAR(1000),
     productCategory     VARCHAR(100)  NOT NULL,
-    productCurrency     VARCHAR(100)  NOT NULL,
+    productCurrency     VARCHAR(10)  NOT NULL,
     productPrice        DECIMAL(7, 2) NOT NULL,
     productBrand        VARCHAR(100)  NOT NULL,
     productDescription  VARCHAR(1000),
-    productInfo         VARCHAR(1000),
     PRIMARY KEY(productID)
 );
 
@@ -81,18 +80,18 @@ CREATE TABLE INVENTORY (
     FOREIGN KEY(supplierID) REFERENCES SUPPLIERS(supplierID)
 );
 
-INSERT INTO PRODUCTS (productName, productPicture, productCategory, productCurrency, productPrice, productBrand, productDescription, productInfo) 
+INSERT INTO PRODUCTS (productName, productPicture, productCategory, productCurrency, productPrice, productBrand, productDescription) 
 VALUES
-    ('Modern Sofa', 'PICTURE_HERE', 'sofas', '€', 999.99, 'BRAND_HERE', 'A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation.', 'PRODUCT_INFO_HERE'),
-    ('Dining Table', 'PICTURE_HERE', 'tables', '€', 499.99, 'BRAND_HERE', 'A stylish and sturdy table designed for modern homes. Crafted from high-quality wood, it provides ample space for meals, game nights, and more.', 'PRODUCT_INFO_HERE'),
-    ('Lounge Chair', 'PICTURE_HERE', 'chairs', '€', 299.99, 'BRAND_HERE', 'An inviting lounge chair with a curved backrest that supports your spine and cushions you in comfort. Ideal for cozy reading nooks or living rooms.', 'PRODUCT_INFO_HERE'),
-    ('Minimalist Bed Frame', 'PICTURE_HERE', 'beds', '€', 799.99, 'BRAND_HERE', 'A sleek, low-profile bed frame that celebrates clean lines and open spaces. Crafted with robust materials for long-lasting support.', 'PRODUCT_INFO_HERE'),
-    ('Ergonomic Office Chair', 'PICTURE_HERE', 'chairs', '€', 249.99, 'BRAND_HERE', 'Designed to keep you comfortable during long work sessions. Adjustable height, lumbar support, and padded armrests ensure proper posture.', 'PRODUCT_INFO_HERE'),
-    ('Coffee Table', 'PICTURE_HERE', 'tables', '€', 199.99, 'BRAND_HERE', 'A functional centerpiece for your living room. Its smooth surface and compact shape provide the perfect spot for books, decor, and beverages.', 'PRODUCT_INFO_HERE'),
-    ('Bookshelf', 'PICTURE_HERE', 'storage', '€', 349.99, 'BRAND_HERE', 'An elegant shelving unit that helps you organize books, decor, and more. Its clean design complements a variety of interior styles.', 'PRODUCT_INFO_HERE'),
-    ('Floor Lamp', 'PICTURE_HERE', 'lighting', '€', 129.99, 'BRAND_HERE', 'A modern, slim-profile lamp that brightens any corner of your home. Features an adjustable neck so you can direct light where you need it.', 'PRODUCT_INFO_HERE'),
-    ('Dresser', 'PICTURE_HERE', 'storage', '€', 599.99, 'BRAND_HERE', 'A spacious and sturdy dresser with ample drawers for organizing clothes and accessories. The timeless design pairs well with various bedroom decors.', 'PRODUCT_INFO_HERE'),
-    ('Accent Chair', 'PICTURE_HERE', 'chairs', '€', 279.99, 'BRAND_HERE', 'A chic and compact piece that adds a stylish flair to your living space. Its cushioned seat and supportive back make for a comfortable reading or conversation spot.', 'PRODUCT_INFO_HERE');
+    ('Modern Sofa', 'PICTURE_HERE', 'sofas', '€', 999.99, 'Furniture LLC.', 'A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation.'),
+    ('Dining Table', 'PICTURE_HERE', 'tables', '€', 499.99, 'WoodArtisans LLC.', 'A stylish and sturdy table designed for modern homes. Crafted from high-quality wood, it provides ample space for meals, game nights, and more.'),
+    ('Lounge Chair', 'PICTURE_HERE', 'chairs', '€', 299.99, 'Furniture LLC.', 'An inviting lounge chair with a curved backrest that supports your spine and cushions you in comfort. Ideal for cozy reading nooks or living rooms.'),
+    ('Minimalist Bed Frame', 'PICTURE_HERE', 'beds', '€', 799.99, 'WoodArtisans LLC.', 'A sleek, low-profile bed frame that celebrates clean lines and open spaces. Crafted with robust materials for long-lasting support.'),
+    ('Ergonomic Office Chair', 'PICTURE_HERE', 'chairs', '€', 249.99, 'Furniture LLC.', 'Designed to keep you comfortable during long work sessions. Adjustable height, lumbar support, and padded armrests ensure proper posture.'),
+    ('Coffee Table', 'PICTURE_HERE', 'tables', '€', 199.99, 'WoodArtisans LLC.', 'A functional centerpiece for your living room. Its smooth surface and compact shape provide the perfect spot for books, decor, and beverages.'),
+    ('Bookshelf', 'PICTURE_HERE', 'storage', '€', 349.99, 'WoodArtisans LLC.', 'An elegant shelving unit that helps you organize books, decor, and more. Its clean design complements a variety of interior styles.'),
+    ('Floor Lamp', 'PICTURE_HERE', 'lighting', '€', 129.99, 'Furniture LLC.', 'A modern, slim-profile lamp that brightens any corner of your home. Features an adjustable neck so you can direct light where you need it.'),
+    ('Dresser', 'PICTURE_HERE', 'storage', '€', 599.99, 'WoodArtisans LLC.', 'A spacious and sturdy dresser with ample drawers for organizing clothes and accessories. The timeless design pairs well with various bedroom decors.'),
+    ('Accent Chair', 'PICTURE_HERE', 'chairs', '€', 279.99, 'Furniture LLC.', 'A chic and compact piece that adds a stylish flair to your living space. Its cushioned seat and supportive back make for a comfortable reading or conversation spot.');
 
 INSERT INTO PRODUCTCOLORS (productID, colorName)
 VALUES

@@ -8,11 +8,10 @@ class Product(db.Model):
     productName = db.Column("productname", db.String(100), nullable=False)
     productPicture = db.Column("productpicture", db.String(1000))
     productCategory = db.Column("productcategory", db.String(100), nullable=False)
-    productCurrency = db.Column("productcurrency", db.String(100), nullable=False)
+    productCurrency = db.Column("productcurrency", db.String(10), nullable=False)
     productPrice = db.Column("productprice", db.Numeric(7, 2), nullable=False)
     productBrand = db.Column("productbrand", db.String(100), nullable=False)
     productDescription = db.Column("productdescription", db.String(1000))
-    productInfo = db.Column("productinfo", db.String(1000))
     def __repr__(self):
         return f"<Product {self.productName}>"
 
