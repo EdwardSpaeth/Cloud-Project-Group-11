@@ -1,5 +1,6 @@
 -- SQL file to create Webshop tables.
--- Tables for product information, categories, prices, etc.
+
+-- Table containing Webshop products
 CREATE TABLE PRODUCTS (
     productID           SMALLINT NOT NULL,
     productName         VARCHAR(100)  NOT NULL,
@@ -14,6 +15,8 @@ CREATE TABLE PRODUCTS (
     PRIMARY KEY(productID)
 );
 
+-- Table containing colors of the products.
+-- Inside its own table to avoid multi-valued cells (a.k.a color = "red and green")
 CREATE TABLE PRODUCTCOLORS (
     productID       SMALLINT NOT NULL,
     colorName       VARCHAR(50) NOT NULL,
@@ -21,17 +24,7 @@ CREATE TABLE PRODUCTCOLORS (
     FOREIGN KEY(productID) REFERENCES PRODUCTS(productID)
 );
 
--- Tables for order information, order status, payment methods, etc.
-CREATE TABLE ORDERS (
-    orderID             SMALLINT NOT NULL,
-    orderStatus         VARCHAR(100)  NOT NULL,
-    orderPaymentMethod  VARCHAR(100)  NOT NULL,
-    customerID          SMALLINT NOT NULL,
-    PRIMARY KEY(orderID),
-    FOREIGN KEY(customerID) REFERENCES CUSTOMERS(customerID)
-);
-
--- Customers
+-- Customer information
 CREATE TABLE CUSTOMERS (
     customerID          SMALLINT NOT NULL,
     customerFirstName   VARCHAR(100) NOT NULL,
@@ -42,7 +35,19 @@ CREATE TABLE CUSTOMERS (
     PRIMARY KEY(customerID)
 );
 
--- Table for contents of orders
+-- Orders both pending and done
+CREATE TABLE ORDERS (
+    orderID             SMALLINT NOT NULL,
+    orderStatus         VARCHAR(100)  NOT NULL,
+    orderPaymentMethod  VARCHAR(100)  NOT NULL,
+    customerID          SMALLINT NOT NULL,
+    PRIMARY KEY(orderID),
+    FOREIGN KEY(customerID) REFERENCES CUSTOMERS(customerID)
+);
+
+-- Table of subitems of orders
+-- E.g., given an order "A", which buys 1x Product "P1" and 2x Product "P2",
+-- The table would have these two entries: ("A", "P1", 1), and ("A", "P2", 2)
 CREATE TABLE ORDERITEMS (
     orderID     SMALLINT NOT NULL,
     productID   SMALLINT NOT NULL,
@@ -52,15 +57,7 @@ CREATE TABLE ORDERITEMS (
     FOREIGN KEY(productID) REFERENCES PRODUCTS(productID)
 );
 
--- Tables for stock levels and supplier information.
-CREATE TABLE INVENTORY (
-    productID       SMALLINT NOT NULL,
-    supplierID      SMALLINT NOT NULL,
-    stock           SMALLINT,
-    PRIMARY KEY(productID),
-    FOREIGN KEY(supplierID) REFERENCES SUPPLIERS(supplierID)
-);
-
+-- Table of supplier information
 CREATE TABLE SUPPLIERS (
     supplierID          SMALLINT NOT NULL,
     supplierName        VARCHAR(100)  NOT NULL,
@@ -68,6 +65,14 @@ CREATE TABLE SUPPLIERS (
     PRIMARY KEY(supplierID)
 );
 
+-- Tables for stock levels
+CREATE TABLE INVENTORY (
+    productID       SMALLINT NOT NULL,
+    supplierID      SMALLINT NOT NULL,
+    stock           SMALLINT,
+    PRIMARY KEY(productID),
+    FOREIGN KEY(supplierID) REFERENCES SUPPLIERS(supplierID)
+);
 
 INSERT INTO PRODUCTS (productID, productName, productPicture, productCategory, productCurrency, productPrice, productBrand, productDescription, productInfo, productMaterial) 
 VALUES
@@ -115,6 +120,13 @@ VALUES
     (1, 6, 1), -- Max Mustermann's order also includes a coffee table
     (2, 5, 1); -- Joe Generic ordered an ergonomic office chair
 
+INSERT INTO SUPPLIERS(supplierID, supplierName, supplierAddress)
+VALUES
+    (1, "Büromöbel GmbH", "Bürostraße 1 23123 Bürostadt"),
+    (2, "Esszimmerexperten GmbH", "Esszimmerstraße 5 23163 Esszimmerstadt"),
+    (3, "Lampenexperten GmbH", "Lampenstraße 7 73167 Lampenstadt"),
+    (4, "Sonstige Möbel GmbH", "Möbelstraße 23 34141 Möbelheim");
+
 INSERT INTO INVENTORY(productID, supplierID, stock)
 VALUES
     (1, 4, 123),
@@ -127,12 +139,3 @@ VALUES
     (8, 3, 18),
     (9, 4, 29),
     (10, 4, 86);
-
-
-
-INSERT INTO SUPPLIERS(supplierID, supplierName, supplierAddress)
-VALUES
-    (1, "Büromöbel GmbH", "Bürostraße 1 23123 Bürostadt"),
-    (2, "Esszimmerexperten GmbH", "Esszimmerstraße 5 23163 Esszimmerstadt"),
-    (3, "Lampenexperten GmbH", "Lampenstraße 7 73167 Lampenstadt"),
-    (4, "Sonstige Möbel GmbH", "Möbelstraße 23 34141 Möbelheim");
