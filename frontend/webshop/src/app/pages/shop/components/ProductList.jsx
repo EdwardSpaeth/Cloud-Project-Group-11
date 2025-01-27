@@ -13,7 +13,6 @@ export default function ProductList() {
 
   useEffect(() => {
     try {
-      // Remove artificial delay, load products immediately
       setProducts(productsData);
       setLoading(false);
     } catch (err) {
