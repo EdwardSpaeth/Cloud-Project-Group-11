@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import styles from "./contact.module.css";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -32,29 +31,26 @@ export default function Contact() {
       const queryString = new URLSearchParams(formData).toString();
       window.location.href = `/pages/contact?${queryString}`;
     }
-  
   };
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <section className={styles.section}>
-          <header>
-            <center>
-              <h2>Get In Touch</h2>
-            </center>
-            <p style={{ textAlign: 'center', marginTop: '1rem' }}>
+    <div className="min-h-screen flex items-center justify-center">
+      <main className="w-full max-w-2xl p-8 bg-white shadow-lg rounded-lg">
+        <section>
+          <header className="text-center">
+            <h2 className="text-3xl font-semibold text-[#db4a2b]">Get In Touch</h2>
+            <p className="mt-4 text-gray-600">
               We’d love to hear from you. Please fill out all fields, and we’ll get back to you soon!
             </p>
           </header>
-          <div className={styles.formContainer}>
-            <form className={styles.contactForm} onSubmit={handleSubmit}>
-              <div className={styles.formGroup}>
-                <label htmlFor="name">
-                  Name{errors.name && <span className={styles.required}> *</span>}
+          <div className="mt-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  Name{errors.name && <span className="text-red-500"> *</span>}
                 </label>
                 <input
-                  className={errors.name ? styles.errorInput : ''}
+                  className={`w-full p-3 border rounded-lg ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   type="text"
                   id="name"
                   name="name"
@@ -63,12 +59,12 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="email">
-                  Email{errors.email && <span className={styles.required}> *</span>}
+              <div className="space-y-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email{errors.email && <span className="text-red-500"> *</span>}
                 </label>
                 <input
-                  className={errors.email ? styles.errorInput : ''}
+                  className={`w-full p-3 border rounded-lg ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   type="email"
                   id="email"
                   name="email"
@@ -77,12 +73,12 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="subject">
-                  Subject{errors.subject && <span className={styles.required}> *</span>}
+              <div className="space-y-2">
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
+                  Subject{errors.subject && <span className="text-red-500"> *</span>}
                 </label>
                 <input
-                  className={errors.subject ? styles.errorInput : ''}
+                  className={`w-full p-3 border rounded-lg ${errors.subject ? 'border-red-500' : 'border-gray-300'}`}
                   type="text"
                   id="subject"
                   name="subject"
@@ -91,9 +87,9 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 />
               </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="message">
-                  Message{errors.message && <span className={styles.required}> *</span>}
+              <div className="space-y-2">
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                  Message{errors.message && <span className="text-red-500"> *</span>}
                 </label>
                 <textarea
                   id="message"
@@ -103,14 +99,20 @@ export default function Contact() {
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   maxLength={1000}
-                  className={errors.message ? styles.errorInput : ''}
+                  className={`w-full p-3 border rounded-lg resize-none ${errors.message ? 'border-red-500' : 'border-gray-300'}`}
                 />
+                <p className="text-sm text-gray-500 text-right">
+                  {formData.message.length}/1000 characters
+                </p>
               </div>
-              <center>
-              <button type="submit" className={styles.submitButton}>
-                Send Message
-              </button>
-              </center>
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="px-6 py-3 border-2 border-[#db4a2b] text-[#db4a2b] bg-white rounded-lg transition-colors duration-300 hover:bg-[#db4a2b] hover:text-white"
+                >
+                  Send Message
+                </button>
+              </div>
             </form>
           </div>
         </section>

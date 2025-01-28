@@ -7,8 +7,6 @@ import { ShoppingCart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCart } from "./pages/context/cart-context";
 
-// ...existing code...
-
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
