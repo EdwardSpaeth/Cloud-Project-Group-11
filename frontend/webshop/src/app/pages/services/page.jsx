@@ -1,10 +1,10 @@
 "use client";
 import { motion } from 'framer-motion';
-import styles from './services.css';
+import React from 'react';
 
 export default function Services() {
   return (
-    <div className="min-h-screen bg-w">
+    <div className="min-h-screen bg-white">
       <div className="max-w-screen-2xl mx-auto">
         {/* Hero Section */}
         <div className="relative h-[40vh] mb-16 overflow-hidden">
@@ -41,12 +41,23 @@ export default function Services() {
               { title: "Furniture Restoration", description: "We breathe new life into your old furniture, restoring it to its former glory with expert craftsmanship." },
               { title: "Space Planning", description: "Our space planning services help you make the most of your available space, ensuring a functional and aesthetically pleasing layout." }
             ].map((service, index) => (
-              <div key={index} className="service-item bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                <div className="service-item-inner">
-                  <div className="service-item-front flex items-center justify-center h-full">
+              <div
+                key={index}
+                className="group [perspective:1000px] h-64 bg-grey p-6 rounded-lg transition-transform transform hover:scale-105 shadow-[0_5px_15px_rgba(0,0,0,0.3)]"
+              >
+                <div
+                  className="relative w-full h-full text-center transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]"
+                >
+                  {/* Front Face */}
+                  <div
+                    className="absolute w-full h-full flex items-center justify-center [backface-visibility:hidden] text-[#db4a2b]"
+                  >
                     <h3 className="text-xl font-semibold">{service.title}</h3>
                   </div>
-                  <div className="service-item-back flex items-center justify-center h-full">
+                  {/* Back Face */}
+                  <div
+                    className="absolute w-full h-full flex items-center justify-center [transform:rotateY(180deg)] [backface-visibility:hidden]"
+                  >
                     <p>{service.description}</p>
                   </div>
                 </div>
