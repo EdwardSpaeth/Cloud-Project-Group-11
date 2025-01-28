@@ -29,7 +29,7 @@ export default function Home() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
         >
-          <Link href="/pages/shop" className="inline-block border-2 border-white text-white py-3 px-6 rounded-lg transition hover:bg-white hover:text-black">
+          <Link href="/shop" className="inline-block border-2 border-white text-white py-3 px-6 rounded-lg transition hover:bg-white hover:text-black">
             View Our Collection
           </Link>
         </motion.div>
