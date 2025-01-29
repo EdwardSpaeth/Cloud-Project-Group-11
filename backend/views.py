@@ -4,7 +4,7 @@ from . import db
 from .entities import Product, ProductColor, ProductMaterial, Customer, Order, OrderItem, Supplier, Inventory
 import json
 
-@app.route("/customers", methods=["POST"])
+@app.post("/customers")
 def create_customer():
     customer = Customer(
         customerFirstName = request.form.get("customerFirstName"),
@@ -17,7 +17,7 @@ def create_customer():
     db.session.commit()
     return "OK", 200
 
-@app.route("/products/<int:id>", methods=["GET"])
+@app.get("/products/<int:id>")
 def get_description(id: int):
     def get_product_info(product: Product) -> dict:
         colors = list(map(lambda m: m.colorName, ProductColor.query.filter(ProductColor.productID == product.productID).all()))
