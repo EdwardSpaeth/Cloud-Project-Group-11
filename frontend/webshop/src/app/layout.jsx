@@ -2,7 +2,7 @@
 
 import './globals.css';
 import { Inter } from "next/font/google";
-import { CartProvider } from "./pages/context/cart-context";
+import { CartProvider } from "./context/cart-context";
 import Header from "./header";
 
 const inter = Inter({ subsets: ["latin"] });

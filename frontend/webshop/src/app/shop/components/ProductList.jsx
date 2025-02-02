@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import { motion } from 'framer-motion';
-import productsData from '../products.json';
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -11,22 +10,32 @@ export default function ProductList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch products from backend endpoint
   useEffect(() => {
-    try {
-      setProducts(productsData);
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to load products');
-      setLoading(false);
-    }
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/products/0');
+        if (!response.ok) {
+          throw new Error('Network response error');
+        }
+        const data = await response.json();
+        setProducts(data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load products');
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const sortProducts = (products, sortBy) => {
     switch (sortBy) {
       case 'price-low':
-        return [...products].sort((a, b) => a.price - b.price);
+        return [...products].sort((a, b) => Number(a.price) - Number(b.price));
       case 'price-high':
-        return [...products].sort((a, b) => b.price - a.price);
+        return [...products].sort((a, b) => Number(b.price) - Number(a.price));
       case 'name':
         return [...products].sort((a, b) => a.name.localeCompare(b.name));
       default:
@@ -75,10 +84,9 @@ export default function ProductList() {
           </button>
         </div>
       </div>
-
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {[...Array(8)].map((_, index) => (
+          {[...Array(4)].map((_, index) => (
             <div key={index} className="animate-pulse">
               <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
               <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
@@ -88,16 +96,16 @@ export default function ProductList() {
         </div>
       ) : (
         <motion.div 
-          className={`${
-            view === 'list' 
+          className={
+            view === 'list'
               ? 'grid grid-cols-1 gap-y-4'
               : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10'
-          }`}
+          }
           layout
         >
           {sortedProducts.map((product, index) => (
             <motion.div
-              key={product.id}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}

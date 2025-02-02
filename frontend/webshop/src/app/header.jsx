@@ -5,9 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useCart } from "./pages/context/cart-context";
-
-// ...existing code...
+import { useCart } from "./context/cart-context";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -70,16 +68,16 @@ export default function Header() {
           <Link href="/" className="block py-2 px-4 hover:text-gray-900">
             Home
           </Link>
-          <Link href="/pages/shop" className="block py-2 px-4 hover:text-gray-900">
+          <Link href="/shop" className="block py-2 px-4 hover:text-gray-900">
             Products
           </Link>
-          <Link href="/pages/services" className="block py-2 px-4 hover:text-gray-900">
+          <Link href="/services" className="block py-2 px-4 hover:text-gray-900">
             Services
           </Link>
-          <Link href="/pages/contact" className="block py-2 px-4 hover:text-gray-900">
+          <Link href="/contact" className="block py-2 px-4 hover:text-gray-900">
             Contact
           </Link>
-          <Link href="/pages/cart" className="relative block py-2 px-4 hover:text-gray-900">
+          <Link href="/cart" className="relative block py-2 px-4 hover:text-gray-900">
             <ShoppingCart className="h-6 w-6" />
             {itemCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
