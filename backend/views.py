@@ -64,3 +64,8 @@ def serve_home():
     ]:
         print(x)
     return "Okay"
+
+
+@app.route("/")
+def serve_default():
+    return "Connection Successful!", 200
