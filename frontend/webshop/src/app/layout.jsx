@@ -4,8 +4,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { CartProvider } from "./context/cart-context";
 import Header from "./header";
-import { usePathname } from "next/navigation";  // Import to get current path
-
+import { usePathname } from "next/navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
