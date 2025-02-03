@@ -36,6 +36,6 @@ COPY . .
 ENV PATH="/opt/venv/bin:$PATH"
 RUN python3 -m pip install -r requirements.txt
 
-CMD ["flask", "--app", "webapp", "run", "--host", "0.0.0.0", "--port", "8080"]
+CMD [ "gunicorn", "-w", "10", "-b", "0.0.0.0:8080", "webapp:app" ]
 
 EXPOSE 8080

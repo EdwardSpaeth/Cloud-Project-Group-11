@@ -2,7 +2,6 @@
 from . import app, request
 from . import db
 from .entities import Product, ProductColor, ProductMaterial, Customer, Order, OrderItem, Supplier, Inventory
-from .database_login_handler import get_image
 import json
 
 @app.post("/customers")
