@@ -2,6 +2,7 @@
 from . import app, request
 from . import db
 from .entities import Product, ProductColor, ProductMaterial, Customer, Order, OrderItem, Supplier, Inventory
+from .database_login_handler import get_image
 import json
 
 @app.post("/customers")
@@ -33,7 +34,8 @@ def get_description(id: int):
             "brand": product.productBrand,
             "materials": materials,
             "colors": colors,
-            "stock": stock
+            "stock": stock,
+            "pictureUrl": product.productPicture
         }
         return product_info
     
