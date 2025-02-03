@@ -16,3 +16,5 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db: SQLAlchemy = SQLAlchemy(app)
 with app.app_context():
     db.reflect()
+    
+from . import views

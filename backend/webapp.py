@@ -1,1 +1,1 @@
-from . import app, views
+from webapp import app
