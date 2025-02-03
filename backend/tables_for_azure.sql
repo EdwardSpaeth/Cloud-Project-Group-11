@@ -82,16 +82,16 @@ CREATE TABLE INVENTORY (
 
 INSERT INTO PRODUCTS (productName, productPicture, productCategory, productCurrency, productPrice, productBrand, productDescription) 
 VALUES
-    (N'Modern Sofa', N'PICTURE_HERE', N'sofas', N'€', 999.99, N'Furniture LLC.', N'A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation.'),
-    (N'Dining Table', N'PICTURE_HERE', N'tables', N'€', 499.99, N'WoodArtisans LLC.', N'A stylish and sturdy table designed for modern homes. Crafted from high-quality wood, it provides ample space for meals, game nights, and more.'),
-    (N'Lounge Chair', N'PICTURE_HERE', N'chairs', N'€', 299.99, N'Furniture LLC.', N'An inviting lounge chair with a curved backrest that supports your spine and cushions you in comfort. Ideal for cozy reading nooks or living rooms.'),
-    (N'Minimalist Bed Frame', N'PICTURE_HERE', N'beds', N'€', 799.99, N'WoodArtisans LLC.', N'A sleek, low-profile bed frame that celebrates clean lines and open spaces. Crafted with robust materials for long-lasting support.'),
-    (N'Ergonomic Office Chair', N'PICTURE_HERE', N'chairs', N'€', 249.99, N'Furniture LLC.', N'Designed to keep you comfortable during long work sessions. Adjustable height, lumbar support, and padded armrests ensure proper posture.'),
-    (N'Coffee Table', N'PICTURE_HERE', N'tables', N'€', 199.99, N'WoodArtisans LLC.', N'A functional centerpiece for your living room. Its smooth surface and compact shape provide the perfect spot for books, decor, and beverages.'),
-    (N'Bookshelf', N'PICTURE_HERE', N'storage', N'€', 349.99, N'WoodArtisans LLC.', N'An elegant shelving unit that helps you organize books, decor, and more. Its clean design complements a variety of interior styles.'),
-    (N'Floor Lamp', N'PICTURE_HERE', N'lighting', N'€', 129.99, N'Furniture LLC.', N'A modern, slim-profile lamp that brightens any corner of your home. Features an adjustable neck so you can direct light where you need it.'),
-    (N'Dresser', N'PICTURE_HERE', N'storage', N'€', 599.99, N'WoodArtisans LLC.', N'A spacious and sturdy dresser with ample drawers for organizing clothes and accessories. The timeless design pairs well with various bedroom decors.'),
-    (N'Accent Chair', N'PICTURE_HERE', N'chairs', N'€', 279.99, N'Furniture LLC.', N'A chic and compact piece that adds a stylish flair to your living space. Its cushioned seat and supportive back make for a comfortable reading or conversation spot.');
+    (N'Modern Sofa', N'modern-sofa.webp', N'sofas', N'€', 999.99, N'Furniture LLC.', N'A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation.'),
+    (N'Dining Table', N'dining-table.webp', N'tables', N'€', 499.99, N'WoodArtisans LLC.', N'A stylish and sturdy table designed for modern homes. Crafted from high-quality wood, it provides ample space for meals, game nights, and more.'),
+    (N'Lounge Chair', N'lounge-chair.webp', N'chairs', N'€', 299.99, N'Furniture LLC.', N'An inviting lounge chair with a curved backrest that supports your spine and cushions you in comfort. Ideal for cozy reading nooks or living rooms.'),
+    (N'Minimalist Bed Frame', N'minimalist-bed-frame.webp', N'beds', N'€', 799.99, N'WoodArtisans LLC.', N'A sleek, low-profile bed frame that celebrates clean lines and open spaces. Crafted with robust materials for long-lasting support.'),
+    (N'Ergonomic Office Chair', N'ergonomic-office-chair.webp', N'chairs', N'€', 249.99, N'Furniture LLC.', N'Designed to keep you comfortable during long work sessions. Adjustable height, lumbar support, and padded armrests ensure proper posture.'),
+    (N'Coffee Table', N'coffee-table.webp', N'tables', N'€', 199.99, N'WoodArtisans LLC.', N'A functional centerpiece for your living room. Its smooth surface and compact shape provide the perfect spot for books, decor, and beverages.'),
+    (N'Bookshelf', N'bookshelf.webp', N'storage', N'€', 349.99, N'WoodArtisans LLC.', N'An elegant shelving unit that helps you organize books, decor, and more. Its clean design complements a variety of interior styles.'),
+    (N'Floor Lamp', N'floor-lamp.webp', N'lighting', N'€', 129.99, N'Furniture LLC.', N'A modern, slim-profile lamp that brightens any corner of your home. Features an adjustable neck so you can direct light where you need it.'),
+    (N'Dresser', N'dresser.webp', N'storage', N'€', 599.99, N'WoodArtisans LLC.', N'A spacious and sturdy dresser with ample drawers for organizing clothes and accessories. The timeless design pairs well with various bedroom decors.'),
+    (N'Accent Chair', N'accent-chair.webp', N'chairs', N'€', 279.99, N'Furniture LLC.', N'A chic and compact piece that adds a stylish flair to your living space. Its cushioned seat and supportive back make for a comfortable reading or conversation spot.');
 
 INSERT INTO PRODUCTCOLORS (productID, colorName)
 VALUES
