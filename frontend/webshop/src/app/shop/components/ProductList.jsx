@@ -14,7 +14,7 @@ export default function ProductList() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/products/0');
+        const response = await fetch('https://lowtechbackend-g5gxhyg5azc7amgh.germanywestcentral-01.azurewebsites.net//products/0');
         if (!response.ok) {
           throw new Error('Network response error');
         }
