@@ -35,7 +35,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/products/0");
+        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
         if (!response.ok) throw new Error("Error fetching products");
         const data = await response.json();
         const dataWithIds = data.map((prod, index) => ({ ...prod, id: index + 1 }));
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
-      const response = await fetch(`http://127.0.0.1:5000/products/${id}`, {
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
@@ -102,7 +102,7 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("http://127.0.0.1:5000/products/0", {
+      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productToAdd),
