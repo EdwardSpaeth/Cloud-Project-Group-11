@@ -11,6 +11,8 @@ Milestone 3 of the Cloud Project for the course "Cloud Computing" at Frankfurt U
 ## Prerequisites
 In order to run the server Python __3.9__ and newer must be installed. To install Python on your machine please refere to the official documentation on the [official website](https://www.python.org/downloads/).
 
+Also you must have installed docker for your system. Please refere to the [official website](https://www.docker.com) of docker for doing that.
+
 ## Setting up the virtual environment
 Now create a virtual environment where all the dependencies will be stored. 
 
@@ -27,18 +29,6 @@ As a next step we will start the virtual environment:
 As a last step, we will now install all the dependencies. Please make sure that you have the __requirement.txt__ file pulled:
 
 > pip install -r requirement.txt (Linux/MacOS)
-
-## Running the server
-
-To run the server, use the following command:
-
-> flask run
-
-This will start the server at 127.0.0.1:5000/index. If you are actively developing the server you have the possibility to use 
-
-> flask run --debug.
-
-Now you don't have to stop the server when making changes to the server. Just safe the changes and refresh your browser. Flask will handle everything else.
 
 # Getting started with the frontend
 
