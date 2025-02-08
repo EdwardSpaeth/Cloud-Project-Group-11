@@ -26,7 +26,7 @@ As a next step we will start the virtual environment:
 
 As a last step, we will now install all the dependencies. Please make sure that you have the __requirement.txt__ file pulled:
 
-> python3 install -r requirement.txt (Linux/MacOS)
+> pip install -r requirement.txt (Linux/MacOS)
 
 ## Running the server
 
