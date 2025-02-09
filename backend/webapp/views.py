@@ -23,7 +23,6 @@ def get_description(id: int):
         colors = list(map(lambda m: m.colorName, ProductColor.query.filter(ProductColor.productID == product.productID).all()))
         materials = list(map(lambda m: m.materialName, ProductMaterial.query.filter(ProductMaterial.productID == product.productID).all()))
         stock = Inventory.query.filter(Inventory.productID == product.productID).first().stock
-        print(materials)
         product_info = {
             "name": product.productName,
             "category": product.productCategory,
@@ -37,7 +36,7 @@ def get_description(id: int):
             "pictureUrl": product.productPicture
         }
         return product_info
-    
+
     # Retrieve all products
     if id == 0:
         product_infos = []
@@ -46,8 +45,8 @@ def get_description(id: int):
             product_infos.append(get_product_info(product))
         return json.dumps(product_infos), 200
     else:
-        product = Product.query.filter(Product.productID == 1).first()
-        
+        product = Product.query.filter(Product.productID == id).first()
+
         product_info = get_product_info(product)
         return json.dumps(product_info), 200
 
@@ -65,7 +64,6 @@ def serve_home():
     ]:
         print(x)
     return "Okay"
-
 
 @app.route("/")
 def serve_default():
