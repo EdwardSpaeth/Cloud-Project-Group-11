@@ -34,13 +34,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-<<<<<<< Updated upstream
-        const response = await fetch(
-          "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0"
-        );
-=======
-        const response = await fetch("http://localhost:5636/products/0");
->>>>>>> Stashed changes
+        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
         if (!response.ok) throw new Error("Error fetching products");
         const data = await response.json();
         const dataWithIds = data.map((prod, index) => ({ ...prod, id: index + 1 }));
@@ -74,9 +68,7 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
-<<<<<<< Updated upstream
-      const response = await fetch(
-        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -90,25 +82,7 @@ const AdminDashboard = () => {
         alert("Product updated successfully!");
       } else {
         alert("Failed to update product");
-=======
-      const response = await fetch('http://localhost:5636/updateProducts', {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData),
-      });
-      // if the something went wrong on the server side throw an exception
-      if (!response.ok) {
-        response.json().then(err => {
-          throw new Error(`Error ${err.status}: ${err.message}`)
-        });
->>>>>>> Stashed changes
       }
-
-      // otherwise set the updated Product
-      setProducts((prev) =>
-          prev.map((p) => (p.id === id ? updatedData : p))
-      );
-      alert("Product updated successfully!");
     } catch (err) {
       alert("Something went wrong when updating the new product. Error: " + err.message);
     }
@@ -129,9 +103,7 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-<<<<<<< Updated upstream
-      const response = await fetch(
-        "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0",
+      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -139,18 +111,6 @@ const AdminDashboard = () => {
         }
       );
       if (!response.ok) throw new Error("Failed to add product");
-=======
-      const response = await fetch("http://127.0.0.1:5636/addProduct", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productToAdd),
-      });
-      if (!response.ok) {
-        response.json().then(errData => {
-          throw new Error(`Error ${response.status}: ${errData.message}`);
-        });
-      }
->>>>>>> Stashed changes
       const addedProduct = await response.json();
       addedProduct.id = products.length + 1;
       setProducts((prev) => [...prev, addedProduct]);
