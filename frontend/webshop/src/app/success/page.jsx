@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useCart } from "../context/cart-context"; 
+import { useCart } from "../context/cart-context";
 import Link from "next/link";
 
 export default function SuccessPage() {
