@@ -50,7 +50,7 @@ export default function CartPage() {
 
             {/* Order Summary Section */}
             <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-              <h2 className="text-2xl font-semibold mb-4">Order Summary BINGO BONGO BONGO BINGO!</h2>
+              <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
               <div className="flex justify-between mb-2">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
