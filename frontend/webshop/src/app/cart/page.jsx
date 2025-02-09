@@ -12,15 +12,23 @@ export default function CartPage() {
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-    const stripe = await stripePromise;
-    const response = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items }),
-    });
-    const { sessionId } = await response.json();
-    const { error } = await stripe.redirectToCheckout({ sessionId });
-    if (error) console.error(error);
+    try {
+      const stripe = await stripePromise;
+      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+
+      if (!response.ok) throw new Error("Failed to create checkout session");
+
+      const { sessionId } = await response.json();
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      if (error) console.error(error);
+
+    } catch (error) {
+      console.error("Checkout error:", error);
+    }
   };
 
   return (
@@ -42,7 +50,7 @@ export default function CartPage() {
 
             {/* Order Summary Section */}
             <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-              <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
+              <h2 className="text-2xl font-semibold mb-4">Order Summary BINGO BONGO BONGO BINGO!</h2>
               <div className="flex justify-between mb-2">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>

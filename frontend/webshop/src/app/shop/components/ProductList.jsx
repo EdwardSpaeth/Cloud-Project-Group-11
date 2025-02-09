@@ -15,18 +15,16 @@ export default function ProductList() {
     const fetchProducts = async () => {
       try {
         const response = await fetch('https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0');
-        if (!response.ok) {
-          throw new Error('Network response error');
-        }
-        const data = await response.json();
+        let data = await response.json();
+        // If data is an array and products don't include an id, assign one:
+        data = data.map((product, index) => ({ id: index + 1, ...product }));
         setProducts(data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to load products');
+        setError(err);
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
@@ -46,7 +44,7 @@ export default function ProductList() {
   const sortedProducts = sortProducts(products, sortBy);
 
   if (error) {
-    return <div className="text-red-500 text-center py-8">{error}</div>;
+    return <div className="text-red-500 text-center py-8">{error.message}</div>;
   }
 
   return (
@@ -95,7 +93,7 @@ export default function ProductList() {
           ))}
         </div>
       ) : (
-        <motion.div 
+        <motion.div
           className={
             view === 'list'
               ? 'grid grid-cols-1 gap-y-4'
@@ -105,7 +103,7 @@ export default function ProductList() {
         >
           {sortedProducts.map((product, index) => (
             <motion.div
-              key={index}
+              key={product.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -121,12 +119,12 @@ export default function ProductList() {
 
 const GridIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
   </svg>
 );
 
 const ListIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
   </svg>
 );

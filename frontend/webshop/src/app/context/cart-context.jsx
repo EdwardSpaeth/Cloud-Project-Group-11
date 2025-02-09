@@ -8,19 +8,18 @@ const CartContext = createContext(undefined)
 export function CartProvider({ children }) {
   const [items, setItems] = useState([])
 
-  // Add an item to the cart locally
   const addToCart = (product) => {
     setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id)
+      const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {
         return prevItems.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        )
+        );
       } else {
-        return [...prevItems, { ...product, quantity: 1 }]
+        return [...prevItems, { ...product, quantity: 1 }];
       }
-    })
-  }
+    });
+  };
 
   // Remove an item from the cart locally
   const removeFromCart = (id) => {
