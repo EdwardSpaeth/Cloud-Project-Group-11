@@ -28,14 +28,15 @@ const AdminDashboard = () => {
     field: "",
   });
 
-
   const lowStockProducts = products.filter((p) => Number(p.stock) < 10);
 
   // Fetch products from the backend using /products/0 (returns all products)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
+        const response = await fetch(
+          "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0"
+        );
         if (!response.ok) throw new Error("Error fetching products");
         const data = await response.json();
         const dataWithIds = data.map((prod, index) => ({ ...prod, id: index + 1 }));
@@ -69,11 +70,14 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData),
-      });
+      const response = await fetch(
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData),
+        }
+      );
       if (response.ok) {
         setProducts((prev) =>
           prev.map((p) => (p.id === id ? updatedData : p))
@@ -92,7 +96,7 @@ const AdminDashboard = () => {
     setNewProduct((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Add new product via the backend (doesnt work, is just a skelleton!!!!! so dont message me if this not work, please!)
+  // Add new product via the backend (doesn't work, is just a skeleton)
   const addProduct = async () => {
     const productToAdd = {
       ...newProduct,
@@ -102,11 +106,14 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productToAdd),
-      });
+      const response = await fetch(
+        "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(productToAdd),
+        }
+      );
       if (!response.ok) throw new Error("Failed to add product");
       const addedProduct = await response.json();
       addedProduct.id = products.length + 1;
@@ -136,11 +143,9 @@ const AdminDashboard = () => {
     router.push("/admin/login");
   };
 
-
   const openModal = (id, field) => {
     setModal({ isOpen: true, productId: id, field });
   };
-
 
   const closeModal = () => {
     setModal({ isOpen: false, productId: null, field: "" });
@@ -180,12 +185,18 @@ const AdminDashboard = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M12 20h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M12 20h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>
               Warning: The following products have low stock:{" "}
-              {lowStockProducts.map((p) => `ID ${p.id} (${p.name} - Stock: ${p.stock})`).join(", ")}
+              {lowStockProducts
+                .map((p) => `ID ${p.id} (${p.name} - Stock: ${p.stock})`)
+                .join(", ")}
             </span>
           </div>
         </div>
@@ -242,7 +253,10 @@ const AdminDashboard = () => {
                 "Stock",
                 "Actions",
               ].map((header) => (
-                <th key={header} className="px-4 py-3 text-left uppercase text-sm tracking-wider">
+                <th
+                  key={header}
+                  className="px-4 py-3 text-left uppercase text-sm tracking-wider"
+                >
                   {header}
                 </th>
               ))}
@@ -266,14 +280,19 @@ const AdminDashboard = () => {
                     title="Edit full name"
                     className="p-1 hover:text-blue-500 self-center"
                   >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      className="h-5 w-5" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+                      />
                     </svg>
                   </button>
                 </td>
@@ -292,14 +311,19 @@ const AdminDashboard = () => {
                     title="Edit full description"
                     className="p-1 hover:text-blue-500"
                   >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      className="h-5 w-5" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+                      />
                     </svg>
                   </button>
                 </td>

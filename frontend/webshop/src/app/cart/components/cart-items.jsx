@@ -1,11 +1,12 @@
 "use client"
 
 import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { useCart } from "../../context/cart-context"
 
 export function CartItem({ id, name, price, quantity, imageUrl }) {
   const { updateQuantity, removeFromCart } = useCart()
+  const priceNum = typeof price === "number" ? price : parseFloat(price)
 
   return (
     <motion.div
@@ -19,15 +20,15 @@ export function CartItem({ id, name, price, quantity, imageUrl }) {
         <Image
           src={imageUrl || "/placeholder.svg"}
           alt={name}
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{ objectFit: "cover" }}
           className="rounded-md"
         />
       </div>
       
       <div className="flex-grow">
         <h3 className="font-medium text-gray-900">{name}</h3>
-        <p className="text-sm text-gray-500">${price.toFixed(2)} each</p>
+        <p className="text-sm text-gray-500">${priceNum.toFixed(2)} each</p>
         
         <div className="flex items-center gap-3 mt-2">
           <button
@@ -45,9 +46,9 @@ export function CartItem({ id, name, price, quantity, imageUrl }) {
           </button>
         </div>
       </div>
-
+      
       <div className="flex flex-col items-end gap-2">
-        <span className="font-medium">${(price * quantity).toFixed(2)}</span>
+        <span className="font-medium">${(priceNum * quantity).toFixed(2)}</span>
         <button
           onClick={() => removeFromCart(id)}
           className="p-2 text-gray-400 hover:text-red-500 transition-colors"

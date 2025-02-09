@@ -1,16 +1,32 @@
-"use client"
+"use client";
 
-import { CartItem } from "./components/cart-items"
-import { useCart } from "../context/cart-context"
+import { CartItem } from "./components/cart-items";
+import { useCart } from "../context/cart-context";
+import { loadStripe } from "@stripe/stripe-js";
+
+// Load your Stripe public key 
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 export default function CartPage() {
-  const { items } = useCart()
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  const { items } = useCart();
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  const handleCheckout = async () => {
+    const stripe = await stripePromise;
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items }),
+    });
+    const { sessionId } = await response.json();
+    const { error } = await stripe.redirectToCheckout({ sessionId });
+    if (error) console.error(error);
+  };
 
   return (
     <div className="container mx-auto p-4">
       {items.length === 0 ? (
-        <div className="justify-center min-h-screen">
+        <div className="flex justify-center items-center min-h-screen">
           <p className="text-center text-gray-500 text-xl">Your cart is empty</p>
         </div>
       ) : (
@@ -19,11 +35,11 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Cart Items Section */}
             <div className="space-y-4">
-              {items.map((item) => (
-                <CartItem key={item.id} {...item} />
+              {items.map((item, index) => (
+                <CartItem key={item.id || index} {...item} />
               ))}
             </div>
-            
+
             {/* Order Summary Section */}
             <div className="bg-gray-100 p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
@@ -40,7 +56,10 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              <button className="w-full border-2 border-black text-black bg-transparent py-3 rounded-lg hover:bg-black hover:text-white transition-colors duration-300">
+              <button
+                onClick={handleCheckout}
+                className="w-full border-2 border-black text-black bg-transparent py-3 rounded-lg hover:bg-black hover:text-white transition-colors duration-300"
+              >
                 Proceed to Checkout
               </button>
             </div>
@@ -48,5 +67,5 @@ export default function CartPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
