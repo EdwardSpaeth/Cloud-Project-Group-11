@@ -72,13 +72,13 @@ export default function ProductList() {
             onClick={() => setView('list')}
             className={`p-2 ${view === 'list' ? 'text-black' : 'text-gray-400'}`}
           >
-            <ListIcon />
+            <GridIcon />
           </button>
           <button
             onClick={() => setView('grid')}
             className={`p-2 ${view === 'grid' ? 'text-black' : 'text-gray-400'}`}
           >
-            <GridIcon />
+            <ListIcon />
           </button>
         </div>
       </div>

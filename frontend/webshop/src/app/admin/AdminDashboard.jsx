@@ -21,12 +21,15 @@ const AdminDashboard = () => {
     colors: "",
     stock: "",
   });
-
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [modal, setModal] = useState({
     isOpen: false,
     productId: null,
     field: "",
   });
+
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [imageList, setImageList] = useState([]);
 
   const lowStockProducts = products.filter((p) => Number(p.stock) < 10);
 
@@ -51,6 +54,25 @@ const AdminDashboard = () => {
       }
     };
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const images = [
+      "accent-chair.webp",
+      "bookshelf.webp",
+      "coffee-table.webp",
+      "dining-table.webp",
+      "dresser.webp",
+      "ergonomic-office-chair.webp",
+      "floor-lamp.webp",
+      "landing.jpg",
+      "lounge-chair.webp",
+      "modern-sofa.webp",
+      "stock1.png",
+      "stock2.png",
+      "stock3.png",
+    ];
+    setImageList(images);
   }, []);
 
   // Handle changes for editable fields
@@ -85,6 +107,23 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       alert("Something went wrong when updating the new product. Error: " + err.message);
+    }
+  };
+
+  // Function to delete selected products
+  const deleteSelectedProducts = async () => {
+    try {
+      const deletePromises = selectedProducts.map((id) =>
+        fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`, {
+          method: "DELETE",
+        })
+      );
+      await Promise.all(deletePromises);
+      setProducts((prev) => prev.filter((p) => !selectedProducts.includes(p.id)));
+      setSelectedProducts([]);
+      alert("Selected products deleted successfully!");
+    } catch (err) {
+      alert("Something went wrong when deleting the products. Error: " + err.message);
     }
   };
 
@@ -132,7 +171,7 @@ const AdminDashboard = () => {
       alert("Something went wrong when adding the new product. Error: " + err.message);
     }
   };
-  
+
   // Logout handler
   const handleLogout = () => {
     localStorage.removeItem("adminCredentials");
@@ -145,6 +184,21 @@ const AdminDashboard = () => {
 
   const closeModal = () => {
     setModal({ isOpen: false, productId: null, field: "" });
+  };
+
+  const handleSelectProduct = (id) => {
+    setSelectedProducts((prev) =>
+      prev.includes(id) ? prev.filter((productId) => productId !== id) : [...prev, id]
+    );
+  };
+
+  const openImageModal = () => {
+    setImageModalOpen(true);
+  };
+
+  const selectImage = (image) => {
+    setNewProduct((prev) => ({ ...prev, image }));
+    setImageModalOpen(false);
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
@@ -168,6 +222,14 @@ const AdminDashboard = () => {
           >
             {showNewProductForm ? "Cancel" : "Add New Product"}
           </button>
+          {selectedProducts.length > 0 && (
+            <button
+              onClick={deleteSelectedProducts}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Delete Selected
+            </button>
+          )}
         </div>
       </div>
       {/* Low Stock Alert */}
@@ -223,13 +285,51 @@ const AdminDashboard = () => {
                 />
               </div>
             ))}
+            {/* Add Image Button */}
+            <div>
+              <label className="block font-semibold">Product Image</label>
+              <button
+                type="button"
+                onClick={openImageModal}
+                className="mt-2 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+              >
+                Add Image
+              </button>
+              {newProduct.image && (
+                <div className="mt-2">
+                  <img src={`/images/${newProduct.image}`} alt="Selected" className="w-24 h-24 object-cover rounded" />
+                </div>
+              )}
+            </div>
           </div>
-          <button
-            onClick={addProduct}
-            className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Add Product
-          </button>
+        </div>
+      )}
+
+      {/*Image Selection Modal */}
+      {imageModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-3/4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold mb-4">Select an Image</h3>
+              <button
+                onClick={() => setImageModalOpen(false)}
+                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Close
+              </button>
+            </div>
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+              {imageList.map((image, index) => (
+                <img
+                  key={index}
+                  src={`/images/${image}`}
+                  alt="Product"
+                  className="w-24 h-24 object-cover cursor-pointer border border-gray-300 rounded hover:border-blue-500"
+                  onClick={() => selectImage(image)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       )}
       {/* Products Table */}
@@ -237,6 +337,17 @@ const AdminDashboard = () => {
         <table className="min-w-full bg-white">
           <thead className="bg-gray-800 text-white">
             <tr>
+              <th className="px-4 py-3">
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    setSelectedProducts(
+                      e.target.checked ? products.map((p) => p.id) : []
+                    )
+                  }
+                  checked={selectedProducts.length === products.length}
+                />
+              </th>
               {[
                 "ID",
                 "Name",
@@ -261,6 +372,13 @@ const AdminDashboard = () => {
           <tbody className="divide-y divide-gray-200">
             {products.map((product) => (
               <tr key={product.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedProducts.includes(product.id)}
+                    onChange={() => handleSelectProduct(product.id)}
+                  />
+                </td>
                 <td className="px-4 py-3">{product.id}</td>
                 <td className="px-4 py-3 flex items-center gap-2">
                   <div
@@ -356,52 +474,54 @@ const AdminDashboard = () => {
         </table>
       </div>
       {/* Modal for full field editing */}
-      {modal.isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
-            <h3 className="text-2xl font-bold mb-4">
-              Edit Full {modal.field === "name" ? "Name" : "Description"}
-            </h3>
-            {modal.field === "description" ? (
-              <textarea
-                value={editedProducts[modal.productId]?.description || ""}
-                onChange={(e) =>
-                  handleFieldChange(modal.productId, "description", e.target.value)
-                }
-                className="w-full border rounded p-2"
-                rows={10}
-              />
-            ) : (
-              <textarea
-                value={editedProducts[modal.productId]?.name || ""}
-                onChange={(e) =>
-                  handleFieldChange(modal.productId, "name", e.target.value)
-                }
-                className="w-full border rounded p-2"
-                rows={3}
-              />
-            )}
-            <div className="mt-4 flex justify-end gap-4">
-              <button
-                onClick={() => {
-                  updateProduct(modal.productId);
-                  closeModal();
-                }}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={closeModal}
-                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-              >
-                Cancel
-              </button>
+      {
+        modal.isOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
+              <h3 className="text-2xl font-bold mb-4">
+                Edit Full {modal.field === "name" ? "Name" : "Description"}
+              </h3>
+              {modal.field === "description" ? (
+                <textarea
+                  value={editedProducts[modal.productId]?.description || ""}
+                  onChange={(e) =>
+                    handleFieldChange(modal.productId, "description", e.target.value)
+                  }
+                  className="w-full border rounded p-2"
+                  rows={10}
+                />
+              ) : (
+                <textarea
+                  value={editedProducts[modal.productId]?.name || ""}
+                  onChange={(e) =>
+                    handleFieldChange(modal.productId, "name", e.target.value)
+                  }
+                  className="w-full border rounded p-2"
+                  rows={3}
+                />
+              )}
+              <div className="mt-4 flex justify-end gap-4">
+                <button
+                  onClick={() => {
+                    updateProduct(modal.productId);
+                    closeModal();
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
