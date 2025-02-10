@@ -1,12 +1,13 @@
-'use client';
-import { useEffect, useState } from 'react';
-import ProductCard from './ProductCard';
-import { motion } from 'framer-motion';
+"use client";
+import { useEffect, useState } from "react";
+import ProductCard from "./ProductCard";
+import { motion } from "framer-motion";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
-  const [view, setView] = useState('grid');
-  const [sortBy, setSortBy] = useState('default');
+  const [view, setView] = useState("grid");
+  const [sortBy, setSortBy] = useState("default");
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -28,20 +29,23 @@ export default function ProductList() {
     fetchProducts();
   }, []);
 
-  const sortProducts = (products, sortBy) => {
-    switch (sortBy) {
-      case 'price-low':
-        return [...products].sort((a, b) => Number(a.price) - Number(b.price));
-      case 'price-high':
-        return [...products].sort((a, b) => Number(b.price) - Number(a.price));
-      case 'name':
-        return [...products].sort((a, b) => a.name.localeCompare(b.name));
+  const sortProducts = (items, sortOption) => {
+    switch (sortOption) {
+      case "price-low":
+        return [...items].sort((a, b) => Number(a.price) - Number(b.price));
+      case "price-high":
+        return [...items].sort((a, b) => Number(b.price) - Number(a.price));
+      case "name":
+        return [...items].sort((a, b) => a.name.localeCompare(b.name));
       default:
-        return products;
+        return items;
     }
   };
 
   const sortedProducts = sortProducts(products, sortBy);
+  const filteredProducts = sortedProducts.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (error) {
     return <div className="text-red-500 text-center py-8">{error.message}</div>;
@@ -54,34 +58,46 @@ export default function ProductList() {
           {loading ? (
             <div className="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
           ) : (
-            `Showing ${products.length} products`
+            `Showing ${filteredProducts.length} products`
           )}
         </div>
-        <div className="flex items-center gap-4">
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <input
+            type="text"
+            value={searchTerm}
+            placeholder="Search..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="text-sm border rounded-md px-2 py-1 w-44"
+          />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="text-sm border rounded-md px-2 py-1"
+            className="text-sm border rounded-md px-2 py-1 w-44"
           >
             <option value="default">Default sorting</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
             <option value="name">Name</option>
           </select>
-          <button
-            onClick={() => setView('list')}
-            className={`p-2 ${view === 'list' ? 'text-black' : 'text-gray-400'}`}
-          >
-            <GridIcon />
-          </button>
-          <button
-            onClick={() => setView('grid')}
-            className={`p-2 ${view === 'grid' ? 'text-black' : 'text-gray-400'}`}
-          >
-            <ListIcon />
-          </button>
+
+          <div className="flex gap-1">
+            <button
+              onClick={() => setView("list")}
+              className={`p-2 ${view === "list" ? "text-black" : "text-gray-400"}`}
+            >
+              <GridIcon />
+            </button>
+            <button
+              onClick={() => setView("grid")}
+              className={`p-2 ${view === "grid" ? "text-black" : "text-gray-400"}`}
+            >
+              <ListIcon />
+            </button>
+          </div>
         </div>
       </div>
+
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[...Array(4)].map((_, index) => (
@@ -95,13 +111,13 @@ export default function ProductList() {
       ) : (
         <motion.div
           className={
-            view === 'list'
-              ? 'grid grid-cols-1 gap-y-4'
-              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10'
+            view === "list"
+              ? "grid grid-cols-1 gap-y-4"
+              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10"
           }
           layout
         >
-          {sortedProducts.map((product, index) => (
+          {filteredProducts.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
