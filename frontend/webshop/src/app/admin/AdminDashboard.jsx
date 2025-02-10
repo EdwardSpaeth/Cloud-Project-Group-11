@@ -33,6 +33,10 @@ const AdminDashboard = () => {
 
   const lowStockProducts = products.filter((p) => Number(p.stock) < 10);
 
+  const [showMessages, setShowMessages] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  const fetchMessages = async () => {
     try {
       const response = await fetch("http://localhost:5636/messages");
       if (!response.ok) throw new Error("Failed to fetch messages");
@@ -40,6 +44,10 @@ const AdminDashboard = () => {
     } catch (err) {
       alert(err.message);
     }
+  };
+
+  const handleToggleMessages = () => {
+    setShowMessages((prev) => {
       if (!prev) {
         fetchMessages();
       }
