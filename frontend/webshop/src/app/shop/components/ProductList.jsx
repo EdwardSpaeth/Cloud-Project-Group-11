@@ -1,12 +1,13 @@
-'use client';
-import { useEffect, useState } from 'react';
-import ProductCard from './ProductCard';
-import { motion } from 'framer-motion';
+"use client";
+import { useEffect, useState } from "react";
+import ProductCard from "./ProductCard";
+import { motion } from "framer-motion";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
-  const [view, setView] = useState('grid');
-  const [sortBy, setSortBy] = useState('default');
+  const [view, setView] = useState("grid");
+  const [sortBy, setSortBy] = useState("default");
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -15,38 +16,39 @@ export default function ProductList() {
     const fetchProducts = async () => {
       try {
         const response = await fetch('https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0');
-        if (!response.ok) {
-          throw new Error('Network response error');
-        }
-        const data = await response.json();
+        let data = await response.json();
+        // If data is an array and products don't include an id, assign one:
+        data = data.map((product, index) => ({ id: index + 1, ...product }));
         setProducts(data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to load products');
+        setError(err);
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
-  const sortProducts = (products, sortBy) => {
-    switch (sortBy) {
-      case 'price-low':
-        return [...products].sort((a, b) => Number(a.price) - Number(b.price));
-      case 'price-high':
-        return [...products].sort((a, b) => Number(b.price) - Number(a.price));
-      case 'name':
-        return [...products].sort((a, b) => a.name.localeCompare(b.name));
+  const sortProducts = (items, sortOption) => {
+    switch (sortOption) {
+      case "price-low":
+        return [...items].sort((a, b) => Number(a.price) - Number(b.price));
+      case "price-high":
+        return [...items].sort((a, b) => Number(b.price) - Number(a.price));
+      case "name":
+        return [...items].sort((a, b) => a.name.localeCompare(b.name));
       default:
-        return products;
+        return items;
     }
   };
 
   const sortedProducts = sortProducts(products, sortBy);
+  const filteredProducts = sortedProducts.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (error) {
-    return <div className="text-red-500 text-center py-8">{error}</div>;
+    return <div className="text-red-500 text-center py-8">{error.message}</div>;
   }
 
   return (
@@ -56,34 +58,46 @@ export default function ProductList() {
           {loading ? (
             <div className="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
           ) : (
-            `Showing ${products.length} products`
+            `Showing ${filteredProducts.length} products`
           )}
         </div>
-        <div className="flex items-center gap-4">
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <input
+            type="text"
+            value={searchTerm}
+            placeholder="Search..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="text-sm border rounded-md px-2 py-1 w-44"
+          />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="text-sm border rounded-md px-2 py-1"
+            className="text-sm border rounded-md px-2 py-1 w-44"
           >
             <option value="default">Default sorting</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
             <option value="name">Name</option>
           </select>
-          <button
-            onClick={() => setView('list')}
-            className={`p-2 ${view === 'list' ? 'text-black' : 'text-gray-400'}`}
-          >
-            <ListIcon />
-          </button>
-          <button
-            onClick={() => setView('grid')}
-            className={`p-2 ${view === 'grid' ? 'text-black' : 'text-gray-400'}`}
-          >
-            <GridIcon />
-          </button>
+
+          <div className="flex gap-1">
+            <button
+              onClick={() => setView("list")}
+              className={`p-2 ${view === "list" ? "text-black" : "text-gray-400"}`}
+            >
+              <GridIcon />
+            </button>
+            <button
+              onClick={() => setView("grid")}
+              className={`p-2 ${view === "grid" ? "text-black" : "text-gray-400"}`}
+            >
+              <ListIcon />
+            </button>
+          </div>
         </div>
       </div>
+
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[...Array(4)].map((_, index) => (
@@ -95,17 +109,17 @@ export default function ProductList() {
           ))}
         </div>
       ) : (
-        <motion.div 
+        <motion.div
           className={
-            view === 'list'
-              ? 'grid grid-cols-1 gap-y-4'
-              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10'
+            view === "list"
+              ? "grid grid-cols-1 gap-y-4"
+              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10"
           }
           layout
         >
-          {sortedProducts.map((product, index) => (
+          {filteredProducts.map((product, index) => (
             <motion.div
-              key={index}
+              key={product.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -121,12 +135,12 @@ export default function ProductList() {
 
 const GridIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
   </svg>
 );
 
 const ListIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/>
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
   </svg>
 );

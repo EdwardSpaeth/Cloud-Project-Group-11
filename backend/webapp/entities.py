@@ -89,3 +89,11 @@ class Inventory(db.Model):
 
     def __repr__(self):
         return f"<Inventory Product {self.productID} Supplier {self.supplierID}>"
+
+class Message(db.Model):
+    __tablename__ = "MESSAGES"
+    messageID = db.Column(db.Integer, primary_key=True)
+    messageName = db.Column(db.String(100), nullable=False)
+    messageEmail = db.Column(db.String(100), nullable=False)
+    messageSubject = db.Column(db.String(150), nullable=False)
+    messageText = db.Column(db.String(2000), nullable=False)

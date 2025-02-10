@@ -21,15 +21,39 @@ const AdminDashboard = () => {
     colors: "",
     stock: "",
   });
-
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [modal, setModal] = useState({
     isOpen: false,
     productId: null,
     field: "",
   });
 
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [imageList, setImageList] = useState([]);
 
   const lowStockProducts = products.filter((p) => Number(p.stock) < 10);
+
+  const [showMessages, setShowMessages] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch("http://localhost:5636/messages");
+      if (!response.ok) throw new Error("Failed to fetch messages");
+      setMessages(await response.json());
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleToggleMessages = () => {
+    setShowMessages((prev) => {
+      if (!prev) {
+        fetchMessages();
+      }
+      return !prev;
+    });
+  };
 
   // Fetch products from the backend using /products/0 (returns all products)
   useEffect(() => {
@@ -54,6 +78,25 @@ const AdminDashboard = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const images = [
+      "accent-chair.webp",
+      "bookshelf.webp",
+      "coffee-table.webp",
+      "dining-table.webp",
+      "dresser.webp",
+      "ergonomic-office-chair.webp",
+      "floor-lamp.webp",
+      "landing.jpg",
+      "lounge-chair.webp",
+      "modern-sofa.webp",
+      "stock1.png",
+      "stock2.png",
+      "stock3.png",
+    ];
+    setImageList(images);
+  }, []);
+
   // Handle changes for editable fields
   const handleFieldChange = (id, field, value) => {
     setEditedProducts((prev) => ({
@@ -69,11 +112,13 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData),
-      });
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData),
+        }
+      );
       if (response.ok) {
         setProducts((prev) =>
           prev.map((p) => (p.id === id ? updatedData : p))
@@ -83,7 +128,24 @@ const AdminDashboard = () => {
         alert("Failed to update product");
       }
     } catch (err) {
-      alert("Error updating product: " + err.message);
+      alert("Something went wrong when updating the new product. Error: " + err.message);
+    }
+  };
+
+  // Function to delete selected products
+  const deleteSelectedProducts = async () => {
+    try {
+      const deletePromises = selectedProducts.map((id) =>
+        fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`, {
+          method: "DELETE",
+        })
+      );
+      await Promise.all(deletePromises);
+      setProducts((prev) => prev.filter((p) => !selectedProducts.includes(p.id)));
+      setSelectedProducts([]);
+      alert("Selected products deleted successfully!");
+    } catch (err) {
+      alert("Something went wrong when deleting the products. Error: " + err.message);
     }
   };
 
@@ -92,7 +154,7 @@ const AdminDashboard = () => {
     setNewProduct((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Add new product via the backend (doesnt work, is just a skelleton!!!!! so dont message me if this not work, please!)
+  // Add new product via the backend (doesn't work, is just a skeleton)
   const addProduct = async () => {
     const productToAdd = {
       ...newProduct,
@@ -102,11 +164,13 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productToAdd),
-      });
+      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(productToAdd),
+        }
+      );
       if (!response.ok) throw new Error("Failed to add product");
       const addedProduct = await response.json();
       addedProduct.id = products.length + 1;
@@ -126,7 +190,7 @@ const AdminDashboard = () => {
       setShowNewProductForm(false);
       alert("New product added!");
     } catch (err) {
-      alert(err.message);
+      alert("Something went wrong when adding the new product. Error: " + err.message);
     }
   };
 
@@ -136,14 +200,27 @@ const AdminDashboard = () => {
     router.push("/admin/login");
   };
 
-
   const openModal = (id, field) => {
     setModal({ isOpen: true, productId: id, field });
   };
 
-
   const closeModal = () => {
     setModal({ isOpen: false, productId: null, field: "" });
+  };
+
+  const handleSelectProduct = (id) => {
+    setSelectedProducts((prev) =>
+      prev.includes(id) ? prev.filter((productId) => productId !== id) : [...prev, id]
+    );
+  };
+
+  const openImageModal = () => {
+    setImageModalOpen(true);
+  };
+
+  const selectImage = (image) => {
+    setNewProduct((prev) => ({ ...prev, image }));
+    setImageModalOpen(false);
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
@@ -155,6 +232,9 @@ const AdminDashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h2 className="text-3xl font-bold mb-4 md:mb-0">Product Overview</h2>
         <div className="flex gap-4">
+        <button onClick={handleToggleMessages} className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
+            {showMessages ? "Hide Messages" : "Messages"}
+          </button>
           <button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
@@ -167,8 +247,47 @@ const AdminDashboard = () => {
           >
             {showNewProductForm ? "Cancel" : "Add New Product"}
           </button>
+          {selectedProducts.length > 0 && (
+            <button
+              onClick={deleteSelectedProducts}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Delete Selected
+            </button>
+          )}
         </div>
       </div>
+
+      {showMessages && (
+  <div className="mt-4 mb-6 p-4 border rounded bg-white">
+    <h3 className="text-xl font-semibold mb-2">Messages</h3>
+    {messages.length === 0 ? (
+      <div>No messages found.</div>
+    ) : (
+      <table className="min-w-full mb-4">
+        <thead>
+          <tr>
+            <th className="px-4 py-2 text-left">Name</th>
+            <th className="px-4 py-2 text-left">Email</th>
+            <th className="px-4 py-2 text-left">Subject</th>
+            <th className="px-4 py-2 text-left">Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {messages.map((msg) => (
+            <tr key={msg.id} className="border-b">
+              <td className="px-4 py-2">{msg.name}</td>
+              <td className="px-4 py-2">{msg.email}</td>
+              <td className="px-4 py-2">{msg.subject}</td>
+              <td className="px-4 py-2">{msg.message}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+)}
+
       {/* Low Stock Alert */}
       {lowStockProducts.length > 0 && (
         <div className="mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded shadow">
@@ -180,12 +299,18 @@ const AdminDashboard = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M12 20h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M12 20h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>
               Warning: The following products have low stock:{" "}
-              {lowStockProducts.map((p) => `ID ${p.id} (${p.name} - Stock: ${p.stock})`).join(", ")}
+              {lowStockProducts
+                .map((p) => `ID ${p.id} (${p.name} - Stock: ${p.stock})`)
+                .join(", ")}
             </span>
           </div>
         </div>
@@ -216,13 +341,51 @@ const AdminDashboard = () => {
                 />
               </div>
             ))}
+            {/* Add Image Button */}
+            <div>
+              <label className="block font-semibold">Product Image</label>
+              <button
+                type="button"
+                onClick={openImageModal}
+                className="mt-2 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+              >
+                Add Image
+              </button>
+              {newProduct.image && (
+                <div className="mt-2">
+                  <img src={`/images/${newProduct.image}`} alt="Selected" className="w-24 h-24 object-cover rounded" />
+                </div>
+              )}
+            </div>
           </div>
-          <button
-            onClick={addProduct}
-            className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Add Product
-          </button>
+        </div>
+      )}
+
+      {/*Image Selection Modal */}
+      {imageModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-3/4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold mb-4">Select an Image</h3>
+              <button
+                onClick={() => setImageModalOpen(false)}
+                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Close
+              </button>
+            </div>
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+              {imageList.map((image, index) => (
+                <img
+                  key={index}
+                  src={`/images/${image}`}
+                  alt="Product"
+                  className="w-24 h-24 object-cover cursor-pointer border border-gray-300 rounded hover:border-blue-500"
+                  onClick={() => selectImage(image)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       )}
       {/* Products Table */}
@@ -230,6 +393,17 @@ const AdminDashboard = () => {
         <table className="min-w-full bg-white">
           <thead className="bg-gray-800 text-white">
             <tr>
+              <th className="px-4 py-3">
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    setSelectedProducts(
+                      e.target.checked ? products.map((p) => p.id) : []
+                    )
+                  }
+                  checked={selectedProducts.length === products.length}
+                />
+              </th>
               {[
                 "ID",
                 "Name",
@@ -242,7 +416,10 @@ const AdminDashboard = () => {
                 "Stock",
                 "Actions",
               ].map((header) => (
-                <th key={header} className="px-4 py-3 text-left uppercase text-sm tracking-wider">
+                <th
+                  key={header}
+                  className="px-4 py-3 text-left uppercase text-sm tracking-wider"
+                >
                   {header}
                 </th>
               ))}
@@ -251,6 +428,13 @@ const AdminDashboard = () => {
           <tbody className="divide-y divide-gray-200">
             {products.map((product) => (
               <tr key={product.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedProducts.includes(product.id)}
+                    onChange={() => handleSelectProduct(product.id)}
+                  />
+                </td>
                 <td className="px-4 py-3">{product.id}</td>
                 <td className="px-4 py-3 flex items-center gap-2">
                   <div
@@ -266,14 +450,19 @@ const AdminDashboard = () => {
                     title="Edit full name"
                     className="p-1 hover:text-blue-500 self-center"
                   >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      className="h-5 w-5" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+                      />
                     </svg>
                   </button>
                 </td>
@@ -292,14 +481,19 @@ const AdminDashboard = () => {
                     title="Edit full description"
                     className="p-1 hover:text-blue-500"
                   >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      className="h-5 w-5" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+                      />
                     </svg>
                   </button>
                 </td>
@@ -336,52 +530,54 @@ const AdminDashboard = () => {
         </table>
       </div>
       {/* Modal for full field editing */}
-      {modal.isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
-            <h3 className="text-2xl font-bold mb-4">
-              Edit Full {modal.field === "name" ? "Name" : "Description"}
-            </h3>
-            {modal.field === "description" ? (
-              <textarea
-                value={editedProducts[modal.productId]?.description || ""}
-                onChange={(e) =>
-                  handleFieldChange(modal.productId, "description", e.target.value)
-                }
-                className="w-full border rounded p-2"
-                rows={10}
-              />
-            ) : (
-              <textarea
-                value={editedProducts[modal.productId]?.name || ""}
-                onChange={(e) =>
-                  handleFieldChange(modal.productId, "name", e.target.value)
-                }
-                className="w-full border rounded p-2"
-                rows={3}
-              />
-            )}
-            <div className="mt-4 flex justify-end gap-4">
-              <button
-                onClick={() => {
-                  updateProduct(modal.productId);
-                  closeModal();
-                }}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={closeModal}
-                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-              >
-                Cancel
-              </button>
+      {
+        modal.isOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
+              <h3 className="text-2xl font-bold mb-4">
+                Edit Full {modal.field === "name" ? "Name" : "Description"}
+              </h3>
+              {modal.field === "description" ? (
+                <textarea
+                  value={editedProducts[modal.productId]?.description || ""}
+                  onChange={(e) =>
+                    handleFieldChange(modal.productId, "description", e.target.value)
+                  }
+                  className="w-full border rounded p-2"
+                  rows={10}
+                />
+              ) : (
+                <textarea
+                  value={editedProducts[modal.productId]?.name || ""}
+                  onChange={(e) =>
+                    handleFieldChange(modal.productId, "name", e.target.value)
+                  }
+                  className="w-full border rounded p-2"
+                  rows={3}
+                />
+              )}
+              <div className="mt-4 flex justify-end gap-4">
+                <button
+                  onClick={() => {
+                    updateProduct(modal.productId);
+                    closeModal();
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

@@ -4,52 +4,62 @@ import { createContext, useContext, useState } from "react"
 
 const CartContext = createContext(undefined)
 
+// For demo: No backend cart URL exists, so we start with an empty cart
 export function CartProvider({ children }) {
   const [items, setItems] = useState([])
 
   const addToCart = (product) => {
-    setItems((currentItems) => {
-      const existingItem = currentItems.find((item) => item.id === product.id)
+    setItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {
-        return currentItems.map((item) => 
+        return prevItems.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        )
+        );
+      } else {
+        return [...prevItems, { ...product, quantity: 1 }];
       }
-      return [...currentItems, { ...product, quantity: 1 }]
-    })
-  }
+    });
+  };
 
+  // Remove an item from the cart locally
   const removeFromCart = (id) => {
-    setItems((currentItems) => currentItems.filter((item) => item.id !== id))
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id))
   }
 
-  const updateQuantity = (id, quantity) => {
-    if (quantity < 1) {
+  // Update the quantity of an item locally. If newQuantity < 1, remove the item.
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) {
       removeFromCart(id)
-      return
-    }
-    setItems((currentItems) => 
-      currentItems.map((item) => 
-        item.id === id ? { ...item, quantity } : item
+    } else {
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, quantity: newQuantity } : item
+        )
       )
-    )
+    }
   }
 
+  // Clear the entire cart locally
   const clearCart = () => setItems([])
-  
-  const cartTotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
+
+  const cartTotal = items.reduce(
+    (total, item) => total + parseFloat(item.price) * item.quantity,
+    0
+  )
   const itemCount = items.reduce((count, item) => count + item.quantity, 0)
 
   return (
-    <CartContext.Provider value={{ 
-      items, 
-      addToCart, 
-      removeFromCart, 
-      updateQuantity,
-      clearCart,
-      cartTotal,
-      itemCount
-    }}>
+    <CartContext.Provider
+      value={{
+        items,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        cartTotal,
+        itemCount,
+      }}
+    >
       {children}
     </CartContext.Provider>
   )
