@@ -65,7 +65,7 @@ const ProductCard = ({ product, viewType }) => {
             {product.currency}{product.price}
           </p>
           <button
-            onClick={() => addToCart(product)}
+            onClick={() => { window.location.href = `/shop/${product.id}`}}
             className="ml-auto bg-[#f6e6e3] hover:bg-[#f6e6e3] text-gray-800 p-2 rounded-full"
           >
             <FiShoppingCart />
