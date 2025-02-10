@@ -40,12 +40,13 @@ export default function Contact() {
           })
         });
         if (!response.ok) {
-          throw new Error("Failed to send message");
+          throw new Error("Something went wrong when sending your message. Please leave us a call or try later.");
         }
-        alert("Message sent!");
+
+        alert("Thank you for your message. We will get in touch as soon as possible.");
         setFormData({ name: '', email: '', subject: '', message: '' });
       } catch (err) {
-        alert(`Error: ${err.message}`);
+        alert(err.message);
       }
     }
   };

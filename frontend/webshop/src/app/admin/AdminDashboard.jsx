@@ -40,6 +40,8 @@ const AdminDashboard = () => {
     try {
       const response = await fetch("http://localhost:5636/messages");
       if (!response.ok) throw new Error("Failed to fetch messages");
+      if (!response.ok) throw new Error("Could not load messages. Please contact the IT department.");
+      
       setMessages(await response.json());
     } catch (err) {
       alert(err.message);

@@ -158,14 +158,21 @@ def create_checkout_session():
 @app.post("/messages")
 def create_message():
     data = request.json
+    if not request.is_json:
+        return jsonify({"message": "Data was not in json format"}), 400
+
+    data = request.get_json()
+
     message = Message(
         messageName=data.get("name"),
         messageEmail=data.get("email"),
         messageSubject=data.get("subject"),
         messageText=data.get("message"),
     )
+    
     db.session.add(message)
     db.session.commit()
+
     return jsonify({"message": "Message created"}), 201
 
 @app.get("/messages")
