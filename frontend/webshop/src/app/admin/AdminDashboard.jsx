@@ -33,6 +33,20 @@ const AdminDashboard = () => {
 
   const lowStockProducts = products.filter((p) => Number(p.stock) < 10);
 
+    try {
+      const response = await fetch("http://localhost:5636/messages");
+      if (!response.ok) throw new Error("Failed to fetch messages");
+      setMessages(await response.json());
+    } catch (err) {
+      alert(err.message);
+    }
+      if (!prev) {
+        fetchMessages();
+      }
+      return !prev;
+    });
+  };
+
   // Fetch products from the backend using /products/0 (returns all products)
   useEffect(() => {
     const fetchProducts = async () => {
@@ -210,6 +224,9 @@ const AdminDashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h2 className="text-3xl font-bold mb-4 md:mb-0">Product Overview</h2>
         <div className="flex gap-4">
+        <button onClick={handleToggleMessages} className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
+            {showMessages ? "Hide Messages" : "Messages"}
+          </button>
           <button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
@@ -232,6 +249,37 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+
+      {showMessages && (
+  <div className="mt-4 mb-6 p-4 border rounded bg-white">
+    <h3 className="text-xl font-semibold mb-2">Messages</h3>
+    {messages.length === 0 ? (
+      <div>No messages found.</div>
+    ) : (
+      <table className="min-w-full mb-4">
+        <thead>
+          <tr>
+            <th className="px-4 py-2 text-left">Name</th>
+            <th className="px-4 py-2 text-left">Email</th>
+            <th className="px-4 py-2 text-left">Subject</th>
+            <th className="px-4 py-2 text-left">Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {messages.map((msg) => (
+            <tr key={msg.id} className="border-b">
+              <td className="px-4 py-2">{msg.name}</td>
+              <td className="px-4 py-2">{msg.email}</td>
+              <td className="px-4 py-2">{msg.subject}</td>
+              <td className="px-4 py-2">{msg.message}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+)}
+
       {/* Low Stock Alert */}
       {lowStockProducts.length > 0 && (
         <div className="mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded shadow">

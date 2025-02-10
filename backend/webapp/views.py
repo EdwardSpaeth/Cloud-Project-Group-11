@@ -11,6 +11,7 @@ from .entities import (
     OrderItem,
     Supplier,
     Inventory,
+    Message,
 )
 import json
 import stripe
@@ -153,3 +154,31 @@ def create_checkout_session():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.post("/messages")
+def create_message():
+    data = request.json
+    message = Message(
+        messageName=data.get("name"),
+        messageEmail=data.get("email"),
+        messageSubject=data.get("subject"),
+        messageText=data.get("message"),
+    )
+    db.session.add(message)
+    db.session.commit()
+    return jsonify({"message": "Message created"}), 201
+
+@app.get("/messages")
+def get_messages():
+    messages = Message.query.all()
+    messages_list = [
+        {
+            "id": msg.messageID,
+            "name": msg.messageName,
+            "email": msg.messageEmail,
+            "subject": msg.messageSubject,
+            "message": msg.messageText,
+        }
+        for msg in messages
+    ]
+    return jsonify(messages_list), 200

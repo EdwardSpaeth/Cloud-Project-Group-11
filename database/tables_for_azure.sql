@@ -80,6 +80,15 @@ CREATE TABLE INVENTORY (
     FOREIGN KEY(supplierID) REFERENCES SUPPLIERS(supplierID)
 );
 
+-- Create a new table for storing contact form messages
+CREATE TABLE MESSAGES (
+    messageID      SERIAL PRIMARY KEY,
+    messageName    VARCHAR(100)  NOT NULL,
+    messageEmail   VARCHAR(100)  NOT NULL,
+    messageSubject VARCHAR(150)  NOT NULL,
+    messageText    VARCHAR(2000) NOT NULL
+);
+
 INSERT INTO PRODUCTS (productName, productPicture, productCategory, productCurrency, productPrice, productBrand, productDescription) 
 VALUES
     (N'Modern Sofa', N'modern-sofa.webp', N'sofas', N'€', 999.99, N'Furniture LLC.', N'A sleek and luxurious sofa that seamlessly fits any contemporary living space. Its clean lines and plush cushions offer both style and comfort, making it perfect for family gatherings or relaxation.'),

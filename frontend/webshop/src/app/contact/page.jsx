@@ -17,7 +17,7 @@ export default function Contact() {
     message: false
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {
       name: !formData.name.trim(),
@@ -27,9 +27,26 @@ export default function Contact() {
     };
     setErrors(newErrors);
 
-    if (!Object.values(newErrors).some(field => field === true)) {
-      const queryString = new URLSearchParams(formData).toString();
-      window.location.href = `/pages/contact?${queryString}`;
+    if (!Object.values(newErrors).some(field => field)) {
+      try {
+        const response = await fetch("http://localhost:5636/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message
+          })
+        });
+        if (!response.ok) {
+          throw new Error("Failed to send message");
+        }
+        alert("Message sent!");
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
     }
   };
 
@@ -45,6 +62,7 @@ export default function Contact() {
           </header>
           <div className="mt-8">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name Field */}
               <div className="space-y-2">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                   Name{errors.name && <span className="text-red-500"> *</span>}
@@ -59,6 +77,7 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
+              {/* Email Field */}
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email{errors.email && <span className="text-red-500"> *</span>}
@@ -73,6 +92,7 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
+              {/* Subject Field */}
               <div className="space-y-2">
                 <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
                   Subject{errors.subject && <span className="text-red-500"> *</span>}
@@ -87,6 +107,7 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 />
               </div>
+              {/* Message Field */}
               <div className="space-y-2">
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700">
                   Message{errors.message && <span className="text-red-500"> *</span>}
@@ -105,6 +126,7 @@ export default function Contact() {
                   {formData.message.length}/1000 characters
                 </p>
               </div>
+              {/* Submit Button */}
               <div className="text-center">
                 <button
                   type="submit"
