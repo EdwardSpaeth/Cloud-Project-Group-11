@@ -17,7 +17,7 @@ const ProductCard = ({ product, viewType }) => {
 
   const handleProductClick = (e) => {
     if (e.target.closest('button')) return;
-    router.push(`/shop/product/${product.id}`);
+    router.push(`/shop/${product.id}`);
   };
 
   if (viewType === 'list') {
