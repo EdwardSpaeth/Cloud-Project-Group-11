@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useCart } from "../../context/cart-context";
+
 import {
 	ShoppingCartIcon,
 	CheckCircleIcon,
@@ -17,6 +19,7 @@ export default function ProductDetail() {
 	const { id } = useParams();
 	const [product, setProduct] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const { addToCart } = useCart();
 
 	useEffect(() => {
 		console.log(id);
@@ -53,14 +56,14 @@ export default function ProductDetail() {
 		<div className="max-w-4xl mx-auto p-6">
 			<div className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
 				{/* <div className="relative w-full md:w-1/2 h-96">
-					<Image
-						src={product.pictureUrl}
-						alt={product.name}
-						layout="fill"
-						objectFit="cover"
-						className="rounded-lg"
-					/>
-				</div> */}
+                    <Image
+                        src={product.pictureUrl}
+                        alt={product.name}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                    />
+                </div> */}
 
 				<div className="p-6 flex flex-col justify-between w-full md:w-1/2">
 					<div>
@@ -121,13 +124,12 @@ export default function ProductDetail() {
 
 					<button
 						className={`mt-6 flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded shadow-md 
-							transition-all ${
-								product.stock > 0
-									? "hover:bg-blue-700"
-									: "opacity-50 cursor-not-allowed"
+                            transition-all ${product.stock > 0
+								? "hover:bg-blue-700"
+								: "opacity-50 cursor-not-allowed"
 							}`}
-							onClick={() => { window.location.href = `/shop/${product.id}`;}}						
-							  disabled={product.stock === 0}
+						onClick={() => { addToCart(product); }}
+						disabled={product.stock === 0}
 					>
 						<ShoppingCartIcon className="h-5 w-5 mr-2" />
 						{product.stock > 0 ? "Add to Cart" : "Sold Out"}
