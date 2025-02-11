@@ -125,7 +125,7 @@ def create_checkout_session():
         line_items = [
             {
                 "price_data": {
-                    "currency": "usd",
+                    "currency": "eur",
                     "product_data": {
                         "name": item.get("name"),
                         "description": item.get("description"),
@@ -145,7 +145,9 @@ def create_checkout_session():
             success_url=f"{origin}/success?session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url=f"{origin}/cancel",
             metadata={"orderId": f"order_{int(time.time())}"},
-            shipping_address_collection={"allowed_countries": ["US", "CA", "GB", "DE"]},
+            shipping_address_collection={
+                "allowed_countries": ["DE", "AT", "BE", "NL", "FR", "IT", "ES", "PT"]
+            },
             billing_address_collection="required",
             phone_number_collection={"enabled": True},
         )
@@ -154,7 +156,8 @@ def create_checkout_session():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+
 @app.post("/messages")
 def create_message():
     data = request.json
@@ -169,11 +172,12 @@ def create_message():
         messageSubject=data.get("subject"),
         messageText=data.get("message"),
     )
-    
+
     db.session.add(message)
     db.session.commit()
 
     return jsonify({"message": "Message created"}), 201
+
 
 @app.get("/messages")
 def get_messages():

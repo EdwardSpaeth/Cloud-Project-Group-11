@@ -4,8 +4,9 @@ import { CartItem } from "./components/cart-items";
 import { useCart } from "../context/cart-context";
 import { loadStripe } from "@stripe/stripe-js";
 
-// Load your Stripe public key 
+// Load your Stripe public key and SAS token
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+const sasToken = process.env.NEXT_PUBLIC_SAS_TOKEN;
 
 export default function CartPage() {
   const { items } = useCart();
@@ -44,7 +45,11 @@ export default function CartPage() {
             {/* Cart Items Section */}
             <div className="space-y-4">
               {items.map((item, index) => (
-                <CartItem key={item.id || index} {...item} />
+                <CartItem
+                  key={item.id || index}
+                  {...item}
+                  sasToken={sasToken}
+                />
               ))}
             </div>
 
@@ -53,7 +58,7 @@ export default function CartPage() {
               <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
               <div className="flex justify-between mb-2">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>€{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between mb-4">
                 <span>Shipping</span>
@@ -62,7 +67,7 @@ export default function CartPage() {
               <hr className="border-gray-300 mb-4" />
               <div className="flex justify-between font-bold text-lg mb-6">
                 <span>Total</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>€{subtotal.toFixed(2)}</span>
               </div>
               <button
                 onClick={handleCheckout}
