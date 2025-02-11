@@ -1,73 +1,51 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { motion } from "framer-motion"
-import { useCart } from "../../context/cart-context"
+import { useCart } from "../../context/cart-context";
+import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 
-export function CartItem({ id, name, price, quantity, imageUrl }) {
-  const { updateQuantity, removeFromCart } = useCart()
-  const priceNum = typeof price === "number" ? price : parseFloat(price)
+export function CartItem({ id, name, price, quantity, pictureUrl, sasToken }) {
+  const { updateQuantity, removeFromCart } = useCart();
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-    >
-      <div className="relative w-24 h-24 flex-shrink-0">
-        <Image
-          src={imageUrl || "/placeholder.svg"}
-          alt={name}
-          fill
-          style={{ objectFit: "cover" }}
-          className="rounded-md"
-        />
-      </div>
-      
-      <div className="flex-grow">
-        <h3 className="font-medium text-gray-900">{name}</h3>
-        <p className="text-sm text-gray-500">${priceNum.toFixed(2)} each</p>
-        
-        <div className="flex items-center gap-3 mt-2">
+    <div className="flex items-center gap-4 p-4 bg-white rounded-lg shadow">
+      <img
+        src={`${pictureUrl}?${sasToken}`}
+        alt={name}
+        className="w-24 h-24 object-cover rounded"
+      />
+      <div className="flex-1">
+        <h3 className="font-semibold">{name}</h3>
+        <p className="text-gray-600">€{price}</p>
+        <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center border border-gray-200 rounded-full">
+            <button
+              onClick={() => updateQuantity(id, quantity - 1)}
+              className="p-2 hover:bg-gray-100 rounded-l-full transition-colors"
+              aria-label="Decrease quantity"
+            >
+              <FiMinus className="w-4 h-4" />
+            </button>
+            <span className="px-4 py-1 text-sm">{quantity}</span>
+            <button
+              onClick={() => updateQuantity(id, quantity + 1)}
+              className="p-2 hover:bg-gray-100 rounded-r-full transition-colors"
+              aria-label="Increase quantity"
+            >
+              <FiPlus className="w-4 h-4" />
+            </button>
+          </div>
           <button
-            onClick={() => updateQuantity(id, quantity - 1)}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            onClick={() => removeFromCart(id)}
+            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+            aria-label="Remove item"
           >
-            -
-          </button>
-          <span className="w-8 text-center font-medium">{quantity}</span>
-          <button
-            onClick={() => updateQuantity(id, quantity + 1)}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-          >
-            +
+            <FiTrash2 className="w-5 h-5" />
           </button>
         </div>
       </div>
-      
-      <div className="flex flex-col items-end gap-2">
-        <span className="font-medium">${(priceNum * quantity).toFixed(2)}</span>
-        <button
-          onClick={() => removeFromCart(id)}
-          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-        >
-          <svg 
-            className="w-5 h-5" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+      <div className="text-right">
+        <p className="font-semibold">€{(price * quantity).toFixed(2)}</p>
       </div>
-    </motion.div>
-  )
+    </div>
+  );
 }

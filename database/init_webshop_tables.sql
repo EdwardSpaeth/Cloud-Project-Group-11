@@ -83,10 +83,12 @@ CREATE TABLE INVENTORY (
 -- Create a new table for storing contact form messages
 CREATE TABLE MESSAGES (
     messageID      SERIAL PRIMARY KEY,
+    messageID      SERIAL,
     messageName    VARCHAR(100)  NOT NULL,
     messageEmail   VARCHAR(100)  NOT NULL,
     messageSubject VARCHAR(150)  NOT NULL,
     messageText    VARCHAR(2000) NOT NULL
+    PRIMARY KEY(messageID)
 );
 
 INSERT INTO PRODUCTS (productName, productPicture, productCategory, productCurrency, productPrice, productBrand, productDescription) 
