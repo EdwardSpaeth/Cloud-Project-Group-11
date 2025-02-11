@@ -38,7 +38,7 @@ const AdminDashboard = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch("http://localhost:5636/messages");
+      //const response = await fetch("http://localhost:5636/messages");
       const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages");
       if (!response.ok) throw new Error("Could not load messages. Please contact the IT department.");
       
@@ -59,7 +59,8 @@ const AdminDashboard = () => {
 
   const deleteMessage = async (id) => {
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
+      const response = await fetch(`http://localhost:5636/messages/${id}`, {
+      //const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete message");
@@ -73,7 +74,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
+        const response = await fetch("http://localhost:5636/products/0");
         if (!response.ok) throw new Error("Error fetching products");
         const data = await response.json();
         const dataWithIds = data.map((prod, index) => ({ ...prod, id: index + 1 }));
@@ -126,8 +127,7 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
-      //const response = await fetch(`http://localhost:5636/products/${id}`,
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+      const response = await fetch(`http://localhost:5636/products/${id}`,
 
         {
           method: "PUT",
@@ -152,7 +152,7 @@ const AdminDashboard = () => {
   const deleteSelectedProducts = async () => {
     try {
       const deletePromises = selectedProducts.map((id) =>
-        fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`, {
+        fetch(`http://localhost:5636/products/${id}`, {
           method: "DELETE",
         })
       );
@@ -180,7 +180,7 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0",
+      const response = await fetch("http://localhost:5636/products/0",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
