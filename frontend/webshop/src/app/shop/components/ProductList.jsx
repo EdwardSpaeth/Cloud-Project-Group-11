@@ -11,11 +11,13 @@ export default function ProductList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch products from backend endpoint
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5636/products/0");
+        const response = await fetch('https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0');
         let data = await response.json();
+        // If data is an array and products don't include an id, assign one:
         data = data.map((product, index) => ({ id: index + 1, ...product }));
         setProducts(data);
         setLoading(false);
