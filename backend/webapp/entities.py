@@ -92,7 +92,6 @@ class Inventory(db.Model):
 
 class Message(db.Model):
     __tablename__ = "MESSAGES"
-    messageID = db.Column(db.Integer, primary_key=True)
     __table_args__ = {"extend_existing": True}
 
     messageID = db.Column(db.Integer, primary_key=True, autoincrement=True)
