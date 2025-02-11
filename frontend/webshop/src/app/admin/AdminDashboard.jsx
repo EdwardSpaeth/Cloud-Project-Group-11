@@ -39,6 +39,7 @@ const AdminDashboard = () => {
   const fetchMessages = async () => {
     try {
       const response = await fetch("http://localhost:5636/messages");
+      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages");
       if (!response.ok) throw new Error("Could not load messages. Please contact the IT department.");
       
       setMessages(await response.json());
@@ -54,6 +55,18 @@ const AdminDashboard = () => {
       }
       return !prev;
     });
+  };
+
+  const deleteMessage = async (id) => {
+    try {
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete message");
+      setMessages((prev) => prev.filter((msg) => msg.id !== id));
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   // Fetch products from the backend using /products/0 (returns all products)
@@ -113,7 +126,9 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
+      //const response = await fetch(`http://localhost:5636/products/${id}`,
       const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -275,14 +290,22 @@ const AdminDashboard = () => {
           </tr>
         </thead>
         <tbody>
-          {messages.map((msg) => (
-            <tr key={msg.id} className="border-b">
-              <td className="px-4 py-2">{msg.name}</td>
-              <td className="px-4 py-2">{msg.email}</td>
-              <td className="px-4 py-2">{msg.subject}</td>
-              <td className="px-4 py-2">{msg.message}</td>
-            </tr>
-          ))}
+        {messages.map((msg) => (
+    <tr key={msg.id} className="border-b">
+      <td className="px-4 py-2">{msg.name}</td>
+      <td className="px-4 py-2">{msg.email}</td>
+      <td className="px-4 py-2">{msg.subject}</td>
+      <td className="px-4 py-2">{msg.message}</td>
+      <td className="px-4 py-2">
+        <button
+          onClick={() => deleteMessage(msg.id)}
+          className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))}
         </tbody>
       </table>
     )}

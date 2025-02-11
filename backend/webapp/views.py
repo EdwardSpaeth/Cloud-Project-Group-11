@@ -189,3 +189,14 @@ def get_messages():
         for msg in messages
     ]
     return jsonify(messages_list), 200
+
+@app.delete("/messages/<int:id>")
+def delete_message(id: int):
+    message = Message.query.get(id)
+    if message is None:
+        return jsonify({"error": "Message not found"}), 404
+
+    db.session.delete(message)
+    db.session.commit()
+
+    return jsonify({"message": "Message deleted"}), 200
