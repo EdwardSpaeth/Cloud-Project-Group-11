@@ -38,7 +38,6 @@ const AdminDashboard = () => {
 
   const fetchMessages = async () => {
     try {
-      //const response = await fetch("http://localhost:5636/messages");
       const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages");
       if (!response.ok) throw new Error("Could not load messages. Please contact the IT department.");
       
@@ -59,8 +58,7 @@ const AdminDashboard = () => {
 
   const deleteMessage = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5636/messages/${id}`, {
-      //const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete message");
