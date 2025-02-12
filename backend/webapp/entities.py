@@ -44,9 +44,16 @@ class Product(db.Model):
 class ProductColor(db.Model):
     __tablename__ = "productcolors"
     __table_args__ = {"extend_existing": True}
+
     productID = db.Column("productid", db.Integer, db.ForeignKey("products.productid"), primary_key=True)
     colorName = db.Column("colorname", db.String(50), primary_key=True, nullable=False)
     product = db.relationship("Product", backref="colors", foreign_keys=[productID])
+
+    def __init__(self, prodID: int, colName: str, prod: Product):
+        self.productID = prodID
+        self.colorName = colName
+        self.product   = prod
+
     def __repr__(self):
         return f"<ProductColor {self.colorName} for Product {self.productID}>"
 
@@ -54,9 +61,16 @@ class ProductColor(db.Model):
 class ProductMaterial(db.Model):
     __tablename__ = "productmaterials"
     __table_args__ = {"extend_existing": True}
+
     productID = db.Column("productid", db.Integer, db.ForeignKey("products.productid"), primary_key=True)
     materialName = db.Column("materialname", db.String(50), primary_key=True, nullable=False)
     product = db.relationship("Product", backref="materials", foreign_keys=[productID])
+
+    def __init__(self, prodID: int, matName: str, prod: Product):
+        self.productID    = prodID
+        self.materialName = matName
+        self.product      = prod
+
     def __repr__(self):
         return f"<ProductMaterial {self.materialName} for Product {self.productID}>"
 
