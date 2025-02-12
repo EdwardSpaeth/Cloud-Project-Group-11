@@ -172,7 +172,7 @@ VALUES
     (8, 3, 18),
     (9, 4, 29),
     (10, 4, 86);
-=======
+
 -- INSERT INTO INVENTORY(productID, supplierID, stock)
 -- VALUES
 --     (1, 4, 123),
@@ -185,3 +185,4 @@ VALUES
 --     (8, 3, 18),
 --     (9, 4, 29),
 --     (10, 4, 86);
+
