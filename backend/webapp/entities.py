@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 class Product(db.Model):
     __tablename__="products"
     __table_args__ = {"extend_existing": True}
+
     productID = db.Column("productid", db.Integer, primary_key=True, autoincrement=True) 
     productName = db.Column("productname", db.String(100), nullable=False)
     productPicture = db.Column("productpicture", db.String(1000))
@@ -12,6 +13,31 @@ class Product(db.Model):
     productPrice = db.Column("productprice", db.Numeric(7, 2), nullable=False)
     productBrand = db.Column("productbrand", db.String(100), nullable=False)
     productDescription = db.Column("productdescription", db.String(1000))
+    productStock = db.Column("productStock", db.Integer, nullable=False)
+    productSupplier = db.Column("productSupplier", db.String(128), nullable=False)
+
+    def __init__(self, prodName: str, prodCategory: str, prodCurrency: str, prodPrice: float, prodBrand: str, prodStock: int, prodSupplier: str, prodDescription: str = None, prodPic: str = None):
+        self.productName        = prodName
+        self.productPicture     = prodPic
+        self.productCategory    = prodCategory
+        self.productCurrency    = prodCurrency
+
+        if not isinstance(prodPrice, float):
+            raise AttributeError('Product price must be a number (float)')
+        
+        if prodPrice < 0:
+            raise ValueError('Price cannot be smaller than zero')
+        
+        self.productPrice       = prodPrice
+        self.productBrand       = prodBrand
+
+        if prodStock < 0:
+            raise ValueError('Product stock cannot be smaller than zero')
+        self.productStock = prodStock
+
+        self.productSupplier = prodSupplier
+        self.productDescription = prodDescription
+
     def __repr__(self):
         return f"<Product {self.productName}>"
 
@@ -78,17 +104,18 @@ class Supplier(db.Model):
     def __repr__(self):
         return f"<Supplier {self.supplierName}>"
     
-class Inventory(db.Model):
-    __tablename__ = "inventory"
-    __table_args__ = {"extend_existing": True}
-    productID = db.Column("productid", db.Integer, db.ForeignKey("products.productid"), primary_key=True)
-    supplierID = db.Column("supplierid", db.Integer, db.ForeignKey("suppliers.supplierid"), nullable=False)
-    stock = db.Column("stock", db.Integer)
-    product = db.relationship("Product", backref="inventory", foreign_keys=[productID])
-    supplier = db.relationship("Supplier", backref="inventory", foreign_keys=[supplierID])
+# class Inventory(db.Model):
+#     __tablename__ = "inventory"
+#     __table_args__ = {"extend_existing": True}
 
-    def __repr__(self):
-        return f"<Inventory Product {self.productID} Supplier {self.supplierID}>"
+#     productID = db.Column("productid", db.Integer, db.ForeignKey("products.productid"), primary_key=True)
+#     supplierID = db.Column("supplierid", db.Integer, db.ForeignKey("suppliers.supplierid"), nullable=False)
+#     stock = db.Column("stock", db.Integer)
+#     product = db.relationship("Product", backref="inventory", foreign_keys=[productID])
+#     supplier = db.relationship("Supplier", backref="inventory", foreign_keys=[supplierID])
+
+#     def __repr__(self):
+#         return f"<Inventory Product {self.productID} Supplier {self.supplierID}>"
 
 class Message(db.Model):
     __tablename__ = "MESSAGES"

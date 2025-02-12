@@ -1,7 +1,11 @@
 # this file will have all the endpoints
 import time
-from . import app, request
-from . import db
+import json
+import stripe
+import os
+import random
+
+from . import app, request, db, jsonify
 from .entities import (
     Product,
     ProductColor,
@@ -10,14 +14,57 @@ from .entities import (
     Order,
     OrderItem,
     Supplier,
-    Inventory,
     Message,
 )
-import json
-import stripe
-from flask import jsonify
-import os
 
+@app.post("/products")
+def add_prod_to_list():
+    if not request.is_json:
+        return jsonify({"message": "Data was not in json format"}), 400
+    
+    # here we get the data from the frontend
+    prod_to_add: str = request.get_json()
+    prodSupplier: int = random.randint(1, 4)
+    try:
+        # first the product is inserted into the db
+        prod: Product = Product(
+            prod_to_add['name'], 
+            prod_to_add['category'], 
+            prod_to_add['currency'], 
+            prod_to_add['price'], 
+            prod_to_add['brand'],
+            prod_to_add['stock'],
+            prodSupplier,
+            prod_to_add['description']#,
+            # prod_to_add['prodPic']
+        )
+    except AttributeError as attrErr:
+        return jsonify({"message": attrErr.args}), 400
+    except ValueError as valErr:
+        return jsonify({"message": valErr.args}), 400
+    
+    db.session.add(prod)
+    db.session.flush()
+
+    # then the colors of the products are saved
+    colors = prod_to_add['colors']
+    for col in colors:
+        prodColor: ProductColor = ProductColor(prod.productID, col, prod)
+        db.session.add(prodColor)
+
+    # as a last step the materials of the products
+    matierals = prod_to_add['materials']
+    for mat in matierals:
+        prodMaterial: ProductMaterial = ProductMaterial(prod.productID, mat, prod)
+        db.session.add(prodMaterial)
+
+    # commiting all the changes
+    try:
+        db.session.commit()
+    except:
+        return jsonify({"message": "Something went wront when adding the data into the database"}), 500
+
+    return jsonify({"message": "Ok"}), 200
 
 @app.post("/customers")
 def create_customer():
@@ -31,7 +78,6 @@ def create_customer():
     db.session.add(customer)
     db.session.commit()
     return "OK", 200
-
 
 @app.get("/products/<int:id>")
 def get_description(id: int):
@@ -53,10 +99,13 @@ def get_description(id: int):
             )
         )
         stock = (
-            Inventory.query.filter(Inventory.productID == product.productID)
-            .first()
-            .stock
+            # Inventory.query.filter(Inventory.productID == product.productID)
+            # .first()
+            # .stock
+
+            Product.query.filter(Product.productID == product.productID).first().productStock
         )
+
         product_info = {
             "name": product.productName,
             "category": product.productCategory,
@@ -96,6 +145,7 @@ def serve_home():
         OrderItem.query.all(),
         Supplier.query.all(),
         Inventory.query.all(),
+        Supplier.query.all()
     ]:
         print(x)
     return "Okay"
@@ -157,7 +207,6 @@ def create_checkout_session():
     
 @app.post("/messages")
 def create_message():
-    data = request.json
     if not request.is_json:
         return jsonify({"message": "Data was not in json format"}), 400
 

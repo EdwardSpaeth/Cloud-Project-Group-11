@@ -172,20 +172,24 @@ const AdminDashboard = () => {
   const addProduct = async () => {
     const productToAdd = {
       ...newProduct,
-      price: newProduct.price,
-      stock: newProduct.stock,
+      price: parseFloat(newProduct.price),
+      stock: parseInt(newProduct.stock),
       materials: newProduct.materials.split(",").map((m) => m.trim()),
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("http://localhost:5636/products/0",
+      const response = await fetch("http://localhost:5636/products",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(productToAdd),
         }
       );
-      if (!response.ok) throw new Error("Failed to add product");
+      if (!response.ok) {
+        return response.json().then(err => {
+          throw new Error(err.message); 
+        });
+      }
       const addedProduct = await response.json();
       addedProduct.id = products.length + 1;
       setProducts((prev) => [...prev, addedProduct]);
@@ -204,7 +208,7 @@ const AdminDashboard = () => {
       setShowNewProductForm(false);
       alert("New product added!");
     } catch (err) {
-      alert("Something went wrong when adding the new product. Error: " + err.message);
+      alert(err.message);
     }
   };
 
@@ -378,6 +382,12 @@ const AdminDashboard = () => {
                   <img src={`/images/${newProduct.image}`} alt="Selected" className="w-24 h-24 object-cover rounded" />
                 </div>
               )}
+            </div>
+            {/* Submit Button */}
+            <div className="col-span-2">
+              <button onClick={addProduct} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                Add Product
+              </button>
             </div>
           </div>
         </div>
