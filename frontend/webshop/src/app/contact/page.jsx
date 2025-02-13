@@ -29,7 +29,7 @@ export default function Contact() {
 
     if (!Object.values(newErrors).some(field => field)) {
       try {
-        const response = await fetch("http://localhost:5636/messages", {
+        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

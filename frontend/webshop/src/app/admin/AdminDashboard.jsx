@@ -59,6 +59,7 @@ const AdminDashboard = () => {
   const deleteMessage = async (id) => {
     try {
       const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
+  
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete message");
