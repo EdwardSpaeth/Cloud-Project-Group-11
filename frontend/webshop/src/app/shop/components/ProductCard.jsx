@@ -3,7 +3,7 @@ import React from 'react';
 import { useCart } from '../../context/cart-context';
 import { FiShoppingCart } from 'react-icons/fi';
 
-const sasToken = "sp=r&st=2025-02-09T07:36:59Z&se=2025-05-10T14:36:59Z&spr=https&sv=2022-11-02&sr=c&sig=PNBPBYabC%2FCj9VtSsRY5jZiWcCYBGEaSDFAIeUdVu4k%3D";
+const sasToken = process.env.SAS_TOKEN;
 
 const truncate = (string, maxLength) => {
   if (!string) return '';
@@ -13,12 +13,14 @@ const truncate = (string, maxLength) => {
 const ProductCard = ({ product, viewType }) => {
   const { addToCart } = useCart();
 
+  const imageUrl = `/images/${product.pictureUrl}`;
+
   if (viewType === 'list') {
     // List view layout
     return (
       <div className="flex w-full max-w-4xl h-48 bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
         <img
-          src={`${product.pictureUrl}?${sasToken}`}
+          src={imageUrl}
           alt={product.name}
           className="object-cover w-48 h-full"
         />
@@ -50,7 +52,7 @@ const ProductCard = ({ product, viewType }) => {
   return (
     <div className="flex flex-col w-full max-w-xs h-96 bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
       <img
-        src={`${product.pictureUrl}?${sasToken}`}
+        src={imageUrl}
         alt={product.name}
         className="object-cover w-full h-48"
       />
