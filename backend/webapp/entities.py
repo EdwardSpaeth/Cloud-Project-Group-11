@@ -117,19 +117,6 @@ class Supplier(db.Model):
     supplierAddress = db.Column("supplieraddress", db.String(200))
     def __repr__(self):
         return f"<Supplier {self.supplierName}>"
-    
-# class Inventory(db.Model):
-#     __tablename__ = "inventory"
-#     __table_args__ = {"extend_existing": True}
-
-#     productID = db.Column("productid", db.Integer, db.ForeignKey("products.productid"), primary_key=True)
-#     supplierID = db.Column("supplierid", db.Integer, db.ForeignKey("suppliers.supplierid"), nullable=False)
-#     stock = db.Column("stock", db.Integer)
-#     product = db.relationship("Product", backref="inventory", foreign_keys=[productID])
-#     supplier = db.relationship("Supplier", backref="inventory", foreign_keys=[supplierID])
-
-#     def __repr__(self):
-#         return f"<Inventory Product {self.productID} Supplier {self.supplierID}>"
 
 class Message(db.Model):
     __tablename__ = "MESSAGES"

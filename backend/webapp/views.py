@@ -98,13 +98,6 @@ def get_description(id: int):
                 ).all(),
             )
         )
-        stock = (
-            # Inventory.query.filter(Inventory.productID == product.productID)
-            # .first()
-            # .stock
-
-            Product.query.filter(Product.productID == product.productID).first().productStock
-        )
 
         product_info = {
             "name": product.productName,
@@ -115,7 +108,7 @@ def get_description(id: int):
             "brand": product.productBrand,
             "materials": materials,
             "colors": colors,
-            "stock": stock,
+            "stock": product.productStock,
             "pictureUrl": product.productPicture,
         }
         return product_info
@@ -144,7 +137,7 @@ def serve_home():
         Order.query.all(),
         OrderItem.query.all(),
         Supplier.query.all(),
-        Inventory.query.all(),
+        #Inventory.query.all(),
         Supplier.query.all()
     ]:
         print(x)
