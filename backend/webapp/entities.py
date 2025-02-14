@@ -23,7 +23,7 @@ class Product(db.Model):
         self.productCurrency    = prodCurrency
 
         if not isinstance(prodPrice, float):
-            raise AttributeError('Product price must be a number (float)')
+            raise AttributeError('Product price must be a number')
         
         if prodPrice < 0:
             raise ValueError('Price cannot be smaller than zero')
@@ -37,6 +37,7 @@ class Product(db.Model):
 
         self.productSupplier = prodSupplier
         self.productDescription = prodDescription
+        self.productPicture = prodPic
 
     def __repr__(self):
         return f"<Product {self.productName}>"
@@ -56,7 +57,6 @@ class ProductColor(db.Model):
 
     def __repr__(self):
         return f"<ProductColor {self.colorName} for Product {self.productID}>"
-
 
 class ProductMaterial(db.Model):
     __tablename__ = "productmaterials"
@@ -117,7 +117,7 @@ class Supplier(db.Model):
     supplierAddress = db.Column("supplieraddress", db.String(200))
     def __repr__(self):
         return f"<Supplier {self.supplierName}>"
-
+    
 class Message(db.Model):
     __tablename__ = "MESSAGES"
     __table_args__ = {"extend_existing": True}
@@ -126,4 +126,5 @@ class Message(db.Model):
     messageName = db.Column(db.String(100), nullable=False)
     messageEmail = db.Column(db.String(100), nullable=False)
     messageSubject = db.Column(db.String(150), nullable=False)
+    messageText = db.Column(db.String(2000), nullable=False)
     messageText = db.Column(db.String(2000), nullable=False)

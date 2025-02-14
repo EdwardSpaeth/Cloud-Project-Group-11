@@ -113,11 +113,17 @@ const AdminDashboard = () => {
 
   // Handle changes for editable fields
   const handleFieldChange = (id, field, value) => {
+    // check if the updated field is the price field and parse the string to a float
+    let num_value = 0;
+    if (field == "price") {
+      num_value = parseFloat(value);
+    }
+
     setEditedProducts((prev) => ({
       ...prev,
       [id]: {
         ...prev[id],
-        [field]: value,
+        [field]: num_value,
       },
     }));
   };
@@ -127,23 +133,24 @@ const AdminDashboard = () => {
     const updatedData = editedProducts[id];
     try {
       const response = await fetch(`http://localhost:5636/products/${id}`,
-
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedData),
         }
       );
-      if (response.ok) {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === id ? updatedData : p))
-        );
-        alert("Product updated successfully!");
-      } else {
-        alert("Failed to update product");
+      console.log(updatedData);
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message);
       }
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? updatedData : p))
+      );
+      alert("Product updated successfully!");
     } catch (err) {
-      alert("Something went wrong when updating the new product. Error: " + err.message);
+      alert(err.message);
     }
   };
 
@@ -187,9 +194,8 @@ const AdminDashboard = () => {
         }
       );
       if (!response.ok) {
-        return response.json().then(err => {
-          throw new Error(err.message); 
-        });
+        const errorData = await response.json();
+        throw new Error(errorData.message);
       }
       const addedProduct = await response.json();
       addedProduct.id = products.length + 1;
