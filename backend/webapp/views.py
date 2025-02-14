@@ -95,8 +95,9 @@ def update_product(prod_id: int):
     db.session.flush()
 
     # delete all rows with the given id
-    db.session.query(ProductMaterial).filter(ProductMaterial.productID == prod_id).delete()
-    db.session.query(ProductColor).filter(ProductColor.productID == prod_id).delete()
+    ProductMaterial.query.filter(ProductMaterial.productID == prod_id).delete
+    ProductColor.query.filter(ProductColor.productID == prod_id).delete
+    db.session.flush()
 
     # and now update the data with the given id
     materials: list = product_to_update['materials']
@@ -112,6 +113,21 @@ def update_product(prod_id: int):
     db.session.commit()
 
     return jsonify({"message": "Ok"}), 200
+
+@app.delete("/products")
+def delete_products():
+    if not request.is_json:
+        return jsonify({"message": "Data was not in json format"}), 400
+    
+    products_to_delete: list = request.get_json()['ids']
+
+    for prod_id in products_to_delete:
+        ProductMaterial.query.filter(ProductMaterial.productID == prod_id).delete()
+        ProductColor.query.filter(ProductColor.productID == prod_id).delete()
+        Product.query.filter(Product.productID == prod_id).delete()
+        db.session.commit()
+        
+    return jsonify({"message": "Successfully deleted the products"}), 200
 
 @app.post("/customers")
 def create_customer():

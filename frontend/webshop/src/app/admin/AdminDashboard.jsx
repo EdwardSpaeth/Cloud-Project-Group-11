@@ -156,18 +156,30 @@ const AdminDashboard = () => {
 
   // Function to delete selected products
   const deleteSelectedProducts = async () => {
+
+    let data = {
+      ids: selectedProducts
+    };
+
+    console.log(data);
+
     try {
-      const deletePromises = selectedProducts.map((id) =>
-        fetch(`http://localhost:5636/products/${id}`, {
-          method: "DELETE",
-        })
-      );
-      await Promise.all(deletePromises);
+      const response = await fetch(`http://localhost:5636/products`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message);
+      }
+
       setProducts((prev) => prev.filter((p) => !selectedProducts.includes(p.id)));
       setSelectedProducts([]);
-      alert("Selected products deleted successfully!");
-    } catch (err) {
-      alert("Something went wrong when deleting the products. Error: " + err.message);
+
+      alert("Selected prodcuts successfully deleted.");
+    } catch(err) {
+      alert(err.message);
     }
   };
 
