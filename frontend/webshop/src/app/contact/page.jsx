@@ -39,12 +39,15 @@ export default function Contact() {
             message: formData.message
           })
         });
+
+        const server_answer = await response.json();
         if (!response.ok) {
-          throw new Error("Something went wrong when sending your message. Please leave us a call or try later.");
+          throw new Error(server_answer.message);
         }
 
-        alert("Thank you for your message. We will get in touch as soon as possible.");
         setFormData({ name: '', email: '', subject: '', message: '' });
+
+        alert(server_answer.message);
       } catch (err) {
         alert(err.message);
       }

@@ -64,7 +64,7 @@ def add_prod_to_list():
     except:
         return jsonify({"message": "Something went wront when adding the data into the database"}), 500
 
-    return jsonify({"message": "Ok"}), 200
+    return jsonify({"message": "Product added to list."}), 200
 
 @app.put("/products/<int:prod_id>")
 def update_product(prod_id: int):
@@ -112,7 +112,7 @@ def update_product(prod_id: int):
 
     db.session.commit()
 
-    return jsonify({"message": "Ok"}), 200
+    return jsonify({"message": "Product updated."}), 200
 
 @app.delete("/products")
 def delete_products():
@@ -127,7 +127,7 @@ def delete_products():
         Product.query.filter(Product.productID == prod_id).delete()
         db.session.commit()
         
-    return jsonify({"message": "Successfully deleted the products"}), 200
+    return jsonify({"message": "Product(s) deleted from list."}), 200
 
 @app.post("/customers")
 def create_customer():
@@ -223,14 +223,21 @@ def create_message():
         messageText=data.get("message"),
     )
     
-    db.session.add(message)
-    db.session.commit()
+    try:
+        db.session.add(message)
+        db.session.commit()
+    except:
+        return jsonify({"message": "Could not safe message. Please leave us a call or try later."}), 500
 
-    return jsonify({"message": "Message created"}), 201
+    return jsonify({"message": "Message successfully safed. We will contact you as soon as possible."}), 200
 
 @app.get("/messages")
 def get_messages():
-    messages = Message.query.all()
+    try:
+        messages = Message.query.all()
+    except:
+        return jsonify({"message": "Could not load messages. Please contact IT department or try later."}), 500
+
     messages_list = [
         {
             "id": msg.messageID,
@@ -241,18 +248,19 @@ def get_messages():
         }
         for msg in messages
     ]
+
     return jsonify(messages_list), 200
 
 @app.delete("/messages/<int:id>")
 def delete_message(id: int):
     message = Message.query.get(id)
     if message is None:
-        return jsonify({"error": "Message not found"}), 404
+        return jsonify({"message": "Message not found."}), 500
 
     db.session.delete(message)
     db.session.commit()
 
-    return jsonify({"message": "Message deleted"}), 200
+    return jsonify({"message": "Message deleted."}), 200
 
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 @app.post("/create-checkout-session")
