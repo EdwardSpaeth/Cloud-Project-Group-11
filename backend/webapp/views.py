@@ -35,8 +35,8 @@ def add_prod_to_list():
             prod_to_add['brand'],
             prod_to_add['stock'],
             prodSupplier,
-            prod_to_add['description']#,
-            # prod_to_add['prodPic']
+            prod_to_add['description'],
+            prod_to_add['pictureUrl']
         )
     except AttributeError as attrErr:
         return jsonify({"message": attrErr.args}), 400
@@ -64,7 +64,70 @@ def add_prod_to_list():
     except:
         return jsonify({"message": "Something went wront when adding the data into the database"}), 500
 
-    return jsonify({"message": "Ok"}), 200
+    return jsonify({"message": "Product added to list."}), 200
+
+@app.put("/products/<int:prod_id>")
+def update_product(prod_id: int):
+    if not request.is_json:
+        return jsonify({"message": "Data was not in json format"}), 400
+    
+    product_to_update = request.get_json()
+
+    if not isinstance(product_to_update['price'], float):
+        return jsonify({"message": "Product price must be a number (float)"}), 400
+    
+    if product_to_update['price'] < 0:
+        return jsonify({"message": "Price cannot be smaller than zero"}), 400
+
+    # update the product itself
+    prod = db.session.query(Product).filter_by(productID = prod_id).first()
+    if prod == None:
+        return jsonify({"message": "Product does not exist yet. Please create it as a new one."}), 500
+
+    prod.productName = product_to_update['name']
+    prod.productPicture = product_to_update['pictureUrl']
+    prod.productCategory = product_to_update['category']
+    prod.productCurrency = product_to_update['currency']
+    prod.productPrice = product_to_update['price']
+    prod.productBrand = product_to_update['brand']
+    prod.productDescription = product_to_update['description']
+    prod.productStock = product_to_update['stock']
+    db.session.flush()
+
+    # delete all rows with the given id
+    ProductMaterial.query.filter(ProductMaterial.productID == prod_id).delete
+    ProductColor.query.filter(ProductColor.productID == prod_id).delete
+    db.session.flush()
+
+    # and now update the data with the given id
+    materials: list = product_to_update['materials']
+    for mat in materials:
+        prodMaterial: ProductMaterial = ProductMaterial(prod_id, mat, prod)
+        db.session.add(prodMaterial)
+
+    colors: list = product_to_update['colors']
+    for col in colors:
+        prodColor: ProductColor = ProductColor(prod_id, col, prod)
+        db.session.add(prodColor)
+
+    db.session.commit()
+
+    return jsonify({"message": "Product updated."}), 200
+
+@app.delete("/products")
+def delete_products():
+    if not request.is_json:
+        return jsonify({"message": "Data was not in json format"}), 400
+    
+    products_to_delete: list = request.get_json()['ids']
+
+    for prod_id in products_to_delete:
+        ProductMaterial.query.filter(ProductMaterial.productID == prod_id).delete()
+        ProductColor.query.filter(ProductColor.productID == prod_id).delete()
+        Product.query.filter(Product.productID == prod_id).delete()
+        db.session.commit()
+        
+    return jsonify({"message": "Product(s) deleted from list."}), 200
 
 @app.post("/customers")
 def create_customer():
@@ -126,7 +189,6 @@ def get_description(id: int):
         product_info = get_product_info(product)
         return json.dumps(product_info), 200
 
-
 @app.route("/dbtest")
 def serve_home():
     for x in [
@@ -143,15 +205,64 @@ def serve_home():
         print(x)
     return "Okay"
 
-
 @app.route("/")
 def serve_default():
     return "Connection Successful!", 200
+    
+@app.post("/messages")
+def create_message():
+    if not request.is_json:
+        return jsonify({"message": "Data was not in json format"}), 400
 
+    data = request.get_json()
+
+    message = Message(
+        messageName=data.get("name"),
+        messageEmail=data.get("email"),
+        messageSubject=data.get("subject"),
+        messageText=data.get("message"),
+    )
+    
+    try:
+        db.session.add(message)
+        db.session.commit()
+    except:
+        return jsonify({"message": "Could not safe message. Please leave us a call or try later."}), 500
+
+    return jsonify({"message": "Message successfully safed. We will contact you as soon as possible."}), 200
+
+@app.get("/messages")
+def get_messages():
+    try:
+        messages = Message.query.all()
+    except:
+        return jsonify({"message": "Could not load messages. Please contact IT department or try later."}), 500
+
+    messages_list = [
+        {
+            "id": msg.messageID,
+            "name": msg.messageName,
+            "email": msg.messageEmail,
+            "subject": msg.messageSubject,
+            "message": msg.messageText,
+        }
+        for msg in messages
+    ]
+
+    return jsonify(messages_list), 200
+
+@app.delete("/messages/<int:id>")
+def delete_message(id: int):
+    message = Message.query.get(id)
+    if message is None:
+        return jsonify({"message": "Message not found."}), 500
+
+    db.session.delete(message)
+    db.session.commit()
+
+    return jsonify({"message": "Message deleted."}), 200
 
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
-
-
 @app.post("/create-checkout-session")
 def create_checkout_session():
     try:
@@ -197,48 +308,4 @@ def create_checkout_session():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-@app.post("/messages")
-def create_message():
-    if not request.is_json:
-        return jsonify({"message": "Data was not in json format"}), 400
 
-    data = request.get_json()
-
-    message = Message(
-        messageName=data.get("name"),
-        messageEmail=data.get("email"),
-        messageSubject=data.get("subject"),
-        messageText=data.get("message"),
-    )
-    
-    db.session.add(message)
-    db.session.commit()
-
-    return jsonify({"message": "Message created"}), 201
-
-@app.get("/messages")
-def get_messages():
-    messages = Message.query.all()
-    messages_list = [
-        {
-            "id": msg.messageID,
-            "name": msg.messageName,
-            "email": msg.messageEmail,
-            "subject": msg.messageSubject,
-            "message": msg.messageText,
-        }
-        for msg in messages
-    ]
-    return jsonify(messages_list), 200
-
-@app.delete("/messages/<int:id>")
-def delete_message(id: int):
-    message = Message.query.get(id)
-    if message is None:
-        return jsonify({"error": "Message not found"}), 404
-
-    db.session.delete(message)
-    db.session.commit()
-
-    return jsonify({"message": "Message deleted"}), 200
