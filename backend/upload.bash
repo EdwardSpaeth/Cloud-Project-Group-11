@@ -1,7 +1,6 @@
 #!/bin/bash
 
-VERSION=v50
-
+VERSION=v72
 docker buildx create --use # Ensure Buildx is enabled
 docker buildx build --platform linux/amd64 -t lowtechcontainerregistry.azurecr.io/lowtechbackendcontainer:$VERSION --push .
 

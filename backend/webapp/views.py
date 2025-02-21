@@ -6,6 +6,8 @@ import random
 import requests
 from flask import Flask, request, jsonify, render_template_string
 from weasyprint import HTML
+from azure.communication.email import EmailClient
+import base64
 
 from . import app, request, db, jsonify
 from .entities import (
@@ -474,8 +476,10 @@ def delete_message(id: int):
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
-MAILGUN_API_KEY = os.getenv("MAILGUN_API_KEY")
-MAILGUN_DOMAIN = os.getenv("MAILGUN_DOMAIN")
+AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING = os.getenv(
+    "AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING"
+)
+SENDER_EMAIL = os.getenv("AZURE_COMMUNICATION_SERVICE_SENDER_EMAIL")
 
 
 def generate_receipt_pdf(html_content):
@@ -539,26 +543,44 @@ def create_checkout_session():
         return jsonify({"error": str(e)}), 500
 
 
-def send_receipt_via_mailgun(customer_email, subject, html_content, pdf_content):
-    url = f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages"
-    data = {
-        "from": f"Your Company <noreply@{MAILGUN_DOMAIN}>",
-        "to": customer_email,
-        "subject": subject,
-        "html": html_content,
-    }
-    files = [("attachment", ("receipt.pdf", pdf_content, "application/pdf"))]
-
-    response = requests.post(
-        url, auth=("api", MAILGUN_API_KEY), data=data, files=files, timeout=30
-    )
-    if response.status_code == 200:
-        print(f"Email sent successfully to: {customer_email}")
-    else:
-        print(
-            f"Failed to send email. Status: {response.status_code}, Response: {response.text}"
+def send_receipt_via_azure(customer_email, subject, html_content, pdf_content):
+    try:
+        # Initialize the email client
+        email_client = EmailClient.from_connection_string(
+            AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING
         )
-    return response
+
+        # Create the email message
+        message = {
+            "senderAddress": SENDER_EMAIL,
+            "recipients": {"to": [{"address": customer_email}]},
+            "content": {
+                "subject": subject,
+                "html": html_content,
+            },
+            "attachments": [
+                {
+                    "name": "receipt.pdf",
+                    "contentType": "application/pdf",
+                    "contentInBase64": base64.b64encode(pdf_content).decode("utf-8"),
+                }
+            ],
+        }
+
+        # Send the email
+        poller = email_client.begin_send(message)
+        result = poller.result()
+
+        if result:
+            print(f"Email sent successfully to: {customer_email}")
+            return True
+        else:
+            print(f"Failed to send email to: {customer_email}")
+            return False
+
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+        return False
 
 
 @app.route("/webhook", methods=["POST"])
@@ -617,7 +639,7 @@ def stripe_webhook():
         pdf_content = generate_receipt_pdf(
             render_template_string(
                 RECEIPT_TEMPLATE,
-                amount=f"{amount:.2f}",  # Format amount with 2 decimal places
+                amount=f"{amount:.2f}",
                 currency=currency,
                 payment_method=payment_method,
                 customer_email=customer_email,
@@ -630,12 +652,12 @@ def stripe_webhook():
         # Generate the email HTML
         email_html = render_template_string(
             EMAIL_TEMPLATE,
-            amount=f"{amount:.2f}",  # Format amount with 2 decimal places
+            amount=f"{amount:.2f}",
             currency=currency,
         )
 
         # Send the email with PDF attachment
-        send_receipt_via_mailgun(
+        send_receipt_via_azure(
             customer_email=customer_email,
             subject="Thank you for your purchase!",
             html_content=email_html,
