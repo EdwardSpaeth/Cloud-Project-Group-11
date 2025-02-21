@@ -3,29 +3,55 @@
 import { CartItem } from "./components/cart-items";
 import { useCart } from "../context/cart-context";
 import { loadStripe } from "@stripe/stripe-js";
+import { useState } from "react";
 
-// Load your Stripe public key 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 export default function CartPage() {
   const { items } = useCart();
+  const [email, setEmail] = useState("");
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
     try {
+      // Prepare a compact version of the items for Stripe metadata
+      const compactItems = items.map(item => ({
+        n: item.name.substring(0, 30), // Limit name length
+        q: item.quantity,
+        p: item.price.toString()
+      }));
+
+      // Prepare the full items data for the backend
+      const checkoutData = {
+        items: items.map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          description: item.description || '',
+          imageUrl: item.imageUrl
+        })),
+        metadata: {
+          items: compactItems // Send compact version for metadata
+        },
+        email: email
+      };
+
       const stripe = await stripePromise;
       const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify(checkoutData)
       });
 
-      if (!response.ok) throw new Error("Failed to create checkout session");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        throw new Error("Failed to create checkout session");
+      }
 
       const { sessionId } = await response.json();
       const { error } = await stripe.redirectToCheckout({ sessionId });
       if (error) console.error(error);
-
     } catch (error) {
       console.error("Checkout error:", error);
     }
@@ -40,6 +66,21 @@ export default function CartPage() {
       ) : (
         <div className="w-full">
           <h1 className="text-3xl font-bold mb-4 text-center">Your Shopping Cart</h1>
+          {/* Email Input */}
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+              Email Address:
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Cart Items Section */}
             <div className="space-y-4">
@@ -67,6 +108,7 @@ export default function CartPage() {
               <button
                 onClick={handleCheckout}
                 className="w-full border-2 border-black text-black bg-transparent py-3 rounded-lg hover:bg-black hover:text-white transition-colors duration-300"
+                disabled={!email}
               >
                 Proceed to Checkout
               </button>

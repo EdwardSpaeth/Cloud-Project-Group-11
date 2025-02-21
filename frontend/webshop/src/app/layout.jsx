@@ -1,11 +1,15 @@
 "use client";
 
 import "./globals.css";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { CartProvider } from "./context/cart-context";
 import Header from "./header";
 import { usePathname } from "next/navigation";
-const inter = Inter({ subsets: ["latin"] });
+
+const inter = localFont({
+  src: '../../public/fonts/Inter-Regular.woff2',
+  display: 'swap',
+});
 
 export default function RootLayout({ children }) {
   const currentYear = new Date().getFullYear();
@@ -16,9 +20,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en" className="h-full bg-gray-50">
-      <body className="h-full font-sans text-gray-900">
+      <body className={`h-full ${inter.className} text-gray-900`}>
         <CartProvider>
-          {!isAdminPage && <Header />} {/* Hide Header on /admin and /admin/login */}
+          {!isAdminPage && <Header />}
           <main className="container mx-auto px-4 py-8">{children}</main>
           <footer className="text-center py-4 text-gray-600">
             <p>&copy; {currentYear} LowTech GmbH. All rights reserved.</p>

@@ -15,3 +15,8 @@ psycopg2-binary==2.9.10
 pyodbc==5.0.1
 gunicorn==23.0.0
 stripe==11.5.0
+requests==2.32.3
+weasyprint>=64.0
+pycairo>=1.21.0
+cffi>=1.15.0
+cairocffi>=1.0.0
