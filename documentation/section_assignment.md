@@ -15,8 +15,9 @@
 ## [3. Context and Scope](https://docs.arc42.org/section-3/)
 - Specify external interfaces 
 - in our case:
-  -  Stripe
-  -  E-Mail Service
+  - Stripe
+  - E-Mail Service
+  - SQL Database 
 -  **Examples**: 
    -  Business Context 
   ![](https://docs.arc42.org/images/examples/mama/3-Mama-Business-Context.png)
@@ -104,22 +105,26 @@ This section describes overall, principal regulations and solution ideas that ar
       - Combined checking results for multiple pages (HTMLPages)
 
 # Assignment
-- 6 pages per person
-- **Person A**:
+- 5-6 pages per person
+- **_(Vinay)_**:
   - 1- Introduction and Goals
   - 2- Constraints
-- **Person B**:
-  - 3- Context and Scope
-  - 4- Solution Strategy
-  - 5- Building Block View (Frontend side)
-- **Person C**:
+- **_(Dennis, Domi, Jatender)_**:
+  - 3- Context and Scope _(Domi)_
+  - 4- Solution Strategy _(Dennis, Jatender)_
+  - 5- Building Block View (Frontend side) _(Dennis, Jatender)_
+- **_(Domi, Edward)_**:
   - 5- Building Block View (Backend side)
   - 6- Runtime View
   - 7- Deployment View
-- **Person D**:
+- **_(Dennis, Jatender)_**:
   - 8- Crosscutting Concepts
   - 9- Architectural Decisions
-- **Person E**:
+- **_(Domi, Edward)_**:
   - 10- Quality Requirements
   - 11- Risks and Technical Debt
-- Everybody is responsibe to keep 12- Glossary up to date with their additions!
+- **Everybody is responsibe to keep 12- Glossary up to date with their additions!**
+
+# Further Notes
+- Deadline for us: Friday, 28th at 6 p.m.
+- At the bottom of document, attach link to our GitHub, say which GitHub user is who, and write "We consider commit with commit id 234141414141431... the final commit for the code base. Any commits after that should only change the documentation (this document) and presentation slides"
