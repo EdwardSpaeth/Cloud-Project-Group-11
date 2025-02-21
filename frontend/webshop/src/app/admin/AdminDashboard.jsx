@@ -39,9 +39,11 @@ const AdminDashboard = () => {
   const fetchMessages = async () => {
     try {
       const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages");
-      if (!response.ok) throw new Error("Could not load messages. Please contact the IT department.");
-      
-      setMessages(await response.json());
+
+      const server_message = await response.json();
+      if (!response.ok) throw new Error(server_message.message);
+
+      setMessages(server_message);
     } catch (err) {
       alert(err.message);
     }
@@ -59,11 +61,15 @@ const AdminDashboard = () => {
   const deleteMessage = async (id) => {
     try {
       const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
-  
         method: "DELETE",
       });
-      if (!response.ok) throw new Error("Failed to delete message");
+
+      const server_answer = await response.json();
+      if (!response.ok) throw new Error(server_answer.message);
+
       setMessages((prev) => prev.filter((msg) => msg.id !== id));
+
+      alert(server_answer.message);
     } catch (err) {
       alert(err.message);
     }
@@ -113,11 +119,17 @@ const AdminDashboard = () => {
 
   // Handle changes for editable fields
   const handleFieldChange = (id, field, value) => {
+    // check if the updated field is the price field and parse the string to a float
+    let num_value = 0;
+    if (field == "price") {
+      num_value = parseFloat(value);
+    }
+
     setEditedProducts((prev) => ({
       ...prev,
       [id]: {
         ...prev[id],
-        [field]: value,
+        [field]: num_value,
       },
     }));
   };
@@ -127,40 +139,45 @@ const AdminDashboard = () => {
     const updatedData = editedProducts[id];
     try {
       const response = await fetch(`http://localhost:5636/products/${id}`,
-
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedData),
         }
       );
-      if (response.ok) {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === id ? updatedData : p))
-        );
-        alert("Product updated successfully!");
-      } else {
-        alert("Failed to update product");
-      }
+
+      const server_answer = await response.json();
+      if (!response.ok) throw new Error(server_answer.message);
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? updatedData : p))
+      );
+      alert(server_answer.message);
     } catch (err) {
-      alert("Something went wrong when updating the new product. Error: " + err.message);
+      alert(err.message);
     }
   };
 
   // Function to delete selected products
   const deleteSelectedProducts = async () => {
+    let data = { ids: selectedProducts };
     try {
-      const deletePromises = selectedProducts.map((id) =>
-        fetch(`http://localhost:5636/products/${id}`, {
-          method: "DELETE",
-        })
-      );
-      await Promise.all(deletePromises);
+      const response = await fetch(`http://localhost:5636/products`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const server_answer = await response.json();
+      if (!response.ok) {
+        throw new Error(server_answer.message);
+      }
+
       setProducts((prev) => prev.filter((p) => !selectedProducts.includes(p.id)));
       setSelectedProducts([]);
-      alert("Selected products deleted successfully!");
-    } catch (err) {
-      alert("Something went wrong when deleting the products. Error: " + err.message);
+
+      alert(server_answer.message);
+    } catch(err) {
+      alert(err.message);
     }
   };
 
@@ -186,11 +203,10 @@ const AdminDashboard = () => {
           body: JSON.stringify(productToAdd),
         }
       );
-      if (!response.ok) {
-        return response.json().then(err => {
-          throw new Error(err.message); 
-        });
-      }
+
+      const server_answer = await response.json();
+      if (!response.ok) throw new Error(server_answer.message);
+
       const addedProduct = await response.json();
       addedProduct.id = products.length + 1;
       setProducts((prev) => [...prev, addedProduct]);
@@ -207,7 +223,8 @@ const AdminDashboard = () => {
         stock: "",
       });
       setShowNewProductForm(false);
-      alert("New product added!");
+
+      alert(server_answer.message);
     } catch (err) {
       alert(err.message);
     }
