@@ -25,7 +25,7 @@ const AdminDashboard = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [modal, setModal] = useState({
     isOpen: false,
-    productId: null,
+    productKey: null,
     field: "",
   });
 
@@ -39,17 +39,16 @@ const AdminDashboard = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages");
-
+      const response = await fetch(
+        "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages"
+      );
       const server_message = await response.json();
       if (!response.ok) throw new Error(server_message.message);
-
       setMessages(server_message);
     } catch (err) {
       alert(err.message);
     }
   };
-
 
   const handleToggleMessages = () => {
     setShowMessages((prev) => {
@@ -62,9 +61,12 @@ const AdminDashboard = () => {
 
   const deleteMessage = async (id) => {
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
@@ -81,15 +83,16 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
+        const response = await fetch(
+          "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0"
+        );
         if (!response.ok) throw new Error("Failed to load products");
         const data = await response.json();
 
-        // Create unique IDs if they don't exist and properly map all fields
-        const dataWithIds = data.map((prod, index) => ({
-          // Fallback to the index + 1 if "prod.id" doesn't exist
-          id: prod.id !== undefined ? prod.id : index + 1,
-
+        // Create an internal key and store the original backend id separately.
+        const dataWithKeys = data.map((prod, index) => ({
+          key: index + 1, // internal key that remains stable
+          backendId: prod.id, // original id from the backend
           name: prod.name,
           category: prod.category,
           description: prod.description,
@@ -99,14 +102,14 @@ const AdminDashboard = () => {
           materials: Array.isArray(prod.materials) ? prod.materials : [],
           colors: Array.isArray(prod.colors) ? prod.colors : [],
           stock: prod.stock,
-          image: prod.pictureUrl
+          image: prod.pictureUrl,
         }));
 
-        setProducts(dataWithIds);
+        setProducts(dataWithKeys);
 
         const initialEdits = {};
-        dataWithIds.forEach(prod => {
-          initialEdits[prod.id] = { ...prod };
+        dataWithKeys.forEach((prod) => {
+          initialEdits[prod.key] = { ...prod };
         });
         setEditedProducts(initialEdits);
         setLoading(false);
@@ -138,7 +141,7 @@ const AdminDashboard = () => {
   }, []);
 
   // Handle changes for editable fields
-  const handleFieldChange = (id, field, value) => {
+  const handleFieldChange = (key, field, value) => {
     let processedValue = value;
 
     if (field === "price") {
@@ -146,34 +149,40 @@ const AdminDashboard = () => {
     } else if (field === "stock") {
       processedValue = parseInt(value) || 0;
     } else if (field === "materials" || field === "colors") {
-      processedValue = typeof value === 'string' ?
-        value.split(",").map(item => item.trim()) :
-        value;
+      processedValue =
+        typeof value === "string"
+          ? value.split(",").map((item) => item.trim())
+          : value;
     }
 
-    setEditedProducts(prev => ({
+    // Prevent changes to the internal key or backendId
+    if (field === "key" || field === "backendId") return;
+
+    setEditedProducts((prev) => ({
       ...prev,
-      [id]: {
-        ...prev[id],
-        [field]: processedValue
-      }
+      [key]: {
+        ...prev[key],
+        [field]: processedValue,
+      },
     }));
   };
 
-  const updateProduct = async (id) => {
+  const updateProduct = async (key) => {
+    const productToUpdate = editedProducts[key];
+    const backendId = productToUpdate.backendId;
     const updatedData = {
-      ...editedProducts[id],
-      pictureUrl: editedProducts[id].image,
-      price: parseFloat(editedProducts[id].price)
+      ...productToUpdate,
+      pictureUrl: productToUpdate.image,
+      price: parseFloat(productToUpdate.price),
     };
 
     try {
       const response = await fetch(
-        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${backendId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedData)
+          body: JSON.stringify(updatedData),
         }
       );
 
@@ -182,17 +191,18 @@ const AdminDashboard = () => {
 
       const updatedProduct = {
         ...updatedData,
-        id: id,
-        image: updatedData.pictureUrl
+        key: key,
+        backendId: backendId,
+        image: updatedData.pictureUrl,
       };
 
-      setProducts(prev =>
-        prev.map(p => p.id === id ? updatedProduct : p)
+      setProducts((prev) =>
+        prev.map((p) => (p.key === key ? updatedProduct : p))
       );
 
-      setEditedProducts(prev => ({
+      setEditedProducts((prev) => ({
         ...prev,
-        [id]: updatedProduct
+        [key]: updatedProduct,
       }));
 
       alert(server_answer.message);
@@ -203,19 +213,28 @@ const AdminDashboard = () => {
 
   // Function to delete selected products
   const deleteSelectedProducts = async () => {
-    let data = { ids: selectedProducts };
+    const backendIds = products
+      .filter((p) => selectedProducts.includes(p.key))
+      .map((p) => p.backendId);
+
+    const data = { ids: backendIds };
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+      const response = await fetch(
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
       const server_answer = await response.json();
       if (!response.ok) {
         throw new Error(server_answer.message);
       }
 
-      setProducts((prev) => prev.filter((p) => !selectedProducts.includes(p.id)));
+      setProducts((prev) =>
+        prev.filter((p) => !selectedProducts.includes(p.key))
+      );
       setSelectedProducts([]);
 
       alert(server_answer.message);
@@ -229,7 +248,7 @@ const AdminDashboard = () => {
     setNewProduct((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Add new product via the backend (doesn't work, is just a skeleton)
+  // Add new product via the backend
   const addProduct = async () => {
     const productToAdd = {
       ...newProduct,
@@ -239,7 +258,8 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products",
+      const response = await fetch(
+        "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -250,10 +270,18 @@ const AdminDashboard = () => {
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
 
-      const addedProduct = await response.json();
-      addedProduct.id = products.length + 1;
+      const newKey = products.length
+        ? Math.max(...products.map((p) => p.key)) + 1
+        : 1;
+      const addedProduct = {
+        ...server_answer,
+        key: newKey,
+        backendId: server_answer.id,
+        image: server_answer.pictureUrl,
+      };
+
       setProducts((prev) => [...prev, addedProduct]);
-      setEditedProducts((prev) => ({ ...prev, [addedProduct.id]: addedProduct }));
+      setEditedProducts((prev) => ({ ...prev, [newKey]: addedProduct }));
       setNewProduct({
         name: "",
         category: "",
@@ -280,17 +308,19 @@ const AdminDashboard = () => {
     router.push("/admin/login");
   };
 
-  const openModal = (id, field) => {
-    setModal({ isOpen: true, productId: id, field });
+  const openModal = (key, field) => {
+    setModal({ isOpen: true, productKey: key, field });
   };
 
   const closeModal = () => {
-    setModal({ isOpen: false, productId: null, field: "" });
+    setModal({ isOpen: false, productKey: null, field: "" });
   };
 
-  const handleSelectProduct = (id) => {
+  const handleSelectProduct = (key) => {
     setSelectedProducts((prev) =>
-      prev.includes(id) ? prev.filter((productId) => productId !== id) : [...prev, id]
+      prev.includes(key)
+        ? prev.filter((productKey) => productKey !== key)
+        : [...prev, key]
     );
   };
 
@@ -300,14 +330,14 @@ const AdminDashboard = () => {
 
   const [editImageProduct, setEditImageProduct] = useState(null);
 
-  const openImageModalForEdit = (productId) => {
-    setEditImageProduct(productId);
+  const openImageModalForEdit = (productKey) => {
+    setEditImageProduct(productKey);
     setImageModalOpen(true);
   };
 
   const selectImage = (image) => {
     if (editImageProduct) {
-      handleFieldChange(editImageProduct, 'image', image);
+      handleFieldChange(editImageProduct, "image", image);
       setEditImageProduct(null);
     } else {
       setNewProduct((prev) => ({ ...prev, image }));
@@ -322,9 +352,14 @@ const AdminDashboard = () => {
     <div className="p-4 max-w-full">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold mb-4 md:mb-0">Product Overview</h2>
+        <h2 className="text-3xl font-bold mb-4 md:mb-0">
+          Product Overview
+        </h2>
         <div className="flex gap-4">
-          <button onClick={handleToggleMessages} className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
+          <button
+            onClick={handleToggleMessages}
+            className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded"
+          >
             {showMessages ? "Hide Messages" : "Messages"}
           </button>
           <button
@@ -409,12 +444,16 @@ const AdminDashboard = () => {
             <span>
               Warning: The following products have low stock:{" "}
               {lowStockProducts
-                .map((p) => `ID ${p.id} (${p.name} - Stock: ${p.stock})`)
+                .map(
+                  (p) =>
+                    `ID ${p.backendId} (${p.name} - Stock: ${p.stock})`
+                )
                 .join(", ")}
             </span>
           </div>
         </div>
       )}
+
       {/* New Product Form */}
       {showNewProductForm && (
         <div className="mb-6 p-6 bg-white rounded shadow-md border">
@@ -436,7 +475,9 @@ const AdminDashboard = () => {
                 <input
                   type="text"
                   value={newProduct[item.field]}
-                  onChange={(e) => handleNewProductChange(item.field, e.target.value)}
+                  onChange={(e) =>
+                    handleNewProductChange(item.field, e.target.value)
+                  }
                   className="w-full border rounded p-2 mt-1"
                 />
               </div>
@@ -453,13 +494,20 @@ const AdminDashboard = () => {
               </button>
               {newProduct.image && (
                 <div className="mt-2">
-                  <img src={`/images/${newProduct.image}`} alt="Selected" className="w-24 h-24 object-cover rounded" />
+                  <img
+                    src={`/images/${newProduct.image}`}
+                    alt="Selected"
+                    className="w-24 h-24 object-cover rounded"
+                  />
                 </div>
               )}
             </div>
             {/* Submit Button */}
             <div className="col-span-2">
-              <button onClick={addProduct} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+              <button
+                onClick={addProduct}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
                 Add Product
               </button>
             </div>
@@ -467,7 +515,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/*Image Selection Modal */}
+      {/* Image Selection Modal */}
       {imageModalOpen && (
         <>
           {/* Overlay */}
@@ -477,18 +525,36 @@ const AdminDashboard = () => {
             style={{ zIndex: 40 }}
           />
           {/* Modal Content */}
-          <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 50 }}>
-            <div className="relative bg-white p-6 rounded shadow-lg w-3/4 max-w-4xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="fixed inset-0 flex items-center justify-center p-4"
+            style={{ zIndex: 50 }}
+          >
+            <div
+              className="relative bg-white p-6 rounded shadow-lg w-3/4 max-w-4xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold">
-                  {editImageProduct ? 'Change Product Image' : 'Select an Image'}
+                  {editImageProduct
+                    ? "Change Product Image"
+                    : "Select an Image"}
                 </h3>
                 <button
                   onClick={() => setImageModalOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -505,7 +571,9 @@ const AdminDashboard = () => {
                       className="w-full h-full object-cover rounded border border-gray-200"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded">
-                      <span className="text-white text-sm font-medium">Select</span>
+                      <span className="text-white text-sm font-medium">
+                        Select
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -514,6 +582,7 @@ const AdminDashboard = () => {
           </div>
         </>
       )}
+
       {/* Products Table */}
       <div className="overflow-x-auto shadow-lg rounded-lg border">
         <table className="min-w-full bg-white">
@@ -524,7 +593,7 @@ const AdminDashboard = () => {
                   type="checkbox"
                   onChange={(e) =>
                     setSelectedProducts(
-                      e.target.checked ? products.map((p) => p.id) : []
+                      e.target.checked ? products.map((p) => p.key) : []
                     )
                   }
                   checked={selectedProducts.length === products.length}
@@ -543,24 +612,26 @@ const AdminDashboard = () => {
                 "Stock",
                 "Actions",
               ].map((header) => (
-                <th key={header} className="px-4 py-3 text-left uppercase text-sm tracking-wider">
+                <th
+                  key={header}
+                  className="px-4 py-3 text-left uppercase text-sm tracking-wider"
+                >
                   {header}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-
             {[...products]
-              .sort((a, b) => a.id - b.id)
+              .sort((a, b) => a.key - b.key)
               .map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
+                <tr key={product.key} className="hover:bg-gray-50">
                   {/* Checkbox cell */}
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
-                      checked={selectedProducts.includes(product.id)}
-                      onChange={() => handleSelectProduct(product.id)}
+                      checked={selectedProducts.includes(product.key)}
+                      onChange={() => handleSelectProduct(product.key)}
                       className="rounded border-gray-300"
                     />
                   </td>
@@ -569,28 +640,34 @@ const AdminDashboard = () => {
                   <td className="px-4 py-3">
                     <div className="relative group">
                       <img
-                        src={`/images/${editedProducts[product.id]?.image}`}
+                        src={`/images/${editedProducts[product.key]?.image}`}
                         alt={product.name}
                         className="w-16 h-16 object-cover rounded-lg shadow-sm"
                       />
                       <button
-                        onClick={() => openImageModalForEdit(product.id)}
+                        onClick={() => openImageModalForEdit(product.key)}
                         className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg"
                       >
-                        <span className="text-white text-sm font-medium">Change Image</span>
+                        <span className="text-white text-sm font-medium">
+                          Change Image
+                        </span>
                       </button>
                     </div>
                   </td>
 
-                  {/* ID cell */}
-                  <td className="px-4 py-3">{product.id}</td>
+                  {/* ID cell: show backendId */}
+                  <td className="px-4 py-3">{product.backendId}</td>
 
                   {/* Name cell */}
                   <td className="px-4 py-3">
                     <input
                       type="text"
-                      value={editedProducts[product.id]?.name ?? product.name}
-                      onChange={(e) => handleFieldChange(product.id, "name", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.name ?? product.name
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(product.key, "name", e.target.value)
+                      }
                       className="w-full border rounded p-1 text-sm"
                     />
                   </td>
@@ -599,15 +676,33 @@ const AdminDashboard = () => {
                   <td className="px-4 py-3">
                     <input
                       type="text"
-                      value={editedProducts[product.id]?.category ?? product.category}
-                      onChange={(e) => handleFieldChange(product.id, "category", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.category ??
+                        product.category
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "category",
+                          e.target.value
+                        )
+                      }
                       className="w-full border rounded p-1 text-sm"
                     />
                   </td>
                   <td className="px-4 py-3">
                     <textarea
-                      value={editedProducts[product.id]?.description ?? product.description}
-                      onChange={(e) => handleFieldChange(product.id, "description", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.description ??
+                        product.description
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "description",
+                          e.target.value
+                        )
+                      }
                       className="w-full border rounded p-1 text-sm"
                       rows={2}
                     />
@@ -615,24 +710,49 @@ const AdminDashboard = () => {
                   <td className="px-4 py-3">
                     <input
                       type="number"
-                      value={editedProducts[product.id]?.price ?? product.price}
-                      onChange={(e) => handleFieldChange(product.id, "price", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.price ?? product.price
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "price",
+                          e.target.value
+                        )
+                      }
                       className="w-full border rounded p-1 text-sm"
                     />
                   </td>
                   <td className="px-4 py-3">
                     <input
                       type="text"
-                      value={editedProducts[product.id]?.brand ?? product.brand}
-                      onChange={(e) => handleFieldChange(product.id, "brand", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.brand ?? product.brand
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "brand",
+                          e.target.value
+                        )
+                      }
                       className="w-full border rounded p-1 text-sm"
                     />
                   </td>
                   <td className="px-4 py-3">
                     <input
                       type="text"
-                      value={editedProducts[product.id]?.materials?.join(", ") ?? product.materials.join(", ")}
-                      onChange={(e) => handleFieldChange(product.id, "materials", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.materials?.join(", ") ??
+                        product.materials.join(", ")
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "materials",
+                          e.target.value
+                        )
+                      }
                       className="w-full border rounded p-1 text-sm"
                       placeholder="Comma separated values"
                     />
@@ -640,8 +760,17 @@ const AdminDashboard = () => {
                   <td className="px-4 py-3">
                     <input
                       type="text"
-                      value={editedProducts[product.id]?.colors?.join(", ") ?? product.colors.join(", ")}
-                      onChange={(e) => handleFieldChange(product.id, "colors", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.colors?.join(", ") ??
+                        product.colors.join(", ")
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "colors",
+                          e.target.value
+                        )
+                      }
                       className="w-full border rounded p-1 text-sm"
                       placeholder="Comma separated values"
                     />
@@ -649,14 +778,22 @@ const AdminDashboard = () => {
                   <td className="px-4 py-3">
                     <input
                       type="number"
-                      value={editedProducts[product.id]?.stock ?? product.stock}
-                      onChange={(e) => handleFieldChange(product.id, "stock", e.target.value)}
+                      value={
+                        editedProducts[product.key]?.stock ?? product.stock
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "stock",
+                          e.target.value
+                        )
+                      }
                       className="w-full border rounded p-1 text-sm"
                     />
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => updateProduct(product.id)}
+                      onClick={() => updateProduct(product.key)}
                       className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded text-sm"
                     >
                       Update
@@ -667,55 +804,63 @@ const AdminDashboard = () => {
           </tbody>
         </table>
       </div>
+
       {/* Modal for full field editing */}
-      {
-        modal.isOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
-              <h3 className="text-2xl font-bold mb-4">
-                Edit Full {modal.field === "name" ? "Name" : "Description"}
-              </h3>
-              {modal.field === "description" ? (
-                <textarea
-                  value={editedProducts[modal.productId]?.description || ""}
-                  onChange={(e) =>
-                    handleFieldChange(modal.productId, "description", e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                  rows={10}
-                />
-              ) : (
-                <textarea
-                  value={editedProducts[modal.productId]?.name || ""}
-                  onChange={(e) =>
-                    handleFieldChange(modal.productId, "name", e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                  rows={3}
-                />
-              )}
-              <div className="mt-4 flex justify-end gap-4">
-                <button
-                  onClick={() => {
-                    updateProduct(modal.productId);
-                    closeModal();
-                  }}
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
+      {modal.isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
+            <h3 className="text-2xl font-bold mb-4">
+              Edit Full{" "}
+              {modal.field === "name" ? "Name" : "Description"}
+            </h3>
+            {modal.field === "description" ? (
+              <textarea
+                value={editedProducts[modal.productKey]?.description || ""}
+                onChange={(e) =>
+                  handleFieldChange(
+                    modal.productKey,
+                    "description",
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded p-2"
+                rows={10}
+              />
+            ) : (
+              <textarea
+                value={editedProducts[modal.productKey]?.name || ""}
+                onChange={(e) =>
+                  handleFieldChange(
+                    modal.productKey,
+                    "name",
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded p-2"
+                rows={3}
+              />
+            )}
+            <div className="mt-4 flex justify-end gap-4">
+              <button
+                onClick={() => {
+                  updateProduct(modal.productKey);
+                  closeModal();
+                }}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={closeModal}
+                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Cancel
+              </button>
             </div>
           </div>
-        )
-      }
-    </div >
+        </div>
+      )}
+    </div>
   );
 };
 
