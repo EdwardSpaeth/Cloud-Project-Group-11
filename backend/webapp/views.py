@@ -203,7 +203,7 @@ def add_prod_to_list():
             prod_to_add["stock"],
             prodSupplier,
             prod_to_add["description"],
-            prod_to_add["pictureUrl"],
+            prod_to_add["image"],
         )
     except AttributeError as attrErr:
         return jsonify({"message": attrErr.args}), 400
@@ -250,8 +250,6 @@ def update_product(prod_id: int):
     # update the product itself
     prod = Product.query.filter(Product.productID == prod_id).first()
     if prod == None:
-        return (
-                    "message": "Product does not exist yet. Please create it as a new one."
         return jsonify({"message": "Product does not exist yet. Please create it as a new one."}), 500,
 
     prod.productName        = product_to_update["name"]
@@ -284,7 +282,6 @@ def update_product(prod_id: int):
 
     return jsonify({"message": "Product updated."}), 200
 
-
 @app.delete("/products")
 def delete_products():
     if not request.is_json:
@@ -296,6 +293,7 @@ def delete_products():
         ProductMaterial.query.filter(ProductMaterial.productID == prod_id).delete()
         ProductColor.query.filter(ProductColor.productID == prod_id).delete()
         Product.query.filter(Product.productID == prod_id).delete()
+
         db.session.commit()
 
     return jsonify({"message": "Product(s) deleted from list."}), 200
@@ -341,11 +339,12 @@ def get_description(id: int):
         products = Product.query.all()
         for product in products:
             product_infos.append(get_product_info(product))
+
         return json.dumps(product_infos), 200
     else:
         product = Product.query.filter(Product.productID == id).first()
-
         product_info = get_product_info(product)
+
         return json.dumps(product_info), 200
 
 @app.post("/customers")
@@ -374,7 +373,6 @@ def serve_home():
     ]:
         print(x)
     return "Okay"
-
 
 @app.route("/")
 def serve_default():
