@@ -248,30 +248,25 @@ def update_product(prod_id: int):
         return jsonify({"message": "Price cannot be smaller than zero"}), 400
 
     # update the product itself
-    prod = db.session.query(Product).filter_by(productID=prod_id).first()
+    prod = Product.query.filter(Product.productID == prod_id).first()
     if prod == None:
         return (
-            jsonify(
-                {
                     "message": "Product does not exist yet. Please create it as a new one."
-                }
-            ),
-            500,
-        )
+        return jsonify({"message": "Product does not exist yet. Please create it as a new one."}), 500,
 
-    prod.productName = product_to_update["name"]
-    prod.productPicture = product_to_update["pictureUrl"]
-    prod.productCategory = product_to_update["category"]
-    prod.productCurrency = product_to_update["currency"]
-    prod.productPrice = product_to_update["price"]
-    prod.productBrand = product_to_update["brand"]
+    prod.productName        = product_to_update["name"]
+    prod.productPicture     = product_to_update["pictureUrl"]
+    prod.productCategory    = product_to_update["category"]
+    prod.productCurrency    = product_to_update["currency"]
+    prod.productPrice       = product_to_update["price"]
+    prod.productBrand       = product_to_update["brand"]
     prod.productDescription = product_to_update["description"]
-    prod.productStock = product_to_update["stock"]
+    prod.productStock       = product_to_update["stock"]
     db.session.flush()
 
     # delete all rows with the given id
-    ProductMaterial.query.filter(ProductMaterial.productID == prod_id).delete
-    ProductColor.query.filter(ProductColor.productID == prod_id).delete
+    ProductMaterial.query.filter(ProductMaterial.productID == prod_id).delete()
+    ProductColor.query.filter(ProductColor.productID == prod_id).delete()
     db.session.flush()
 
     # and now update the data with the given id
@@ -304,20 +299,6 @@ def delete_products():
         db.session.commit()
 
     return jsonify({"message": "Product(s) deleted from list."}), 200
-
-@app.post("/customers")
-def create_customer():
-    customer = Customer(
-        customerFirstName=request.form.get("customerFirstName"),
-        customerLastName=request.form.get("customerLastName"),
-        customerAddress=request.form.get("customerAddress"),
-        customerEmail=request.form.get("customerEmail"),
-        customerPhoneNumber=request.form.get("customerPhoneNumber"),
-    )
-    db.session.add(customer)
-    db.session.commit()
-    return "OK", 200
-
 
 @app.get("/products/<int:id>")
 def get_description(id: int):
@@ -366,6 +347,19 @@ def get_description(id: int):
 
         product_info = get_product_info(product)
         return json.dumps(product_info), 200
+
+@app.post("/customers")
+def create_customer():
+    customer = Customer(
+        customerFirstName=request.form.get("customerFirstName"),
+        customerLastName=request.form.get("customerLastName"),
+        customerAddress=request.form.get("customerAddress"),
+        customerEmail=request.form.get("customerEmail"),
+        customerPhoneNumber=request.form.get("customerPhoneNumber"),
+    )
+    db.session.add(customer)
+    db.session.commit()
+    return "OK", 200
 
 @app.route("/dbtest")
 def serve_home():
