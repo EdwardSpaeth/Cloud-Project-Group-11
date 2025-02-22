@@ -233,12 +233,15 @@ def add_prod_to_list():
 
     return jsonify({"message": "Product added to list."}), 200
 
-
 @app.put("/products/<int:prod_id>")
 def update_product(prod_id: int):
+    prod = Product.query.filter(Product.productID == prod_id).first()
+    if prod == None:
+        return jsonify({"message": "Product does not exist yet. Please create it as a new one."}), 500
+
     if not request.is_json:
         return jsonify({"message": "Data was not in json format"}), 400
-
+    
     product_to_update = request.get_json()
 
     if not isinstance(product_to_update["price"], float):
@@ -248,10 +251,6 @@ def update_product(prod_id: int):
         return jsonify({"message": "Price cannot be smaller than zero"}), 400
 
     # update the product itself
-    prod = Product.query.filter(Product.productID == prod_id).first()
-    if prod == None:
-        return jsonify({"message": "Product does not exist yet. Please create it as a new one."}), 500,
-
     prod.productName        = product_to_update["name"]
     prod.productPicture     = product_to_update["pictureUrl"]
     prod.productCategory    = product_to_update["category"]
@@ -298,8 +297,8 @@ def delete_products():
 
     return jsonify({"message": "Product(s) deleted from list."}), 200
 
-@app.get("/products/<int:id>")
-def get_description(id: int):
+@app.get("/products/<int:prod_id>")
+def get_description(prod_id: int):
     def get_product_info(product: Product) -> dict:
         colors = list(
             map(
@@ -334,7 +333,7 @@ def get_description(id: int):
         return product_info
 
     # Retrieve all products
-    if id == 0:
+    if prod_id == 0:
         product_infos = []
         products = Product.query.all()
         for product in products:
