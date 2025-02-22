@@ -20,6 +20,7 @@ const AdminDashboard = () => {
     materials: "",
     colors: "",
     stock: "",
+    image: "",
   });
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [modal, setModal] = useState({
@@ -221,6 +222,7 @@ const AdminDashboard = () => {
         materials: "",
         colors: "",
         stock: "",
+        image: "",
       });
       setShowNewProductForm(false);
 
