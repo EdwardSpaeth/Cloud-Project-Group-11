@@ -50,6 +50,7 @@ const AdminDashboard = () => {
     }
   };
 
+
   const handleToggleMessages = () => {
     setShowMessages((prev) => {
       if (!prev) {
@@ -83,10 +84,28 @@ const AdminDashboard = () => {
         const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
         if (!response.ok) throw new Error("Failed to load products");
         const data = await response.json();
-        const dataWithIds = data.map((prod) => ({ ...prod, id: prod.id }));
+
+        // Create unique IDs if they don't exist and properly map all fields
+        const dataWithIds = data.map((prod, index) => ({
+          // Fallback to the index + 1 if "prod.id" doesn't exist
+          id: prod.id !== undefined ? prod.id : index + 1,
+
+          name: prod.name,
+          category: prod.category,
+          description: prod.description,
+          price: prod.price,
+          currency: prod.currency,
+          brand: prod.brand,
+          materials: Array.isArray(prod.materials) ? prod.materials : [],
+          colors: Array.isArray(prod.colors) ? prod.colors : [],
+          stock: prod.stock,
+          image: prod.pictureUrl
+        }));
+
         setProducts(dataWithIds);
+
         const initialEdits = {};
-        dataWithIds.forEach((prod) => {
+        dataWithIds.forEach(prod => {
           initialEdits[prod.id] = { ...prod };
         });
         setEditedProducts(initialEdits);
@@ -120,39 +139,62 @@ const AdminDashboard = () => {
 
   // Handle changes for editable fields
   const handleFieldChange = (id, field, value) => {
-    // check if the updated field is the price field and parse the string to a float
-    let num_value = 0;
-    if (field == "price") {
-      num_value = parseFloat(value);
+    let processedValue = value;
+
+    if (field === "price") {
+      processedValue = parseFloat(value) || 0;
+    } else if (field === "stock") {
+      processedValue = parseInt(value) || 0;
+    } else if (field === "materials" || field === "colors") {
+      processedValue = typeof value === 'string' ?
+        value.split(",").map(item => item.trim()) :
+        value;
     }
 
-    setEditedProducts((prev) => ({
+    setEditedProducts(prev => ({
       ...prev,
       [id]: {
         ...prev[id],
-        [field]: num_value,
-      },
+        [field]: processedValue
+      }
     }));
   };
 
-  // Update product in the backend and locally
   const updateProduct = async (id) => {
-    const updatedData = editedProducts[id];
+    const updatedData = {
+      ...editedProducts[id],
+      pictureUrl: editedProducts[id].image,
+      price: parseFloat(editedProducts[id].price)
+    };
+
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+      const response = await fetch(
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedData),
+          body: JSON.stringify(updatedData)
         }
       );
-      
+
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
 
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? updatedData : p))
+      const updatedProduct = {
+        ...updatedData,
+        id: id,
+        image: updatedData.pictureUrl
+      };
+
+      setProducts(prev =>
+        prev.map(p => p.id === id ? updatedProduct : p)
       );
+
+      setEditedProducts(prev => ({
+        ...prev,
+        [id]: updatedProduct
+      }));
+
       alert(server_answer.message);
     } catch (err) {
       alert(err.message);
@@ -256,8 +298,20 @@ const AdminDashboard = () => {
     setImageModalOpen(true);
   };
 
+  const [editImageProduct, setEditImageProduct] = useState(null);
+
+  const openImageModalForEdit = (productId) => {
+    setEditImageProduct(productId);
+    setImageModalOpen(true);
+  };
+
   const selectImage = (image) => {
-    setNewProduct((prev) => ({ ...prev, image }));
+    if (editImageProduct) {
+      handleFieldChange(editImageProduct, 'image', image);
+      setEditImageProduct(null);
+    } else {
+      setNewProduct((prev) => ({ ...prev, image }));
+    }
     setImageModalOpen(false);
   };
 
@@ -415,30 +469,50 @@ const AdminDashboard = () => {
 
       {/*Image Selection Modal */}
       {imageModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-3/4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold mb-4">Select an Image</h3>
-              <button
-                onClick={() => setImageModalOpen(false)}
-                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded"
-              >
-                Close
-              </button>
-            </div>
-            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-              {imageList.map((image, index) => (
-                <img
-                  key={index}
-                  src={`/images/${image}`}
-                  alt="Product"
-                  className="w-24 h-24 object-cover cursor-pointer border border-gray-300 rounded hover:border-blue-500"
-                  onClick={() => selectImage(image)}
-                />
-              ))}
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={() => setImageModalOpen(false)}
+            style={{ zIndex: 40 }}
+          />
+          {/* Modal Content */}
+          <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 50 }}>
+            <div className="relative bg-white p-6 rounded shadow-lg w-3/4 max-w-4xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold">
+                  {editImageProduct ? 'Change Product Image' : 'Select an Image'}
+                </h3>
+                <button
+                  onClick={() => setImageModalOpen(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-[60vh] overflow-y-auto p-4">
+                {imageList.map((image, index) => (
+                  <div
+                    key={index}
+                    className="aspect-square relative group cursor-pointer hover:opacity-90"
+                    onClick={() => selectImage(image)}
+                  >
+                    <img
+                      src={`/images/${image}`}
+                      alt="Product"
+                      className="w-full h-full object-cover rounded border border-gray-200"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded">
+                      <span className="text-white text-sm font-medium">Select</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
       {/* Products Table */}
       <div className="overflow-x-auto shadow-lg rounded-lg border">
@@ -457,6 +531,7 @@ const AdminDashboard = () => {
                 />
               </th>
               {[
+                "Image",
                 "ID",
                 "Name",
                 "Category",
@@ -468,116 +543,127 @@ const AdminDashboard = () => {
                 "Stock",
                 "Actions",
               ].map((header) => (
-                <th
-                  key={header}
-                  className="px-4 py-3 text-left uppercase text-sm tracking-wider"
-                >
+                <th key={header} className="px-4 py-3 text-left uppercase text-sm tracking-wider">
                   {header}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.includes(product.id)}
-                    onChange={() => handleSelectProduct(product.id)}
-                  />
-                </td>
-                <td className="px-4 py-3">{product.id}</td>
-                <td className="px-4 py-3 flex items-center gap-2">
-                  <div
-                    onClick={() => openModal(product.id, "name")}
-                    className="cursor-pointer hover:underline flex-1"
-                  >
-                    {editedProducts[product.id]?.name?.length > 20
-                      ? editedProducts[product.id].name.slice(0, 20) + "..."
-                      : editedProducts[product.id]?.name}
-                  </div>
-                  <button
-                    onClick={() => openModal(product.id, "name")}
-                    title="Edit full name"
-                    className="p-1 hover:text-blue-500 self-center"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+
+            {[...products]
+              .sort((a, b) => a.id - b.id)
+              .map((product) => (
+                <tr key={product.id} className="hover:bg-gray-50">
+                  {/* Checkbox cell */}
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(product.id)}
+                      onChange={() => handleSelectProduct(product.id)}
+                      className="rounded border-gray-300"
+                    />
+                  </td>
+
+                  {/* Image cell */}
+                  <td className="px-4 py-3">
+                    <div className="relative group">
+                      <img
+                        src={`/images/${editedProducts[product.id]?.image}`}
+                        alt={product.name}
+                        className="w-16 h-16 object-cover rounded-lg shadow-sm"
                       />
-                    </svg>
-                  </button>
-                </td>
-                <td className="px-4 py-3">{product.category}</td>
-                <td className="px-4 py-3 flex items-center gap-2">
-                  <div
-                    onClick={() => openModal(product.id, "description")}
-                    className="cursor-pointer hover:underline flex-1"
-                  >
-                    {editedProducts[product.id]?.description?.length > 50
-                      ? editedProducts[product.id].description.slice(0, 50) + "..."
-                      : editedProducts[product.id]?.description}
-                  </div>
-                  <button
-                    onClick={() => openModal(product.id, "description")}
-                    title="Edit full description"
-                    className="p-1 hover:text-blue-500"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                      <button
+                        onClick={() => openImageModalForEdit(product.id)}
+                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg"
+                      >
+                        <span className="text-white text-sm font-medium">Change Image</span>
+                      </button>
+                    </div>
+                  </td>
+
+                  {/* ID cell */}
+                  <td className="px-4 py-3">{product.id}</td>
+
+                  {/* Name cell */}
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={editedProducts[product.id]?.name ?? product.name}
+                      onChange={(e) => handleFieldChange(product.id, "name", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+
+                  {/* Category cell */}
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={editedProducts[product.id]?.category ?? product.category}
+                      onChange={(e) => handleFieldChange(product.id, "category", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <textarea
+                      value={editedProducts[product.id]?.description ?? product.description}
+                      onChange={(e) => handleFieldChange(product.id, "description", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                      rows={2}
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      value={editedProducts[product.id]?.price ?? product.price}
+                      onChange={(e) => handleFieldChange(product.id, "price", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={editedProducts[product.id]?.brand ?? product.brand}
+                      onChange={(e) => handleFieldChange(product.id, "brand", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={editedProducts[product.id]?.materials?.join(", ") ?? product.materials.join(", ")}
+                      onChange={(e) => handleFieldChange(product.id, "materials", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                      placeholder="Comma separated values"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={editedProducts[product.id]?.colors?.join(", ") ?? product.colors.join(", ")}
+                      onChange={(e) => handleFieldChange(product.id, "colors", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                      placeholder="Comma separated values"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      value={editedProducts[product.id]?.stock ?? product.stock}
+                      onChange={(e) => handleFieldChange(product.id, "stock", e.target.value)}
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => updateProduct(product.id)}
+                      className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded text-sm"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
-                      />
-                    </svg>
-                  </button>
-                </td>
-                <td className="px-4 py-3">
-                  <input
-                    type="text"
-                    value={`${editedProducts[product.id]?.price || 0} ${product.currency || ""}`}
-                    onChange={(e) => handleFieldChange(product.id, "price", e.target.value)}
-                    className="w-full border rounded p-1 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3">{product.brand}</td>
-                <td className="px-4 py-3">{product.materials.join(", ")}</td>
-                <td className="px-4 py-3">{product.colors.join(", ")}</td>
-                <td className="px-4 py-3">
-                  <input
-                    type="text"
-                    value={editedProducts[product.id]?.stock || ""}
-                    onChange={(e) => handleFieldChange(product.id, "stock", e.target.value)}
-                    className="w-full border rounded p-1 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <button
-                    onClick={() => updateProduct(product.id)}
-                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded text-sm"
-                  >
-                    Update
-                  </button>
-                </td>
-              </tr>
-            ))}
+                      Update
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
