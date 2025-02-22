@@ -229,19 +229,30 @@ def add_prod_to_list():
     try:
         db.session.commit()
     except:
-        return jsonify({"message": "Something went wrong when saving the product."}), 500
+        return (
+            jsonify({"message": "Something went wrong when saving the product."}),
+            500,
+        )
 
     return jsonify({"message": "Product added to list."}), 200
+
 
 @app.put("/products/<int:prod_id>")
 def update_product(prod_id: int):
     prod = Product.query.filter(Product.productID == prod_id).first()
     if prod == None:
-        return jsonify({"message": "Product does not exist yet. Please create it as a new one."}), 500
+        return (
+            jsonify(
+                {
+                    "message": "Product does not exist yet. Please create it as a new one."
+                }
+            ),
+            500,
+        )
 
     if not request.is_json:
         return jsonify({"message": "Data was not in json format"}), 400
-    
+
     product_to_update = request.get_json()
 
     if not isinstance(product_to_update["price"], float):
@@ -251,14 +262,14 @@ def update_product(prod_id: int):
         return jsonify({"message": "Price cannot be smaller than zero"}), 400
 
     # update the product itself
-    prod.productName        = product_to_update["name"]
-    prod.productPicture     = product_to_update["pictureUrl"]
-    prod.productCategory    = product_to_update["category"]
-    prod.productCurrency    = product_to_update["currency"]
-    prod.productPrice       = product_to_update["price"]
-    prod.productBrand       = product_to_update["brand"]
+    prod.productName = product_to_update["name"]
+    prod.productPicture = product_to_update["pictureUrl"]
+    prod.productCategory = product_to_update["category"]
+    prod.productCurrency = product_to_update["currency"]
+    prod.productPrice = product_to_update["price"]
+    prod.productBrand = product_to_update["brand"]
     prod.productDescription = product_to_update["description"]
-    prod.productStock       = product_to_update["stock"]
+    prod.productStock = product_to_update["stock"]
     db.session.flush()
 
     # delete all rows with the given id
@@ -281,6 +292,7 @@ def update_product(prod_id: int):
 
     return jsonify({"message": "Product updated."}), 200
 
+
 @app.delete("/products")
 def delete_products():
     if not request.is_json:
@@ -296,6 +308,7 @@ def delete_products():
         db.session.commit()
 
     return jsonify({"message": "Product(s) deleted from list."}), 200
+
 
 @app.get("/products/<int:prod_id>")
 def get_description(prod_id: int):
@@ -338,13 +351,15 @@ def get_description(prod_id: int):
         products = Product.query.all()
         for product in products:
             product_infos.append(get_product_info(product))
-
         return json.dumps(product_infos), 200
     else:
-        product = Product.query.filter(Product.productID == id).first()
-        product_info = get_product_info(product)
+        product = Product.query.filter(Product.productID == prod_id).first()
+        if product is None:
+            return jsonify({"message": "Product not found"}), 404
 
+        product_info = get_product_info(product)
         return json.dumps(product_info), 200
+
 
 @app.post("/customers")
 def create_customer():
@@ -358,6 +373,7 @@ def create_customer():
     db.session.add(customer)
     db.session.commit()
     return "OK", 200
+
 
 @app.route("/dbtest")
 def serve_home():
@@ -373,9 +389,11 @@ def serve_home():
         print(x)
     return "Okay"
 
+
 @app.route("/")
 def serve_default():
     return "Connection Successful!", 200
+
 
 @app.post("/messages")
 def create_message():
@@ -395,9 +413,23 @@ def create_message():
         db.session.add(message)
         db.session.commit()
     except:
-        return jsonify({"message": "Could not safe message. Please leave us a call or try later."}),500,
+        return (
+            jsonify(
+                {
+                    "message": "Could not safe message. Please leave us a call or try later."
+                }
+            ),
+            500,
+        )
 
-    return jsonify({"message": "Message successfully safed. We will contact you as soon as possible."}),200,
+    return (
+        jsonify(
+            {
+                "message": "Message successfully safed. We will contact you as soon as possible."
+            }
+        ),
+        200,
+    )
 
 
 @app.get("/messages")
@@ -405,7 +437,14 @@ def get_messages():
     try:
         messages = Message.query.all()
     except:
-        return jsonify({"message": "Could not load messages. Please contact IT department or try later."}),500,
+        return (
+            jsonify(
+                {
+                    "message": "Could not load messages. Please contact IT department or try later."
+                }
+            ),
+            500,
+        )
 
     messages_list = [
         {

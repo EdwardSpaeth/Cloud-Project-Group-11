@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '../../context/cart-context';
 import { FiShoppingCart } from 'react-icons/fi';
 
@@ -11,6 +12,8 @@ const truncate = (string, maxLength) => {
 };
 
 const ProductCard = ({ product, viewType }) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+  const router = useRouter();
   const { addToCart, cartItems } = useCart();
   const imageUrl = `/images/${product.pictureUrl}`;
 
@@ -26,15 +29,25 @@ const ProductCard = ({ product, viewType }) => {
     return "Add to Cart";
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
     if (!isDisabled) {
+      setIsAnimating(true);
       addToCart(product);
+      setTimeout(() => setIsAnimating(false), 200);
     }
+  };
+
+  const handleCardClick = () => {
+    router.push(`/shop/product/${product.id}`);
   };
 
   if (viewType === 'list') {
     return (
-      <div className="flex flex-col md:flex-row w-full bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
+      <div
+        onClick={handleCardClick}
+        className="flex flex-col md:flex-row w-full bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+      >
         <div className="w-full md:w-48 h-48">
           <img
             src={imageUrl}
@@ -57,9 +70,10 @@ const ProductCard = ({ product, viewType }) => {
             <button
               onClick={handleAddToCart}
               disabled={isDisabled}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${isDisabled
-                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800'
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all transform ${isAnimating ? 'scale-90' : 'scale-100'
+                } ${isDisabled
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800'
                 }`}
             >
               <FiShoppingCart />
@@ -72,7 +86,10 @@ const ProductCard = ({ product, viewType }) => {
   }
 
   return (
-    <div className="flex flex-col bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden h-full">
+    <div
+      onClick={handleCardClick}
+      className="flex flex-col bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden h-full cursor-pointer hover:shadow-md transition-shadow"
+    >
       <div className="aspect-square w-full relative">
         <img
           src={imageUrl}
@@ -93,9 +110,10 @@ const ProductCard = ({ product, viewType }) => {
           <button
             onClick={handleAddToCart}
             disabled={isDisabled}
-            className={`flex items-center gap-2 p-2 rounded-full transition-colors ${isDisabled
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-              : 'bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800'
+            className={`flex items-center gap-2 p-2 rounded-full transition-all transform ${isAnimating ? 'scale-90' : 'scale-100'
+              } ${isDisabled
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800'
               }`}
             aria-label={getButtonText()}
             title={getButtonText()}
