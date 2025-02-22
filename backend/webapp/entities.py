@@ -5,20 +5,24 @@ class Product(db.Model):
     __tablename__="products"
     __table_args__ = {"extend_existing": True}
 
-    productID = db.Column("productid", db.Integer, primary_key=True, autoincrement=True) 
-    productName = db.Column("productname", db.String(100), nullable=False)
-    productPicture = db.Column("productpicture", db.String(1000))
-    productCategory = db.Column("productcategory", db.String(100), nullable=False)
-    productCurrency = db.Column("productcurrency", db.String(10), nullable=False)
-    productPrice = db.Column("productprice", db.Numeric(7, 2), nullable=False)
-    productBrand = db.Column("productbrand", db.String(100), nullable=False)
-    productDescription = db.Column("productdescription", db.String(1000))
-    productStock = db.Column("productStock", db.Integer, nullable=False)
-    productSupplier = db.Column("productSupplier", db.String(128), nullable=False)
+    # primary key
+    productID           = db.Column("productid", db.Integer, primary_key=True, autoincrement=True)
+
+    # values which cannot be null
+    productName         = db.Column("productname", db.String(100), nullable=False)
+    productCategory     = db.Column("productcategory", db.String(100), nullable=False)
+    productCurrency     = db.Column("productcurrency", db.String(10), nullable=False)
+    productPrice        = db.Column("productprice", db.Numeric(7, 2), nullable=False)
+    productBrand        = db.Column("productbrand", db.String(100), nullable=False)
+    productStock        = db.Column("productStock", db.Integer, nullable=False)
+    productSupplier     = db.Column("productSupplier", db.String(128), nullable=False)
+
+    # values which can be null
+    productDescription  = db.Column("productdescription", db.String(1000))
+    productPicture      = db.Column("productpicture", db.String(1000))
 
     def __init__(self, prodName: str, prodCategory: str, prodCurrency: str, prodPrice: float, prodBrand: str, prodStock: int, prodSupplier: str, prodDescription: str = None, prodPic: str = None):
         self.productName        = prodName
-        self.productPicture     = prodPic
         self.productCategory    = prodCategory
         self.productCurrency    = prodCurrency
 

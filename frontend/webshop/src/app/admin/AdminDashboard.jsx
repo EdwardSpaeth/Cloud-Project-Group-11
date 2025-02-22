@@ -20,6 +20,7 @@ const AdminDashboard = () => {
     materials: "",
     colors: "",
     stock: "",
+    image: "",
   });
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [modal, setModal] = useState({
@@ -80,9 +81,9 @@ const AdminDashboard = () => {
     const fetchProducts = async () => {
       try {
         const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
-        if (!response.ok) throw new Error("Error fetching products");
+        if (!response.ok) throw new Error("Failed to load products");
         const data = await response.json();
-        const dataWithIds = data.map((prod, index) => ({ ...prod, id: index + 1 }));
+        const dataWithIds = data.map((prod) => ({ ...prod, id: prod.id }));
         setProducts(dataWithIds);
         const initialEdits = {};
         dataWithIds.forEach((prod) => {
@@ -91,7 +92,7 @@ const AdminDashboard = () => {
         setEditedProducts(initialEdits);
         setLoading(false);
       } catch (err) {
-        setError("Failed to load products");
+        setError(err.message);
         setLoading(false);
       }
     };
@@ -145,7 +146,7 @@ const AdminDashboard = () => {
           body: JSON.stringify(updatedData),
         }
       );
-
+      
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
 
@@ -221,6 +222,7 @@ const AdminDashboard = () => {
         materials: "",
         colors: "",
         stock: "",
+        image: "",
       });
       setShowNewProductForm(false);
 
