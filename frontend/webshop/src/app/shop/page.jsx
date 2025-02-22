@@ -1,11 +1,21 @@
-"use client"
+"use client";
 
-import ProductList from './components/ProductList';
-import ProductFilters from './components/ProductFilters';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import ProductList from "./components/ProductList";
+import ProductFilters from "./components/ProductFilters";
+import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function ShopPage() {
+  const [category, setCategory] = useState("All");
+  const [maxPrice, setMaxPrice] = useState(1000);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const handleFilterChange = (newFilters) => {
+    setCategory(newFilters.category);
+    setMaxPrice(newFilters.price);
+    setSelectedColors(newFilters.colors);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-screen-2xl mx-auto">
@@ -25,7 +35,9 @@ export default function ShopPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
-                <h1 className="text-5xl font-light text-white mb-4">Modern Collection</h1>
+                <h1 className="text-5xl font-light text-white mb-4">
+                  Modern Collection
+                </h1>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
@@ -33,21 +45,31 @@ export default function ShopPage() {
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               >
                 <p className="text-gray-200 text-lg max-w-xl">
-                  Discover our carefully curated selection of contemporary furniture pieces.
+                  Discover our carefully curated selection of contemporary
+                  furniture pieces.
                 </p>
               </motion.div>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-8">
             <aside className="lg:w-64 flex-shrink-0">
-              <ProductFilters />
+              <ProductFilters
+                category={category}
+                maxPrice={maxPrice}
+                selectedColors={selectedColors}
+                onFilterChange={handleFilterChange}
+              />
             </aside>
+
             <main className="flex-1">
-              <ProductList />
+              <ProductList
+                category={category}
+                maxPrice={maxPrice}
+                selectedColors={selectedColors}
+              />
             </main>
           </div>
         </div>
