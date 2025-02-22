@@ -12,18 +12,18 @@ const truncate = (string, maxLength) => {
 
 const ProductCard = ({ product, viewType }) => {
   const { addToCart } = useCart();
-
   const imageUrl = `/images/${product.pictureUrl}`;
 
   if (viewType === 'list') {
-    // List view layout
     return (
-      <div className="flex w-full max-w-4xl h-48 bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
-        <img
-          src={imageUrl}
-          alt={product.name}
-          className="object-cover w-48 h-full"
-        />
+      <div className="flex flex-col md:flex-row w-full bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
+        <div className="w-full md:w-48 h-48">
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div className="flex flex-col justify-between p-4 w-full">
           <div>
             <h3 className="font-semibold text-xl text-gray-800">{product.name}</h3>
@@ -32,43 +32,46 @@ const ProductCard = ({ product, viewType }) => {
               {truncate(product.description, 150)}
             </p>
           </div>
-          <div className="flex items-center">
-            <button
-              onClick={() => addToCart(product)}
-              className="bg-[#f6e6e3] hover:bg-[#f6e6e3] text-gray-800 px-4 py-2 rounded-full"
-            >
-              Add to Cart
-            </button>
-            <p className="ml-4 text-sm text-gray-600">
+          <div className="flex flex-wrap items-center gap-4 mt-4">
+            <p className="text-sm text-gray-600 font-medium">
               {product.currency}{product.price}
             </p>
+            <button
+              onClick={() => addToCart(product)}
+              className="flex items-center gap-2 bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800 px-4 py-2 rounded-full transition-colors"
+            >
+              <FiShoppingCart />
+              <span>Add to Cart</span>
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Grid view layout
   return (
-    <div className="flex flex-col w-full max-w-xs h-96 bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
-      <img
-        src={imageUrl}
-        alt={product.name}
-        className="object-cover w-full h-48"
-      />
-      <div className="flex flex-col flex-grow p-4">
-        <h3 className="font-semibold text-lg text-gray-800">{product.name}</h3>
+    <div className="flex flex-col bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden h-full">
+      <div className="aspect-square w-full relative">
+        <img
+          src={imageUrl}
+          alt={product.name}
+          className="object-cover w-full h-full"
+        />
+      </div>
+      <div className="flex flex-col p-4 flex-grow">
+        <h3 className="font-semibold text-lg text-gray-800 line-clamp-1">{product.name}</h3>
         <p className="text-sm text-gray-500">{product.category}</p>
-        <p className="mt-1 text-sm text-gray-700 flex-grow">
+        <p className="mt-1 text-sm text-gray-700 line-clamp-2">
           {truncate(product.description, 100)}
         </p>
-        <div className="mt-1 flex items-center">
-          <p className="text-sm text-gray-600">
+        <div className="mt-auto pt-4 flex items-center justify-between">
+          <p className="text-sm font-medium text-gray-600">
             {product.currency}{product.price}
           </p>
           <button
             onClick={() => addToCart(product)}
-            className="ml-auto bg-[#f6e6e3] hover:bg-[#f6e6e3] text-gray-800 p-2 rounded-full"
+            className="flex items-center gap-2 bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800 p-2 rounded-full transition-colors"
+            aria-label="Add to cart"
           >
             <FiShoppingCart />
           </button>

@@ -16,7 +16,11 @@ export function CartProvider({ children }) {
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
-        return [...prevItems, { ...product, quantity: 1 }];
+        return [...prevItems, {
+          ...product,
+          quantity: 1,
+          imageUrl: product.pictureUrl || product.imageUrl
+        }];
       }
     });
   };

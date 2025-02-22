@@ -61,7 +61,7 @@ export default function ProductList() {
             `Showing ${filteredProducts.length} products`
           )}
         </div>
-        
+
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <input
             type="text"
@@ -112,14 +112,15 @@ export default function ProductList() {
         <motion.div
           className={
             view === "list"
-              ? "grid grid-cols-1 gap-y-4"
-              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10"
+              ? "grid grid-cols-1 gap-4"
+              : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6"
           }
           layout
         >
           {filteredProducts.map((product, index) => (
             <motion.div
               key={product.id}
+              className={view === "list" ? "w-full" : "h-full"}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}

@@ -79,7 +79,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5636/products/0");
+        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
         if (!response.ok) throw new Error("Error fetching products");
         const data = await response.json();
         const dataWithIds = data.map((prod, index) => ({ ...prod, id: index + 1 }));
@@ -138,7 +138,7 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
-      const response = await fetch(`http://localhost:5636/products/${id}`,
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -162,7 +162,7 @@ const AdminDashboard = () => {
   const deleteSelectedProducts = async () => {
     let data = { ids: selectedProducts };
     try {
-      const response = await fetch(`http://localhost:5636/products`, {
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -176,7 +176,7 @@ const AdminDashboard = () => {
       setSelectedProducts([]);
 
       alert(server_answer.message);
-    } catch(err) {
+    } catch (err) {
       alert(err.message);
     }
   };
@@ -196,7 +196,7 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("http://localhost:5636/products",
+      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -268,7 +268,7 @@ const AdminDashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h2 className="text-3xl font-bold mb-4 md:mb-0">Product Overview</h2>
         <div className="flex gap-4">
-        <button onClick={handleToggleMessages} className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
+          <button onClick={handleToggleMessages} className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
             {showMessages ? "Hide Messages" : "Messages"}
           </button>
           <button
@@ -295,42 +295,42 @@ const AdminDashboard = () => {
       </div>
 
       {showMessages && (
-  <div className="mt-4 mb-6 p-4 border rounded bg-white">
-    <h3 className="text-xl font-semibold mb-2">Messages</h3>
-    {messages.length === 0 ? (
-      <div>No messages found.</div>
-    ) : (
-      <table className="min-w-full mb-4">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">Email</th>
-            <th className="px-4 py-2 text-left">Subject</th>
-            <th className="px-4 py-2 text-left">Message</th>
-          </tr>
-        </thead>
-        <tbody>
-        {messages.map((msg) => (
-    <tr key={msg.id} className="border-b">
-      <td className="px-4 py-2">{msg.name}</td>
-      <td className="px-4 py-2">{msg.email}</td>
-      <td className="px-4 py-2">{msg.subject}</td>
-      <td className="px-4 py-2">{msg.message}</td>
-      <td className="px-4 py-2">
-        <button
-          onClick={() => deleteMessage(msg.id)}
-          className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm"
-        >
-          Delete
-        </button>
-      </td>
-    </tr>
-  ))}
-        </tbody>
-      </table>
-    )}
-  </div>
-)}
+        <div className="mt-4 mb-6 p-4 border rounded bg-white">
+          <h3 className="text-xl font-semibold mb-2">Messages</h3>
+          {messages.length === 0 ? (
+            <div>No messages found.</div>
+          ) : (
+            <table className="min-w-full mb-4">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left">Name</th>
+                  <th className="px-4 py-2 text-left">Email</th>
+                  <th className="px-4 py-2 text-left">Subject</th>
+                  <th className="px-4 py-2 text-left">Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {messages.map((msg) => (
+                  <tr key={msg.id} className="border-b">
+                    <td className="px-4 py-2">{msg.name}</td>
+                    <td className="px-4 py-2">{msg.email}</td>
+                    <td className="px-4 py-2">{msg.subject}</td>
+                    <td className="px-4 py-2">{msg.message}</td>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => deleteMessage(msg.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
 
       {/* Low Stock Alert */}
       {lowStockProducts.length > 0 && (

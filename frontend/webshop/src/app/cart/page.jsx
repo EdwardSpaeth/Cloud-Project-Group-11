@@ -64,58 +64,64 @@ export default function CartPage() {
           <p className="text-center text-gray-500 text-xl">Your cart is empty</p>
         </div>
       ) : (
-        <div className="w-full">
-          <h1 className="text-3xl font-bold mb-4 text-center">Your Shopping Cart</h1>
-          {/* Email Input */}
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-              Email Address:
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="w-full max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6 text-center">Your Shopping Cart</h1>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Cart Items Section */}
-            <div className="space-y-4">
+            <div className="lg:col-span-2 space-y-4">
               {items.map((item, index) => (
                 <CartItem key={item.id || index} {...item} />
               ))}
             </div>
 
             {/* Order Summary Section */}
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-              <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
-              <div className="flex justify-between mb-2">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+            <div className="lg:col-span-1">
+              <div className="bg-gray-50 p-6 rounded-xl shadow-sm sticky top-4">
+                <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
+
+                {/* Email input */}
+                <div className="mb-6">
+                  <input
+                    type="email"
+                    id="email"
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email to checkout"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span>€{subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Shipping</span>
+                    <span className="text-gray-500">Calculated at checkout</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-3 mt-3">
+                    <div className="flex justify-between font-semibold text-lg">
+                      <span>Total</span>
+                      <span>€{subtotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleCheckout}
+                  disabled={!email}
+                  className="w-full mt-6 bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Proceed to Checkout
+                </button>
               </div>
-              <div className="flex justify-between mb-4">
-                <span>Shipping</span>
-                <span className="text-gray-500">Calculated at checkout</span>
-              </div>
-              <hr className="border-gray-300 mb-4" />
-              <div className="flex justify-between font-bold text-lg mb-6">
-                <span>Total</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <button
-                onClick={handleCheckout}
-                className="w-full border-2 border-black text-black bg-transparent py-3 rounded-lg hover:bg-black hover:text-white transition-colors duration-300"
-                disabled={!email}
-              >
-                Proceed to Checkout
-              </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }

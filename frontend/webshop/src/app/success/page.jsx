@@ -32,11 +32,6 @@ function SuccessContent() {
                 <p className="mt-2 text-sm text-gray-600">
                     Thank you for your purchase! Your payment has been processed successfully.
                 </p>
-                {sessionId && (
-                    <p className="mt-2 text-sm text-gray-600">
-                        Order ID: {sessionId}
-                    </p>
-                )}
                 <div className="mt-5 space-y-3">
                     <Link
                         href="/orders"

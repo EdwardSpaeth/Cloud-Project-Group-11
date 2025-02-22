@@ -28,8 +28,8 @@ export default function ProductFilters() {
             step="50"
           />
           <div className="flex justify-between text-sm text-gray-500 mt-2">
-            <span>$0</span>
-            <span>$1000+</span>
+            <span>€0</span>
+            <span>€1000+</span>
           </div>
         </div>
       </div>
