@@ -243,20 +243,38 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle input change for new product form
   const handleNewProductChange = (field, value) => {
-    setNewProduct((prev) => ({ ...prev, [field]: value }));
+    let processedValue = value;
+
+    if (field === "price") {
+      // Convert to float and handle invalid input
+      const floatValue = parseFloat(value);
+      processedValue = isNaN(floatValue) ? 0 : floatValue;
+    } else if (field === "stock") {
+      // Convert to integer and handle invalid input
+      const intValue = parseInt(value);
+      processedValue = isNaN(intValue) ? 0 : intValue;
+    }
+
+    setNewProduct(prev => ({ ...prev, [field]: processedValue }));
   };
 
   // Add new product via the backend
   const addProduct = async () => {
+    // Validate price is a number
+    if (typeof newProduct.price !== 'number' || isNaN(newProduct.price)) {
+      alert('Please enter a valid price');
+      return;
+    }
+
     const productToAdd = {
       ...newProduct,
       price: parseFloat(newProduct.price),
       stock: parseInt(newProduct.stock),
-      materials: newProduct.materials.split(",").map((m) => m.trim()),
-      colors: newProduct.colors.split(",").map((c) => c.trim()),
+      materials: newProduct.materials ? newProduct.materials.split(",").map((m) => m.trim()) : [],
+      colors: newProduct.colors ? newProduct.colors.split(",").map((c) => c.trim()) : [],
     };
+
     try {
       const response = await fetch(
         "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products",
@@ -270,14 +288,15 @@ const AdminDashboard = () => {
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
 
-      const newKey = products.length
-        ? Math.max(...products.map((p) => p.key)) + 1
-        : 1;
+      const newKey = products.length ? Math.max(...products.map((p) => p.key)) + 1 : 1;
       const addedProduct = {
         ...server_answer,
         key: newKey,
         backendId: server_answer.id,
         image: server_answer.pictureUrl,
+        // Ensure materials and colors are arrays
+        materials: Array.isArray(server_answer.materials) ? server_answer.materials : [],
+        colors: Array.isArray(server_answer.colors) ? server_answer.colors : [],
       };
 
       setProducts((prev) => [...prev, addedProduct]);
@@ -460,24 +479,24 @@ const AdminDashboard = () => {
           <h3 className="text-2xl font-bold mb-4">New Product</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { label: "Name", field: "name" },
-              { label: "Category", field: "category" },
-              { label: "Description", field: "description" },
-              { label: "Price", field: "price" },
-              { label: "Currency", field: "currency" },
-              { label: "Brand", field: "brand" },
-              { label: "Materials (comma separated)", field: "materials" },
-              { label: "Colors (comma separated)", field: "colors" },
-              { label: "Stock", field: "stock" },
+              { label: "Name", field: "name", type: "text" },
+              { label: "Category", field: "category", type: "text" },
+              { label: "Description", field: "description", type: "text" },
+              { label: "Price", field: "price", type: "number", step: "0.01", min: "0" },
+              { label: "Currency", field: "currency", type: "text" },
+              { label: "Brand", field: "brand", type: "text" },
+              { label: "Materials (comma separated)", field: "materials", type: "text" },
+              { label: "Colors (comma separated)", field: "colors", type: "text" },
+              { label: "Stock", field: "stock", type: "number", min: "0" },
             ].map((item) => (
               <div key={item.field}>
                 <label className="block font-semibold">{item.label}</label>
                 <input
-                  type="text"
+                  type={item.type}
+                  step={item.step}
+                  min={item.min}
                   value={newProduct[item.field]}
-                  onChange={(e) =>
-                    handleNewProductChange(item.field, e.target.value)
-                  }
+                  onChange={(e) => handleNewProductChange(item.field, e.target.value)}
                   className="w-full border rounded p-2 mt-1"
                 />
               </div>
