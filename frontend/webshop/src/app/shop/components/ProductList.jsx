@@ -55,7 +55,7 @@ export default function ProductList({ category, maxPrice, selectedColors }) {
     "bg-black": "black",
     "bg-white": "white",
     "bg-gray-300": "gray",
-    "bg-brown-500": "brown",
+    "bg-amber-500": ["amber", "brown"],
     "bg-blue-500": "blue",
     "bg-yellow-500": "yellow",
   };
