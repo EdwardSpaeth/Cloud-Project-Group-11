@@ -80,8 +80,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5636/products/0");
-        if (!response.ok) throw new Error("Error fetching products");
+        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
+        if (!response.ok) throw new Error("Failed to load products");
         const data = await response.json();
         const dataWithIds = data.map((prod) => ({ ...prod, id: prod.id }));
         setProducts(dataWithIds);
@@ -92,7 +92,7 @@ const AdminDashboard = () => {
         setEditedProducts(initialEdits);
         setLoading(false);
       } catch (err) {
-        setError("Failed to load products");
+        setError(err.message);
         setLoading(false);
       }
     };
@@ -139,14 +139,14 @@ const AdminDashboard = () => {
   const updateProduct = async (id) => {
     const updatedData = editedProducts[id];
     try {
-      const response = await fetch(`http://localhost:5636/products/${id}`,
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedData),
         }
       );
-
+      
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
 
@@ -163,7 +163,7 @@ const AdminDashboard = () => {
   const deleteSelectedProducts = async () => {
     let data = { ids: selectedProducts };
     try {
-      const response = await fetch(`http://localhost:5636/products`, {
+      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -197,7 +197,7 @@ const AdminDashboard = () => {
       colors: newProduct.colors.split(",").map((c) => c.trim()),
     };
     try {
-      const response = await fetch("http://localhost:5636/products",
+      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
