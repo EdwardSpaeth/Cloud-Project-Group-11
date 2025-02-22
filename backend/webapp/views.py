@@ -340,6 +340,7 @@ def get_description(id: int):
         )
 
         product_info = {
+            "id": product.productID,
             "name": product.productName,
             "category": product.productCategory,
             "price": str(product.productPrice),

@@ -82,7 +82,7 @@ const AdminDashboard = () => {
         const response = await fetch("http://localhost:5636/products/0");
         if (!response.ok) throw new Error("Error fetching products");
         const data = await response.json();
-        const dataWithIds = data.map((prod, index) => ({ ...prod, id: index + 1 }));
+        const dataWithIds = data.map((prod) => ({ ...prod, id: prod.id }));
         setProducts(dataWithIds);
         const initialEdits = {};
         dataWithIds.forEach((prod) => {
