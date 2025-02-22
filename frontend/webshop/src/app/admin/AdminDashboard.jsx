@@ -247,8 +247,8 @@ const AdminDashboard = () => {
     let processedValue = value;
 
     if (field === "price") {
-      // Convert to float and handle invalid input
-      const floatValue = parseFloat(value);
+      const normalizedValue = value.replace(",", ".");
+      const floatValue = parseFloat(normalizedValue);
       processedValue = isNaN(floatValue) ? 0 : floatValue;
     } else if (field === "stock") {
       // Convert to integer and handle invalid input
