@@ -3,13 +3,13 @@ import json
 import stripe
 import os
 import random
-import requests
-from flask import Flask, request, jsonify, render_template_string
+
+from flask import request, jsonify, render_template_string
 from weasyprint import HTML
 from azure.communication.email import EmailClient
 import base64
 
-from . import app, request, db, jsonify
+from . import app, db
 from .entities import (
     Product,
     ProductColor,
@@ -187,7 +187,7 @@ RECEIPT_TEMPLATE = """
 @app.post("/products")
 def add_prod_to_list():
     if not request.is_json:
-        return jsonify({"message": "Data was not in json format"}), 400
+        return jsonify({"message": "Data was not in json format."}), 400
 
     # here we get the data from the frontend
     prod_to_add: str = request.get_json()
@@ -229,14 +229,7 @@ def add_prod_to_list():
     try:
         db.session.commit()
     except:
-        return (
-            jsonify(
-                {
-                    "message": "Something went wront when adding the data into the database"
-                }
-            ),
-            500,
-        )
+        return jsonify({"message": "Something went wrong when saving the product."}), 500
 
     return jsonify({"message": "Product added to list."}), 200
 
@@ -312,7 +305,6 @@ def delete_products():
 
     return jsonify({"message": "Product(s) deleted from list."}), 200
 
-
 @app.post("/customers")
 def create_customer():
     customer = Customer(
@@ -374,7 +366,6 @@ def get_description(id: int):
         product_info = get_product_info(product)
         return json.dumps(product_info), 200
 
-
 @app.route("/dbtest")
 def serve_home():
     for x in [
@@ -385,8 +376,6 @@ def serve_home():
         Order.query.all(),
         OrderItem.query.all(),
         Supplier.query.all(),
-        # Inventory.query.all(),
-        Supplier.query.all(),
     ]:
         print(x)
     return "Okay"
@@ -395,7 +384,6 @@ def serve_home():
 @app.route("/")
 def serve_default():
     return "Connection Successful!", 200
-
 
 @app.post("/messages")
 def create_message():
@@ -415,23 +403,9 @@ def create_message():
         db.session.add(message)
         db.session.commit()
     except:
-        return (
-            jsonify(
-                {
-                    "message": "Could not safe message. Please leave us a call or try later."
-                }
-            ),
-            500,
-        )
+        return jsonify({"message": "Could not safe message. Please leave us a call or try later."}),500,
 
-    return (
-        jsonify(
-            {
-                "message": "Message successfully safed. We will contact you as soon as possible."
-            }
-        ),
-        200,
-    )
+    return jsonify({"message": "Message successfully safed. We will contact you as soon as possible."}),200,
 
 
 @app.get("/messages")
@@ -439,14 +413,7 @@ def get_messages():
     try:
         messages = Message.query.all()
     except:
-        return (
-            jsonify(
-                {
-                    "message": "Could not load messages. Please contact IT department or try later."
-                }
-            ),
-            500,
-        )
+        return jsonify({"message": "Could not load messages. Please contact IT department or try later."}),500,
 
     messages_list = [
         {
@@ -487,7 +454,7 @@ def generate_receipt_pdf(html_content):
     return pdf
 
 
-@app.route("/create-checkout-session", methods=["POST"])
+@app.post("/create-checkout-session")
 def create_checkout_session():
     try:
         data = request.json
@@ -583,7 +550,7 @@ def send_receipt_via_azure(customer_email, subject, html_content, pdf_content):
         return False
 
 
-@app.route("/webhook", methods=["POST"])
+@app.post("/webhook")
 def stripe_webhook():
     payload = request.get_data(as_text=True)
     sig_header = request.headers.get("Stripe-Signature")
