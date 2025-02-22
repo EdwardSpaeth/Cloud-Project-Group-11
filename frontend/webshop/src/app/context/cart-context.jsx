@@ -1,61 +1,66 @@
-"use client"
+'use client';
+import { createContext, useContext, useState } from 'react';
 
-import { createContext, useContext, useState } from "react"
+const CartContext = createContext();
 
-const CartContext = createContext(undefined)
-
-// For demo: No backend cart URL exists, so we start with an empty cart
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([])
+  const [cartItems, setCartItems] = useState([]);
 
   const addToCart = (product) => {
-    setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      } else {
-        return [...prevItems, {
-          ...product,
-          quantity: 1,
-          imageUrl: product.pictureUrl || product.imageUrl
-        }];
+    setCartItems(currentItems => {
+      const existingItem = currentItems.find(item => item.id === product.id);
+      const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+
+      if (currentQuantity >= product.stock) {
+        return currentItems;
       }
+      if (existingItem) {
+        return currentItems.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...currentItems, { ...product, quantity: 1 }];
     });
   };
 
   // Remove an item from the cart locally
   const removeFromCart = (id) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id))
-  }
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
 
   // Update the quantity of an item locally. If newQuantity < 1, remove the item.
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
-      removeFromCart(id)
+      removeFromCart(id);
     } else {
-      setItems((prevItems) =>
+      setCartItems((prevItems) =>
         prevItems.map((item) =>
           item.id === id ? { ...item, quantity: newQuantity } : item
         )
-      )
+      );
     }
-  }
+  };
 
   // Clear the entire cart locally
-  const clearCart = () => setItems([])
+  const clearCart = () => setCartItems([]);
 
-  const cartTotal = items.reduce(
+  const cartTotal = cartItems.reduce(
     (total, item) => total + parseFloat(item.price) * item.quantity,
     0
-  )
-  const itemCount = items.reduce((count, item) => count + item.quantity, 0)
+  );
+
+  const itemCount = cartItems.reduce(
+    (count, item) => count + item.quantity,
+    0
+  );
 
   return (
     <CartContext.Provider
       value={{
-        items,
+        cartItems,
         addToCart,
         removeFromCart,
         updateQuantity,
@@ -66,13 +71,13 @@ export function CartProvider({ children }) {
     >
       {children}
     </CartContext.Provider>
-  )
+  );
 }
 
-export function useCart() {
-  const context = useContext(CartContext)
-  if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider")
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
   }
-  return context
-}
+  return context;
+};

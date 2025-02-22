@@ -10,8 +10,7 @@ import { useCart } from "./context/cart-context";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { items } = useCart();
-  const itemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const { cartItems, itemCount } = useCart();
 
   return (
     <header className="bg-white shadow-md relative">

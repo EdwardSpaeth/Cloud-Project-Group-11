@@ -11,8 +11,26 @@ const truncate = (string, maxLength) => {
 };
 
 const ProductCard = ({ product, viewType }) => {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const imageUrl = `/images/${product.pictureUrl}`;
+
+  const currentCartQuantity = cartItems?.find(item => item.id === product.id)?.quantity || 0;
+
+  const isOutOfStock = product.stock === 0;
+  const reachedStockLimit = currentCartQuantity >= product.stock;
+  const isDisabled = isOutOfStock || reachedStockLimit;
+
+  const getButtonText = () => {
+    if (isOutOfStock) return "Out of Stock";
+    if (reachedStockLimit) return "Stock Limit Reached";
+    return "Add to Cart";
+  };
+
+  const handleAddToCart = () => {
+    if (!isDisabled) {
+      addToCart(product);
+    }
+  };
 
   if (viewType === 'list') {
     return (
@@ -37,11 +55,15 @@ const ProductCard = ({ product, viewType }) => {
               {product.currency}{product.price}
             </p>
             <button
-              onClick={() => addToCart(product)}
-              className="flex items-center gap-2 bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800 px-4 py-2 rounded-full transition-colors"
+              onClick={handleAddToCart}
+              disabled={isDisabled}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${isDisabled
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800'
+                }`}
             >
               <FiShoppingCart />
-              <span>Add to Cart</span>
+              <span>{getButtonText()}</span>
             </button>
           </div>
         </div>
@@ -69,9 +91,14 @@ const ProductCard = ({ product, viewType }) => {
             {product.currency}{product.price}
           </p>
           <button
-            onClick={() => addToCart(product)}
-            className="flex items-center gap-2 bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800 p-2 rounded-full transition-colors"
-            aria-label="Add to cart"
+            onClick={handleAddToCart}
+            disabled={isDisabled}
+            className={`flex items-center gap-2 p-2 rounded-full transition-colors ${isDisabled
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              : 'bg-[#f6e6e3] hover:bg-[#f6e6e3]/80 text-gray-800'
+              }`}
+            aria-label={getButtonText()}
+            title={getButtonText()}
           >
             <FiShoppingCart />
           </button>
