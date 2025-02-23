@@ -39,7 +39,7 @@ const ProductCard = ({ product, viewType }) => {
   };
 
   const handleCardClick = () => {
-    router.push(`/shop/product/${product.id}`);
+    router.push(`/shop/${product.id}`);
   };
 
   if (viewType === 'list') {
