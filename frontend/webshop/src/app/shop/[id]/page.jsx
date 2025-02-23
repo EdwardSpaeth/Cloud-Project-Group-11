@@ -55,15 +55,15 @@ export default function ProductDetail() {
 	return (
 		<div className="max-w-4xl mx-auto p-6">
 			<div className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
-				{/* <div className="relative w-full md:w-1/2 h-96">
+				<div className="relative w-full md:w-1/2 h-96">
                     <Image
-                        src={product.pictureUrl}
+                        src={"/images/" + product.pictureUrl}
                         alt={product.name}
                         layout="fill"
                         objectFit="cover"
                         className="rounded-lg"
                     />
-                </div> */}
+                </div>
 
 				<div className="p-6 flex flex-col justify-between w-full md:w-1/2">
 					<div>
