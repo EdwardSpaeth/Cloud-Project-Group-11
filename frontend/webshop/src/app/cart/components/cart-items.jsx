@@ -4,10 +4,10 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { useCart } from "../../context/cart-context"
 
-export function CartItem({ id, name, price, quantity, imageUrl }) {
+export function CartItem({ id, name, price, quantity, pictureUrl }) {
   const { updateQuantity, removeFromCart } = useCart()
   const priceNum = typeof price === "number" ? price : parseFloat(price)
-  const imagePath = imageUrl ? `/images/${imageUrl}` : '/images/placeholder.webp'
+  const imagePath = `/images/${pictureUrl}`
 
   return (
     <motion.div
@@ -21,8 +21,8 @@ export function CartItem({ id, name, price, quantity, imageUrl }) {
         <Image
           src={imagePath}
           alt={name || 'Product image'}
-          width={96}
-          height={96}
+          fill
+          sizes="(max-width: 96px) 100vw, 96px"
           style={{ objectFit: "cover" }}
           className="hover:scale-105 transition-transform duration-300"
           onError={(e) => {

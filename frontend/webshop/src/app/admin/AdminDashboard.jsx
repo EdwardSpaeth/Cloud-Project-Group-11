@@ -25,7 +25,7 @@ const AdminDashboard = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [modal, setModal] = useState({
     isOpen: false,
-    productId: null,
+    productKey: null,
     field: "",
   });
 
@@ -39,11 +39,11 @@ const AdminDashboard = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages");
-
+      const response = await fetch(
+        "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages"
+      );
       const server_message = await response.json();
       if (!response.ok) throw new Error(server_message.message);
-
       setMessages(server_message);
     } catch (err) {
       alert(err.message);
@@ -61,9 +61,12 @@ const AdminDashboard = () => {
 
   const deleteMessage = async (id) => {
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/messages/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
@@ -80,14 +83,33 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0");
+        const response = await fetch(
+          "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/0"
+        );
         if (!response.ok) throw new Error("Failed to load products");
         const data = await response.json();
-        const dataWithIds = data.map((prod) => ({ ...prod, id: prod.id }));
-        setProducts(dataWithIds);
+
+        // Create an internal key and store the original backend id separately.
+        const dataWithKeys = data.map((prod, index) => ({
+          key: index + 1, // internal key that remains stable
+          backendId: prod.id, // original id from the backend
+          name: prod.name,
+          category: prod.category,
+          description: prod.description,
+          price: prod.price,
+          currency: prod.currency,
+          brand: prod.brand,
+          materials: Array.isArray(prod.materials) ? prod.materials : [],
+          colors: Array.isArray(prod.colors) ? prod.colors : [],
+          stock: prod.stock,
+          image: prod.pictureUrl,
+        }));
+
+        setProducts(dataWithKeys);
+
         const initialEdits = {};
-        dataWithIds.forEach((prod) => {
-          initialEdits[prod.id] = { ...prod };
+        dataWithKeys.forEach((prod) => {
+          initialEdits[prod.key] = { ...prod };
         });
         setEditedProducts(initialEdits);
         setLoading(false);
@@ -119,40 +141,70 @@ const AdminDashboard = () => {
   }, []);
 
   // Handle changes for editable fields
-  const handleFieldChange = (id, field, value) => {
-    // check if the updated field is the price field and parse the string to a float
-    let num_value = 0;
-    if (field == "price") {
-      num_value = parseFloat(value);
+  const handleFieldChange = (key, field, value) => {
+    let processedValue = value;
+
+    if (field === "price") {
+      processedValue = parseFloat(value) || 0;
+    } else if (field === "stock") {
+      processedValue = parseInt(value) || 0;
+    } else if (field === "materials" || field === "colors") {
+      processedValue =
+        typeof value === "string"
+          ? value.split(",").map((item) => item.trim())
+          : value;
     }
+
+    // Prevent changes to the internal key or backendId
+    if (field === "key" || field === "backendId") return;
 
     setEditedProducts((prev) => ({
       ...prev,
-      [id]: {
-        ...prev[id],
-        [field]: num_value,
+      [key]: {
+        ...prev[key],
+        [field]: processedValue,
       },
     }));
   };
 
-  // Update product in the backend and locally
-  const updateProduct = async (id) => {
-    const updatedData = editedProducts[id];
+  const updateProduct = async (key) => {
+    const productToUpdate = editedProducts[key];
+    const backendId = productToUpdate.backendId;
+    const updatedData = {
+      ...productToUpdate,
+      pictureUrl: productToUpdate.image,
+      price: parseFloat(productToUpdate.price),
+    };
+
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${id}`,
+      const response = await fetch(
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products/${backendId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedData),
         }
       );
-      
+
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
 
+      const updatedProduct = {
+        ...updatedData,
+        key: key,
+        backendId: backendId,
+        image: updatedData.pictureUrl,
+      };
+
       setProducts((prev) =>
-        prev.map((p) => (p.id === id ? updatedData : p))
+        prev.map((p) => (p.key === key ? updatedProduct : p))
       );
+
+      setEditedProducts((prev) => ({
+        ...prev,
+        [key]: updatedProduct,
+      }));
+
       alert(server_answer.message);
     } catch (err) {
       alert(err.message);
@@ -161,19 +213,28 @@ const AdminDashboard = () => {
 
   // Function to delete selected products
   const deleteSelectedProducts = async () => {
-    let data = { ids: selectedProducts };
+    const backendIds = products
+      .filter((p) => selectedProducts.includes(p.key))
+      .map((p) => p.backendId);
+
+    const data = { ids: backendIds };
     try {
-      const response = await fetch(`https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+      const response = await fetch(
+        `https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
       const server_answer = await response.json();
       if (!response.ok) {
         throw new Error(server_answer.message);
       }
 
-      setProducts((prev) => prev.filter((p) => !selectedProducts.includes(p.id)));
+      setProducts((prev) =>
+        prev.filter((p) => !selectedProducts.includes(p.key))
+      );
       setSelectedProducts([]);
 
       alert(server_answer.message);
@@ -182,22 +243,41 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle input change for new product form
   const handleNewProductChange = (field, value) => {
-    setNewProduct((prev) => ({ ...prev, [field]: value }));
+    let processedValue = value;
+
+    if (field === "price") {
+      const normalizedValue = value.replace(",", ".");
+      const floatValue = parseFloat(normalizedValue);
+      processedValue = isNaN(floatValue) ? 0 : floatValue;
+    } else if (field === "stock") {
+      // Convert to integer and handle invalid input
+      const intValue = parseInt(value);
+      processedValue = isNaN(intValue) ? 0 : intValue;
+    }
+
+    setNewProduct(prev => ({ ...prev, [field]: processedValue }));
   };
 
-  // Add new product via the backend (doesn't work, is just a skeleton)
+  // Add new product via the backend
   const addProduct = async () => {
+    // Validate price is a number
+    if (typeof newProduct.price !== 'number' || isNaN(newProduct.price)) {
+      alert('Please enter a valid price');
+      return;
+    }
+
     const productToAdd = {
       ...newProduct,
       price: parseFloat(newProduct.price),
       stock: parseInt(newProduct.stock),
-      materials: newProduct.materials.split(",").map((m) => m.trim()),
-      colors: newProduct.colors.split(",").map((c) => c.trim()),
+      materials: newProduct.materials ? newProduct.materials.split(",").map((m) => m.trim()) : [],
+      colors: newProduct.colors ? newProduct.colors.split(",").map((c) => c.trim()) : [],
     };
+
     try {
-      const response = await fetch("https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products",
+      const response = await fetch(
+        "https://lowtechbackendcontainer.nicemeadow-ec141575.germanywestcentral.azurecontainerapps.io/products",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -208,10 +288,19 @@ const AdminDashboard = () => {
       const server_answer = await response.json();
       if (!response.ok) throw new Error(server_answer.message);
 
-      const addedProduct = await response.json();
-      addedProduct.id = products.length + 1;
+      const newKey = products.length ? Math.max(...products.map((p) => p.key)) + 1 : 1;
+      const addedProduct = {
+        ...server_answer,
+        key: newKey,
+        backendId: server_answer.id,
+        image: server_answer.pictureUrl,
+        // Ensure materials and colors are arrays
+        materials: Array.isArray(server_answer.materials) ? server_answer.materials : [],
+        colors: Array.isArray(server_answer.colors) ? server_answer.colors : [],
+      };
+
       setProducts((prev) => [...prev, addedProduct]);
-      setEditedProducts((prev) => ({ ...prev, [addedProduct.id]: addedProduct }));
+      setEditedProducts((prev) => ({ ...prev, [newKey]: addedProduct }));
       setNewProduct({
         name: "",
         category: "",
@@ -238,17 +327,19 @@ const AdminDashboard = () => {
     router.push("/admin/login");
   };
 
-  const openModal = (id, field) => {
-    setModal({ isOpen: true, productId: id, field });
+  const openModal = (key, field) => {
+    setModal({ isOpen: true, productKey: key, field });
   };
 
   const closeModal = () => {
-    setModal({ isOpen: false, productId: null, field: "" });
+    setModal({ isOpen: false, productKey: null, field: "" });
   };
 
-  const handleSelectProduct = (id) => {
+  const handleSelectProduct = (key) => {
     setSelectedProducts((prev) =>
-      prev.includes(id) ? prev.filter((productId) => productId !== id) : [...prev, id]
+      prev.includes(key)
+        ? prev.filter((productKey) => productKey !== key)
+        : [...prev, key]
     );
   };
 
@@ -256,8 +347,20 @@ const AdminDashboard = () => {
     setImageModalOpen(true);
   };
 
+  const [editImageProduct, setEditImageProduct] = useState(null);
+
+  const openImageModalForEdit = (productKey) => {
+    setEditImageProduct(productKey);
+    setImageModalOpen(true);
+  };
+
   const selectImage = (image) => {
-    setNewProduct((prev) => ({ ...prev, image }));
+    if (editImageProduct) {
+      handleFieldChange(editImageProduct, "image", image);
+      setEditImageProduct(null);
+    } else {
+      setNewProduct((prev) => ({ ...prev, image }));
+    }
     setImageModalOpen(false);
   };
 
@@ -268,9 +371,14 @@ const AdminDashboard = () => {
     <div className="p-4 max-w-full">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold mb-4 md:mb-0">Product Overview</h2>
+        <h2 className="text-3xl font-bold mb-4 md:mb-0">
+          Product Overview
+        </h2>
         <div className="flex gap-4">
-          <button onClick={handleToggleMessages} className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
+          <button
+            onClick={handleToggleMessages}
+            className="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded"
+          >
             {showMessages ? "Hide Messages" : "Messages"}
           </button>
           <button
@@ -355,32 +463,38 @@ const AdminDashboard = () => {
             <span>
               Warning: The following products have low stock:{" "}
               {lowStockProducts
-                .map((p) => `ID ${p.id} (${p.name} - Stock: ${p.stock})`)
+                .map(
+                  (p) =>
+                    `ID ${p.backendId} (${p.name} - Stock: ${p.stock})`
+                )
                 .join(", ")}
             </span>
           </div>
         </div>
       )}
+
       {/* New Product Form */}
       {showNewProductForm && (
         <div className="mb-6 p-6 bg-white rounded shadow-md border">
           <h3 className="text-2xl font-bold mb-4">New Product</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { label: "Name", field: "name" },
-              { label: "Category", field: "category" },
-              { label: "Description", field: "description" },
-              { label: "Price", field: "price" },
-              { label: "Currency", field: "currency" },
-              { label: "Brand", field: "brand" },
-              { label: "Materials (comma separated)", field: "materials" },
-              { label: "Colors (comma separated)", field: "colors" },
-              { label: "Stock", field: "stock" },
+              { label: "Name", field: "name", type: "text" },
+              { label: "Category", field: "category", type: "text" },
+              { label: "Description", field: "description", type: "text" },
+              { label: "Price", field: "price", type: "number", step: "0.01", min: "0" },
+              { label: "Currency", field: "currency", type: "text" },
+              { label: "Brand", field: "brand", type: "text" },
+              { label: "Materials (comma separated)", field: "materials", type: "text" },
+              { label: "Colors (comma separated)", field: "colors", type: "text" },
+              { label: "Stock", field: "stock", type: "number", min: "0" },
             ].map((item) => (
               <div key={item.field}>
                 <label className="block font-semibold">{item.label}</label>
                 <input
-                  type="text"
+                  type={item.type}
+                  step={item.step}
+                  min={item.min}
                   value={newProduct[item.field]}
                   onChange={(e) => handleNewProductChange(item.field, e.target.value)}
                   className="w-full border rounded p-2 mt-1"
@@ -399,13 +513,20 @@ const AdminDashboard = () => {
               </button>
               {newProduct.image && (
                 <div className="mt-2">
-                  <img src={`/images/${newProduct.image}`} alt="Selected" className="w-24 h-24 object-cover rounded" />
+                  <img
+                    src={`/images/${newProduct.image}`}
+                    alt="Selected"
+                    className="w-24 h-24 object-cover rounded"
+                  />
                 </div>
               )}
             </div>
             {/* Submit Button */}
             <div className="col-span-2">
-              <button onClick={addProduct} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+              <button
+                onClick={addProduct}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
                 Add Product
               </button>
             </div>
@@ -413,33 +534,74 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/*Image Selection Modal */}
+      {/* Image Selection Modal */}
       {imageModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-3/4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold mb-4">Select an Image</h3>
-              <button
-                onClick={() => setImageModalOpen(false)}
-                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded"
-              >
-                Close
-              </button>
-            </div>
-            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-              {imageList.map((image, index) => (
-                <img
-                  key={index}
-                  src={`/images/${image}`}
-                  alt="Product"
-                  className="w-24 h-24 object-cover cursor-pointer border border-gray-300 rounded hover:border-blue-500"
-                  onClick={() => selectImage(image)}
-                />
-              ))}
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={() => setImageModalOpen(false)}
+            style={{ zIndex: 40 }}
+          />
+          {/* Modal Content */}
+          <div
+            className="fixed inset-0 flex items-center justify-center p-4"
+            style={{ zIndex: 50 }}
+          >
+            <div
+              className="relative bg-white p-6 rounded shadow-lg w-3/4 max-w-4xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold">
+                  {editImageProduct
+                    ? "Change Product Image"
+                    : "Select an Image"}
+                </h3>
+                <button
+                  onClick={() => setImageModalOpen(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-h-[60vh] overflow-y-auto p-4">
+                {imageList.map((image, index) => (
+                  <div
+                    key={index}
+                    className="aspect-square relative group cursor-pointer hover:opacity-90"
+                    onClick={() => selectImage(image)}
+                  >
+                    <img
+                      src={`/images/${image}`}
+                      alt="Product"
+                      className="w-full h-full object-cover rounded border border-gray-200"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded">
+                      <span className="text-white text-sm font-medium">
+                        Select
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
+
       {/* Products Table */}
       <div className="overflow-x-auto shadow-lg rounded-lg border">
         <table className="min-w-full bg-white">
@@ -450,13 +612,14 @@ const AdminDashboard = () => {
                   type="checkbox"
                   onChange={(e) =>
                     setSelectedProducts(
-                      e.target.checked ? products.map((p) => p.id) : []
+                      e.target.checked ? products.map((p) => p.key) : []
                     )
                   }
                   checked={selectedProducts.length === products.length}
                 />
               </th>
               {[
+                "Image",
                 "ID",
                 "Name",
                 "Category",
@@ -478,158 +641,245 @@ const AdminDashboard = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.includes(product.id)}
-                    onChange={() => handleSelectProduct(product.id)}
-                  />
-                </td>
-                <td className="px-4 py-3">{product.id}</td>
-                <td className="px-4 py-3 flex items-center gap-2">
-                  <div
-                    onClick={() => openModal(product.id, "name")}
-                    className="cursor-pointer hover:underline flex-1"
-                  >
-                    {editedProducts[product.id]?.name?.length > 20
-                      ? editedProducts[product.id].name.slice(0, 20) + "..."
-                      : editedProducts[product.id]?.name}
-                  </div>
-                  <button
-                    onClick={() => openModal(product.id, "name")}
-                    title="Edit full name"
-                    className="p-1 hover:text-blue-500 self-center"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+            {[...products]
+              .sort((a, b) => a.key - b.key)
+              .map((product) => (
+                <tr key={product.key} className="hover:bg-gray-50">
+                  {/* Checkbox cell */}
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(product.key)}
+                      onChange={() => handleSelectProduct(product.key)}
+                      className="rounded border-gray-300"
+                    />
+                  </td>
+
+                  {/* Image cell */}
+                  <td className="px-4 py-3">
+                    <div className="relative group">
+                      <img
+                        src={`/images/${editedProducts[product.key]?.image}`}
+                        alt={product.name}
+                        className="w-16 h-16 object-cover rounded-lg shadow-sm"
                       />
-                    </svg>
-                  </button>
-                </td>
-                <td className="px-4 py-3">{product.category}</td>
-                <td className="px-4 py-3 flex items-center gap-2">
-                  <div
-                    onClick={() => openModal(product.id, "description")}
-                    className="cursor-pointer hover:underline flex-1"
-                  >
-                    {editedProducts[product.id]?.description?.length > 50
-                      ? editedProducts[product.id].description.slice(0, 50) + "..."
-                      : editedProducts[product.id]?.description}
-                  </div>
-                  <button
-                    onClick={() => openModal(product.id, "description")}
-                    title="Edit full description"
-                    className="p-1 hover:text-blue-500"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                      <button
+                        onClick={() => openImageModalForEdit(product.key)}
+                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg"
+                      >
+                        <span className="text-white text-sm font-medium">
+                          Change Image
+                        </span>
+                      </button>
+                    </div>
+                  </td>
+
+                  {/* ID cell: show backendId */}
+                  <td className="px-4 py-3">{product.backendId}</td>
+
+                  {/* Name cell */}
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={
+                        editedProducts[product.key]?.name ?? product.name
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(product.key, "name", e.target.value)
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+
+                  {/* Category cell */}
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={
+                        editedProducts[product.key]?.category ??
+                        product.category
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "category",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <textarea
+                      value={
+                        editedProducts[product.key]?.description ??
+                        product.description
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                      rows={2}
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      value={
+                        editedProducts[product.key]?.price ?? product.price
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "price",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={
+                        editedProducts[product.key]?.brand ?? product.brand
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "brand",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={
+                        editedProducts[product.key]?.materials?.join(", ") ??
+                        product.materials.join(", ")
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "materials",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                      placeholder="Comma separated values"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      value={
+                        editedProducts[product.key]?.colors?.join(", ") ??
+                        product.colors.join(", ")
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "colors",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                      placeholder="Comma separated values"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      value={
+                        editedProducts[product.key]?.stock ?? product.stock
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          product.key,
+                          "stock",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded p-1 text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => updateProduct(product.key)}
+                      className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded text-sm"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
-                      />
-                    </svg>
-                  </button>
-                </td>
-                <td className="px-4 py-3">
-                  <input
-                    type="text"
-                    value={`${editedProducts[product.id]?.price || 0} ${product.currency || ""}`}
-                    onChange={(e) => handleFieldChange(product.id, "price", e.target.value)}
-                    className="w-full border rounded p-1 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3">{product.brand}</td>
-                <td className="px-4 py-3">{product.materials.join(", ")}</td>
-                <td className="px-4 py-3">{product.colors.join(", ")}</td>
-                <td className="px-4 py-3">
-                  <input
-                    type="text"
-                    value={editedProducts[product.id]?.stock || ""}
-                    onChange={(e) => handleFieldChange(product.id, "stock", e.target.value)}
-                    className="w-full border rounded p-1 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <button
-                    onClick={() => updateProduct(product.id)}
-                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded text-sm"
-                  >
-                    Update
-                  </button>
-                </td>
-              </tr>
-            ))}
+                      Update
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
+
       {/* Modal for full field editing */}
-      {
-        modal.isOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
-              <h3 className="text-2xl font-bold mb-4">
-                Edit Full {modal.field === "name" ? "Name" : "Description"}
-              </h3>
-              {modal.field === "description" ? (
-                <textarea
-                  value={editedProducts[modal.productId]?.description || ""}
-                  onChange={(e) =>
-                    handleFieldChange(modal.productId, "description", e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                  rows={10}
-                />
-              ) : (
-                <textarea
-                  value={editedProducts[modal.productId]?.name || ""}
-                  onChange={(e) =>
-                    handleFieldChange(modal.productId, "name", e.target.value)
-                  }
-                  className="w-full border rounded p-2"
-                  rows={3}
-                />
-              )}
-              <div className="mt-4 flex justify-end gap-4">
-                <button
-                  onClick={() => {
-                    updateProduct(modal.productId);
-                    closeModal();
-                  }}
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
+      {modal.isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded p-6 w-11/12 md:w-1/2">
+            <h3 className="text-2xl font-bold mb-4">
+              Edit Full{" "}
+              {modal.field === "name" ? "Name" : "Description"}
+            </h3>
+            {modal.field === "description" ? (
+              <textarea
+                value={editedProducts[modal.productKey]?.description || ""}
+                onChange={(e) =>
+                  handleFieldChange(
+                    modal.productKey,
+                    "description",
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded p-2"
+                rows={10}
+              />
+            ) : (
+              <textarea
+                value={editedProducts[modal.productKey]?.name || ""}
+                onChange={(e) =>
+                  handleFieldChange(
+                    modal.productKey,
+                    "name",
+                    e.target.value
+                  )
+                }
+                className="w-full border rounded p-2"
+                rows={3}
+              />
+            )}
+            <div className="mt-4 flex justify-end gap-4">
+              <button
+                onClick={() => {
+                  updateProduct(modal.productKey);
+                  closeModal();
+                }}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={closeModal}
+                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Cancel
+              </button>
             </div>
           </div>
-        )
-      }
-    </div >
+        </div>
+      )}
+    </div>
   );
 };
 

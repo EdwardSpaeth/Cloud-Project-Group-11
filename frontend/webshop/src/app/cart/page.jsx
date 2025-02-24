@@ -8,14 +8,13 @@ import { useState } from "react";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 export default function CartPage() {
-  const { items } = useCart();
+  const { cartItems, cartTotal } = useCart();
   const [email, setEmail] = useState("");
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
     try {
       // Prepare a compact version of the items for Stripe metadata
-      const compactItems = items.map(item => ({
+      const compactItems = cartItems.map(item => ({
         n: item.name.substring(0, 30), // Limit name length
         q: item.quantity,
         p: item.price.toString()
@@ -23,7 +22,7 @@ export default function CartPage() {
 
       // Prepare the full items data for the backend
       const checkoutData = {
-        items: items.map(item => ({
+        items: cartItems.map(item => ({
           name: item.name,
           price: item.price,
           quantity: item.quantity,
@@ -59,7 +58,7 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto p-4">
-      {items.length === 0 ? (
+      {cartItems.length === 0 ? (
         <div className="flex justify-center items-center min-h-screen">
           <p className="text-center text-gray-500 text-xl">Your cart is empty</p>
         </div>
@@ -70,7 +69,7 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Cart Items Section */}
             <div className="lg:col-span-2 space-y-4">
-              {items.map((item, index) => (
+              {cartItems.map((item, index) => (
                 <CartItem key={item.id || index} {...item} />
               ))}
             </div>
@@ -96,7 +95,7 @@ export default function CartPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span>€{subtotal.toFixed(2)}</span>
+                    <span>€{cartTotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
@@ -105,7 +104,7 @@ export default function CartPage() {
                   <div className="border-t border-gray-200 pt-3 mt-3">
                     <div className="flex justify-between font-semibold text-lg">
                       <span>Total</span>
-                      <span>€{subtotal.toFixed(2)}</span>
+                      <span>€{cartTotal.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -123,5 +122,5 @@ export default function CartPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

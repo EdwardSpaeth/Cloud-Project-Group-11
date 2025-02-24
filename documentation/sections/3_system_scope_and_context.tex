@@ -4,88 +4,99 @@ Context}\label{section-system-scope-and-context}}
 
 \textbf{Contents}
 
-System scope and context - as the name suggests - delimits your system
-(i.e. your scope) from all its communication partners (neighboring
-systems and users, i.e. the context of your system). It thereby
-specifies the external interfaces.
-
-If necessary, differentiate the business context (domain specific inputs
-and outputs) from the technical context (channels, protocols, hardware).
+This section defines the scope and context of the Webshop system, a platform designed to display products to users, process payments, and confirm orders. The system retrieves product data from an Azure-hosted database, integrates with Stripe for payment processing, and uses an Azure email service to send order confirmations. It outlines the external entities—users, the Azure database, Stripe, and the Azure email service—and specifies the business and technical interfaces connecting them to the Webshop.
 
 \textbf{Motivation}
 
-The domain interfaces and technical interfaces to communication partners
-are among your system's most critical aspects. Make sure that you
-completely understand them.
+Understanding the Webshop's and its external entities' interfaces is crucial for stakeholders to make informed architectural decisions. Clear boundaries ensure alignment on what the system handles (e.g., product display and payment) versus what it relies on externally (e.g., payment processing via Stripe), guiding both development and deployment decisions.
 
 \textbf{Form}
 
-Various options:
-
-\begin{itemize}
-\item
-  Context diagrams
-\item
-  Lists of communication partners and their interfaces.
-\end{itemize}
-
-See \href{https://docs.arc42.org/section-3/}{Context and Scope} in the
-arc42 documentation.
+The business context will be presented with a context diagram showing the Webshop as a black box linked to its external partners, alongside a table listing communication partners, inputs, and outputs. The technical context will use a UML deployment diagram to illustrate the system’s technical connections, supplemented by a mapping table tying domain inputs/outputs to specific channels.
 
 \hypertarget{_business_context}{%
 \subsection{Business Context}\label{_business_context}}
 
 \textbf{Contents}
 
-Specification of \textbf{all} communication partners (users, IT-systems,
-\ldots) with explanations of domain specific inputs and outputs or
-interfaces. Optionally you can add domain specific formats or
-communication protocols.
+The Webshop system interacts with several external entities: (1) Users, who browse products, submit orders, provide payment information, and receive order confirmations; (2) Azure-hosted Database, which provides product data; (3) Stripe, which processes payment transactions; and (4) Azure Email Service, which delivers order confirmation emails. This subsection specifies the domain-specific inputs and outputs exchanged between the Webshop and these partners.
 
 \textbf{Motivation}
 
-All stakeholders should understand which data are exchanged with the
-environment of the system.
+Defining these interactions ensures stakeholders understand the Webshop’s core business functions—displaying products, processing orders, and confirming purchases—and its dependencies on external systems for data, payments, and notifications.
 
 \textbf{Form}
 
-All kinds of diagrams that show the system as a black box and specify
-the domain interfaces to communication partners.
+The context diagram below depicts the Webshop system and its external interactions. The table details the inputs and outputs for each communication partner.
 
-Alternatively (or additionally) you can use a table. The title of the
-table is the name of your system, the three columns contain the name of
-the communication partner, the inputs, and the outputs.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/webshop_context_diagram.pdf} 
+  \caption{Context Diagram of the Webshop System and Its External Entities}
+  \label{fig:webshop-context}
+\end{figure}
 
-\textbf{\textless Diagram or Table\textgreater{}}
-
-\textbf{\textless optionally: Explanation of external domain
-interfaces\textgreater{}}
+\begin{table}[h]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|l|l|}
+      \hline
+      Communication Partner & Inputs                          & Outputs                           \\
+      \hline
+      Users                & User Interface & Product requests, order details, payment info \\
+      Azure Database       & Product data, order storage requests & Product info \\
+      Stripe               & Payment info                   & Payment success/failure response \\
+      Azure Email Service  & Order details                  & email delivered to users \\
+      \hline
+    \end{tabular}
+  }
+  \caption{Inputs and Outputs for Webshop Communication Partners}
+  \label{tab:webshop-business-context}
+\end{table}
 
 \hypertarget{_technical_context}{%
 \subsection{Technical Context}\label{_technical_context}}
 
 \textbf{Contents}
 
-Technical interfaces (channels and transmission media) linking your
-system to its environment. In addition a mapping of domain specific
-input/output to the channels, i.e. an explanation which I/O uses which
-channel.
+This subsection details the technical interfaces connecting the Webshop system to its environment, including the channels, protocols, and hardware used. The Webshop operates as a web application hosted on Azure, communicating with users via HTTP/HTTPS over the internet, accessing the Azure-hosted Database through REST API calls, integrating with Stripe via HTTPS for payment processing, and utilizing Azure Email Service for SMTP-based email delivery. It maps these technical connections to the business inputs and outputs described in the Business Context.
 
 \textbf{Motivation}
 
-Many stakeholders make architectural decision based on the technical
-interfaces between the system and its context. Especially infrastructure
-or hardware designers decide these technical interfaces.
+Understanding these technical interfaces is critical for infrastructure designers and developers to ensure reliable connectivity, secure data transmission, and scalable deployment of the Webshop. It informs decisions about hosting, network configuration, and integration with external services like Stripe and Azure.
 
 \textbf{Form}
 
-E.g. UML deployment diagram describing channels to neighboring systems,
-together with a mapping table showing the relationships between channels
-and input/output.
+The UML deployment diagram below illustrates the Webshop’s technical architecture and its connections to external entities. The table maps the domain-specific inputs and outputs to their technical channels and protocols.
 
-\textbf{\textless Diagram or Table\textgreater{}}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/webshop_deployment_diagram.pdf} 
+  \caption{UML Deployment Diagram of the Webshop Technical Architecture}
+  \label{fig:webshop-deployment}
+\end{figure}
 
-\textbf{\textless optionally: Explanation of technical
-interfaces\textgreater{}}
+\clearpage
 
-\textbf{\textless Mapping Input/Output to Channels\textgreater{}}
+
+\begin{table}[h]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|l|l|}
+      \hline
+      Input/Output                          & Channel/Protocol               & Description (Optional)                   \\
+      \hline
+      Product requests, order details, payment info (Users → Webshop) & HTTPS over the Internet        & User interactions via web browser       \\
+      Product listings, order confirmation (Webshop → Users) & HTTPS over the Internet        & Web app responses                        \\
+      Product data, order storage requests (Webshop → Azure Database) & REST API over Azure internal network & Database queries and updates            \\
+      Product info (Azure Database → Webshop) & REST API over Azure internal network & Data retrieval for product display      \\
+      Payment info (Backend → Stripe)       & HTTPS over the Internet        & Payment processing requests             \\
+      Payment webhook (Stripe → Backend)    & HTTPS over the Internet        & Payment status updates via webhook       \\
+      Order details (Webshop → Azure Email Service) & SMTP over Azure internal network & Email notification setup                \\
+      Email delivered to users (Azure Email Service → Users) & SMTP over Internet             & Email delivery to users                 \\
+      \hline
+    \end{tabular}
+  }
+  \caption{Mapping of Webshop Inputs/Outputs to Technical Channels}
+  \label{tab:webshop-technical-mapping}
+\end{table}

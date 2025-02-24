@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 8080",
-    "build": "next build",
+    "build": "PORT=8080 next build",
     "start": "npx next start -p ${PORT:-8080}"
   },
   "dependencies": {
