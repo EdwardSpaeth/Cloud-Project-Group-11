@@ -39,9 +39,28 @@ Definition
 \end{minipage} \\
 \midrule
 \endhead
-\emph{\textless Term-1\textgreater{}} &
-\emph{\textless definition-1\textgreater{}} \\
-\emph{\textless Term-2\textgreater{}} &
-\emph{\textless definition-2\textgreater{}} \\
+\emph{Cloud Service Provider (CSP)} &
+\emph{A Cloud Service Provider (CSP) is a third-party company, 
+which offers (paid) services in regard to cloud capabilities, be it compute, storage, management, and/or analytics. 
+In our case, we are solely referring to public Cloud Service Providers, which provide these services to the public,
+opposed to offering services exclusive to one or multiple companies.} \\ \hline
+\emph{Microsoft Azure ("Azure")} &
+\emph{Microsoft Azure is a public cloud service provider belonging to Microsoft.} \\ \hline
+\emph{Service-Level Agreement (SLA)} &
+\emph{Service-level agreements are made between a (cloud) service provider and a customer. 
+For our purposes, the main point of interest, is availability, where the (cloud) service provider
+guarantees a certain availability for a given service, 
+allowing us to fulfill our own availability requirements when relying on said service.} \\ \hline
+\emph{Horizontal Scaling} &
+\emph{Horizontal Scaling refers to improving performance by spinning up multiple instances,
+so that requests can be distributed among them, allowing for greater parallel processing, 
+rather than just increasing hardware performance directly (Vertical Scaling).} \\ \hline
+\emph{Replica} &
+\emph{A replica in our case refers to additional copies of either Docker containers or database copies.
+The purpose is to provide increased performance (horizontal scaling), such as having multiple read-only replicas of a database, 
+allowing for higher throughput of read operations, 
+especially if additional replicas are spread geographically to decrease latency.
+Replicas also increases availability, especially if they are spread geographically, 
+making it so that an instance of a service is running even if there were to be a data center failure at N-1 locations.} \\
 \bottomrule
 \end{longtable}

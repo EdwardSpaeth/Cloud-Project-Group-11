@@ -1,115 +1,80 @@
 \hypertarget{section-deployment-view}{%
 \section{Deployment View}\label{section-deployment-view}}
 
-\textbf{Content}
-
-The deployment view describes:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  technical infrastructure used to execute your system, with
-  infrastructure elements like geographical locations, environments,
-  computers, processors, channels and net topologies as well as other
-  infrastructure elements and
-\item
-  mapping of (software) building blocks to that infrastructure elements.
-\end{enumerate}
-
-Often systems are executed in different environments, e.g. development
-environment, test environment, production environment. In such cases you
-should document all relevant environments.
-
-Especially document a deployment view if your software is executed as
-distributed system with more than one computer, processor, server or
-container or when you design and construct your own hardware processors
-and chips.
-
-From a software perspective it is sufficient to capture only those
-elements of an infrastructure that are needed to show a deployment of
-your building blocks. Hardware architects can go beyond that and
-describe an infrastructure to any level of detail they need to capture.
-
-\textbf{Motivation}
-
-Software does not run without hardware. This underlying infrastructure
-can and will influence a system and/or some cross-cutting concepts.
-Therefore, there is a need to know the infrastructure.
-
-Maybe a highest level deployment diagram is already contained in section
-3.2. as technical context with your own infrastructure as ONE black box.
-In this section one can zoom into this black box using additional
-deployment diagrams:
-
-\begin{itemize}
-\item
-  UML offers deployment diagrams to express that view. Use it, probably
-  with nested diagrams, when your infrastructure is more complex.
-\item
-  When your (hardware) stakeholders prefer other kinds of diagrams
-  rather than a deployment diagram, let them use any kind that is able
-  to show nodes and channels of the infrastructure.
-\end{itemize}
-
-See \href{https://docs.arc42.org/section-7/}{Deployment View} in the
-arc42 documentation.
-
 \hypertarget{_infrastructure_level_1}{%
-\subsection{Infrastructure Level 1}\label{_infrastructure_level_1}}
+\subsection{Microsoft Azure Deployment}\label{_infrastructure_level_1}}
 
-Describe (usually in a combination of diagrams, tables, and text):
+\includegraphics{images/azure_deployment_view.png}
 
-\begin{itemize}
-\item
-  distribution of a system to multiple locations, environments,
-  computers, processors, .., as well as physical connections between
-  them
-\item
-  important justifications or motivations for this deployment structure
-\item
-  quality and/or performance features of this infrastructure
-\item
-  mapping of software artifacts to elements of this infrastructure
-\end{itemize}
+\subsubsection{Motivation}
+Instead of hosting the application locally on-premise, we instead opted for hosting it on the cloud.
+This has multiple advantages such as not having to manage our own hardware as well as allowing more efficient resource utilization
+by using a pay-as-you-go method of billing, rather than investing into our own hardware outright.
 
-For multiple environments or alternative deployments please copy and
-adapt this section of arc42 for all relevant environments.
+We chose to go forward with Microsoft Azure as our Cloud Service Provider, because they offer advanced features,
+which we can make good use of, as well as being reliable and easy to deploy with.
 
-\emph{\textbf{\textless Overview Diagram\textgreater{}}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+Component
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule
+\endhead
+Frontend &
+The frontend is served using NodeJS, therefore we deployed it using an Azure App Service,
+since that is the most convenient way of deploying NodeJS applications on Azure. 
+\\ \hline
+Backend &
+The python backend was designed as a Docker container.
+Therefore, it is suitable to use an Azure Container App to deploy the container into the cloud. 
+\\ \hline
+Database &
+As our database, we are utilizing the SaaS offering of Azure SQL Database, since it is generally more reliable
+and more comfortable to work with, compared to hosting your own database with a PaaS offering. 
+\\
+\bottomrule
+\end{longtable}
 
-\begin{description}
-\item[Motivation]
-\emph{\textless explanation in text form\textgreater{}}
-\item[Quality and/or Performance Features]
-\emph{\textless explanation in text form\textgreater{}}
-\item[Mapping of Building Blocks to Infrastructure]
-\emph{\textless description of the mapping\textgreater{}}
-\end{description}
+\subsubsection{Quality and/or Performance Features}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+Component
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Quality and/or Performance Feature(s)
+\end{minipage} \\
+\midrule
+\endhead
+Frontend &
+The Azure App Service features 99.95\% guaranteed uptime as per the service-level agreement (SLA),
+which is crucial for fulfilling our requirement of having high availability. 
+\\ \hline
+Backend &
+The Azure Container App features the ability of creating replicas, allowing for horizontal scaling,
+which can even be scaled automatically based on e.g., amount of concurrent incoming requests or CPU usage,
+allowing for greater performance.
+\\ \hline
+Database &
+The Azure SQL Database SaaS offering provides 99.99\% availability as per the service-level agreement.
+This option allows for seamless upgrades to more premium service tiers, 
+allowing for even availability guarantees exceeding 99.99\%.
+Furthermore, more premium service tiers allow for using features, such as geo-redundant backup storage,
+which replicates additional backups to a physical location hundreds of miles away from the primary region,
+making it even more unlikely to lose significant amounts of data, even in catastrophic cases.
+\\ \hline
+BLOB Storage &
+With Azure Storage Accounts, which we use for the blob storage, we have a 99.9\% availability as per the service-level agreement.
+More premium options allow for going as high as 99.99\% availability.
+\\
+\bottomrule
+\end{longtable}
 
-\hypertarget{_infrastructure_level_2}{%
-\subsection{Infrastructure Level 2}\label{_infrastructure_level_2}}
-
-Here you can include the internal structure of (some) infrastructure
-elements from level 1.
-
-Please copy the structure from level 1 for each selected element.
-
-\hypertarget{__emphasis_infrastructure_element_1_emphasis}{%
-\subsubsection{\texorpdfstring{\emph{\textless Infrastructure Element
-1\textgreater{}}}{\textless Infrastructure Element 1\textgreater{}}}\label{__emphasis_infrastructure_element_1_emphasis}}
-
-\emph{\textless diagram + explanation\textgreater{}}
-
-\hypertarget{__emphasis_infrastructure_element_2_emphasis}{%
-\subsubsection{\texorpdfstring{\emph{\textless Infrastructure Element
-2\textgreater{}}}{\textless Infrastructure Element 2\textgreater{}}}\label{__emphasis_infrastructure_element_2_emphasis}}
-
-\emph{\textless diagram + explanation\textgreater{}}
-
-\ldots{}
-
-\hypertarget{__emphasis_infrastructure_element_n_emphasis}{%
-\subsubsection{\texorpdfstring{\emph{\textless Infrastructure Element
-n\textgreater{}}}{\textless Infrastructure Element n\textgreater{}}}\label{__emphasis_infrastructure_element_n_emphasis}}
-
-\emph{\textless diagram + explanation\textgreater{}}
+\subsubsection{Mapping}
+(Mapping from components in deployment view to components in building block view!)
