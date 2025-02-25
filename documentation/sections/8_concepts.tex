@@ -1,12 +1,9 @@
 \hypertarget{section-concepts}{%
-\section{Cross-cutting Concepts}\label{section-concepts}}
+\section{Crosscutting Concepts and Architectural Decisions}\label{section-concepts}}
 
 \textbf{Content}
 
-This section describes overall, principal regulations and solution ideas
-that are relevant in multiple parts (= cross-cutting) of your system.
-Such concepts are often related to multiple building blocks. They can
-include many different topics, such as
+This section describes overall, principal regulations and solution ideas that are relevant in multiple parts (= crosscutting) of our system and its architecture. Such concepts and decisions are often related to multiple building blocks and can include many different topics, such as
 
 \begin{itemize}
 \item
@@ -16,83 +13,51 @@ include many different topics, such as
 \item
   rules for using specific technology
 \item
-  principal, often technical decisions of an overarching (=
-  cross-cutting) nature
+  principal, often technical decisions of an overarching nature
 \item
   implementation rules
 \end{itemize}
 
-\textbf{Motivation}
-
-Concepts form the basis for \emph{conceptual integrity} (consistency,
-homogeneity) of the architecture. Thus, they are an important
-contribution to achieve inner qualities of your system.
-
-Some of these concepts cannot be assigned to individual building blocks,
-e.g. security or safety.
-
-\textbf{Form}
-
-The form can be varied:
+\subsection{Domain Model \& Data Structures}
+The Vivendo Webshop frontend relies on several key data models that keep information consistent across different parts of the application:
 
 \begin{itemize}
-\item
-  concept papers with any kind of structure
-\item
-  cross-cutting model excerpts or scenarios using notations of the
-  architecture views
-\item
-  sample implementations, especially for technical concepts
-\item
-  reference to typical usage of standard frameworks (e.g. using
-  Hibernate for object/relational mapping)
+  \item \textbf{Product Model}: This structure includes fields such as the product ID, name, description, price, and stock level. Any part of the webshop that displays or updates product information---including the Shop Module and the Admin Dashboard---uses this same model.
+  
+  \item \textbf{Cart Item Model}: This extends the Product Model by incorporating cart-related details, such as quantity or item-level notes. The Cart Context employs this structure to ensure that updates to product attributes, like pricing or availability, remain in sync with a user's cart.
+  
+  \item \textbf{Message Model}: This standardized format describes user inquiries with fields such as subject, sender information, and message text. Both the Contact Module and the Admin Dashboard interact with this single model to create, display, and manage messages consistently.
 \end{itemize}
 
-\textbf{Structure}
+We maintain these data models as shared sources of truth (SSOT). Splitting them into different product models for the shop and the admin area would risk creating mismatches if one model would be updated without the other. It would also complicate maintenance, since any field changes would need to be replicated in multiple places. By using these core structures throughout the system, we reduce the likelihood of data inconsistencies and simplify ongoing feature development.
 
-A potential (but not mandatory) structure for this section could be:
+\subsection{UI \& UX Conventions}
+All pages in the Vivendo Webshop share a unified layout and design language. A global layout component (\texttt{layout.jsx}) includes site-wide elements such as the header, footer and navigation links. This approach guarantees that the user experience remains consistent across all modules. Tailwind CSS is used to provide a utility-first styling approach so that developers can quickly apply spacing, color, and typography classes to maintain uniform visuals. 
 
+We selected Tailwind because of its flexibility and the minimal overhead it adds, Although other frameworks like Bootstrap might provide predefined components, those often require extensive overrides to achieve a specific kind of identity. 
+
+\subsection{Routing \& Folder Structure (Next.js)}
+Our Next.js setup uses file-based routing to map files within the \texttt{pages/} directory to distinct routes. This arrangement makes the URL structure predictable for both developers and users. Public pages - including the shop, cart, and contact form - reside under straightforward displayed paths, while administrative features such as login or the Admin Dashboard are kept separate to detach sensitive functionality.
+
+We chose Next.js because it offers server-side rendering and built-in image optimization. These features are valuable for an online shop (e.g. Vivendo) where both SEO and performance are important. Besides alternative solutions, Next.js fits best with the platform's requirement for dynamic content, simple configuration and a strong user experience across devices.
+
+\subsection{Shared State Management}
+React Context API is used to share and manage global data. For example, the Cart Context holds a user’s cart items and provides methods to add, remove, or update them. By centralizing cart logic, all components in the webshop - from product pages to checkout flows - operate on the same state and can render consistent information. 
+
+\subsection{Security \& Authentication}
+The webshop uses an authentication-based route for the dashboard including all administrative features. This ensures that unauthorized individuals cannot edit products or read messages. The current approach checks whether the username and password match the required values and if valid, stores them in a local storage to simulate a logged-in state. This design is sufficient for a simple prototype but would need to be replaced with a more secure solution in a production environment.
+
+For payment processing the system depends on Stripe to handle sensitive credit card data. This reliance on a secure external provider reduces compliance overhead for our team and limits the exposure of critical payment details in our infrastructure. We selected Stripe based on its popularity, strong security posture and clear documentation for the integration with Next.js. 
+
+\subsection{Error Handling \& Logging}
+React error boundaries catch unexpected exceptions in key components, preventing the entire application from failing if one feature encounters a problem. 
+
+\subsection{Consolidated Architectural Decisions}
 \begin{itemize}
-\item
-  Domain concepts
-\item
-  User Experience concepts (UX)
-\item
-  Safety and security concepts
-\item
-  Architecture and design patterns
-\item
-  "Under-the-hood"
-\item
-  development concepts
-\item
-  operational concepts
+  \item \textbf{Next.js} is our framework for delivering server-rendered pages and handling routing automatically.
+  \item \textbf{Stripe} is used for payment processing, removing the need to manage credit card data in our own systems.
+  \item \textbf{React Context} manages global state, such as the shopping cart, in order to reduce boilerplate and maintain clarity.
+  \item \textbf{Single Source of Truth} for data models avoids the duplication of field definitions across modules.
 \end{itemize}
 
-Note: it might be difficult to assign individual concepts to one
-specific topic on this list.
-
-\includegraphics{images/08-Crosscutting-Concepts-Structure-EN.png}
-
-See \href{https://docs.arc42.org/section-8/}{Concepts} in the arc42
-documentation.
-
-\hypertarget{__emphasis_concept_1_emphasis}{%
-\subsection{\texorpdfstring{\emph{\textless Concept
-1\textgreater{}}}{\textless Concept 1\textgreater{}}}\label{__emphasis_concept_1_emphasis}}
-
-\emph{\textless explanation\textgreater{}}
-
-\hypertarget{__emphasis_concept_2_emphasis}{%
-\subsection{\texorpdfstring{\emph{\textless Concept
-2\textgreater{}}}{\textless Concept 2\textgreater{}}}\label{__emphasis_concept_2_emphasis}}
-
-\emph{\textless explanation\textgreater{}}
-
-\ldots{}
-
-\hypertarget{__emphasis_concept_n_emphasis}{%
-\subsection{\texorpdfstring{\emph{\textless Concept
-n\textgreater{}}}{\textless Concept n\textgreater{}}}\label{__emphasis_concept_n_emphasis}}
-
-\emph{\textless explanation\textgreater{}}
+These decisions ensure that the our frontend remains flexible and performant through maintaining an architecture that is adaptable as the platform evolves.
