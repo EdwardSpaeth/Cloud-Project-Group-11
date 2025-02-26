@@ -12,6 +12,7 @@ start
 
 |Backend|
 :confirm-payment;
+:generate-receipt-email-template;
 :request-send-receipt;
 
 |E-Mail Service|
