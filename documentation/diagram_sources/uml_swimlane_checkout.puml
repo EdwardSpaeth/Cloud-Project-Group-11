@@ -1,0 +1,27 @@
+@startuml
+|Frontend|
+start
+:add-products-to-cart;
+:checkout;
+
+|Backend|
+:create-stripe-checkout;
+
+|Stripe|
+:process-payment;
+
+|Backend|
+:confirm-payment;
+:request-send-receipt;
+
+|E-Mail Service|
+:send-receipt-to-customer;
+
+|Backend|
+:confirm-checkout;
+
+|Frontend|
+:purchase-was-successful;
+
+stop
+@enduml

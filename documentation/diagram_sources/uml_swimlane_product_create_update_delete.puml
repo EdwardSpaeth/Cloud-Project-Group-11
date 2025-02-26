@@ -1,0 +1,22 @@
+@startuml
+|Frontend\nAdmin Panel|
+start
+:login-to-admin-panel;
+:create-update-delete-product;
+
+|Backend|
+:validate-input;
+:apply-changes-in-orm;
+:sync-to-db;
+
+|Database|
+:perform-changes;
+
+|Backend|
+:confirm-create-update-delete;
+
+|Frontend\nAdmin Panel|
+:create-update-delete-was-successful;
+
+stop
+@enduml
