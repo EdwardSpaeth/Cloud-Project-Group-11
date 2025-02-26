@@ -1,0 +1,26 @@
+@startuml
+|Frontend|
+start
+:request-product-list;
+
+|Backend|
+:query-database;
+
+|Database|
+:respond-to-database-query;
+
+|Backend|
+:package-query-into-response;
+:respond-with-product-list;
+
+|Frontend|
+:request-product-images;
+
+|Image Storage|
+:respond-with-images;
+
+|Frontend|
+:display-products;
+
+stop
+@enduml

@@ -12,7 +12,10 @@ This has multiple advantages such as not having to manage our own hardware as we
 by using a pay-as-you-go method of billing, rather than investing into our own hardware outright.
 
 We chose to go forward with Microsoft Azure as our Cloud Service Provider, because they offer advanced features,
-which we can make good use of, as well as being reliable and easy to deploy with.
+which we can make good use of, 
+ being reliable and easy to deploy with.
+
+Now follow rationales for select services, where multiple Azure offerings could have been considered instead.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
@@ -21,7 +24,7 @@ which we can make good use of, as well as being reliable and easy to deploy with
 \begin{minipage}[b]{\linewidth}\raggedright
 Component
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Description
+Rationale
 \end{minipage} \\
 \midrule
 \endhead
@@ -30,12 +33,14 @@ The frontend is served using NodeJS, therefore we deployed it using an Azure App
 since that is the most convenient way of deploying NodeJS applications on Azure. 
 \\ \hline
 Backend &
-The python backend was designed as a Docker container.
-Therefore, it is suitable to use an Azure Container App to deploy the container into the cloud. 
+The python backend was designed as a Docker container in order to have e.g., rather simple horizontal scaling.
+Therefore, it is suitable to use an Azure Container App to deploy the container into the cloud.
 \\ \hline
 Database &
 As our database, we are utilizing the SaaS offering of Azure SQL Database, since it is generally more reliable
-and more comfortable to work with, compared to hosting your own database with a PaaS offering. 
+and more comfortable to work with, compared to hosting your own database with a PaaS offering.
+Furthermore, we have personal preference toward managing relational databases, rather than non-relational databases.
+Otherwise, we could have opted for non-relational database SaaS offering such as Azure Cosmos DB.
 \\
 \bottomrule
 \end{longtable}
@@ -72,6 +77,10 @@ making it even more unlikely to lose significant amounts of data, even in catast
 BLOB Storage &
 With Azure Storage Accounts, which we use for the blob storage, we have a 99.9\% availability as per the service-level agreement.
 More premium options allow for going as high as 99.99\% availability.
+\\ \hline
+Azure Communication Services &
+Azure Communication Services have an availability of 99.9\% guaranteed availability as per the service-level agreement,
+making it so that our mailing service is highly available.
 \\
 \bottomrule
 \end{longtable}
