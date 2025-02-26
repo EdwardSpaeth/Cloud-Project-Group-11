@@ -1,79 +1,53 @@
 \hypertarget{section-runtime-view}{%
-\section{Runtime View}\label{section-runtime-view}}
-
-\textbf{Contents}
-
-The runtime view describes concrete behavior and interactions of the
-system's building blocks in form of scenarios from the following areas:
-
-\begin{itemize}
-\item
-  important use cases or features: how do building blocks execute them?
-\item
-  interactions at critical external interfaces: how do building blocks
-  cooperate with users and neighboring systems?
-\item
-  operation and administration: launch, start-up, stop
-\item
-  error and exception scenarios
-\end{itemize}
-
-Remark: The main criterion for the choice of possible scenarios
-(sequences, workflows) is their \textbf{architectural relevance}. It is
-\textbf{not} important to describe a large number of scenarios. You
-should rather document a representative selection.
-
-\textbf{Motivation}
-
-You should understand how (instances of) building blocks of your system
-perform their job and communicate at runtime. You will mainly capture
-scenarios in your documentation to communicate your architecture to
-stakeholders that are less willing or able to read and understand the
-static models (building block view, deployment view).
-
-\textbf{Form}
-
-There are many notations for describing scenarios, e.g.
-
-\begin{itemize}
-\item
-  numbered list of steps (in natural language)
-\item
-  activity diagrams or flow charts
-\item
-  sequence diagrams
-\item
-  BPMN or EPCs (event process chains)
-\item
-  state machines
-\item
-  \ldots{}
-\end{itemize}
-
-See \href{https://docs.arc42.org/section-6/}{Runtime View} in the arc42
-documentation.
+\section{6 Runtime View}\label{section-runtime-view}}
 
 \hypertarget{__runtime_scenario_1}{%
-\subsection{\textless Runtime Scenario
-1\textgreater{}}\label{__runtime_scenario_1}}
+\subsection{Display Product List}\label{__runtime_scenario_1}}
+\includegraphics{images/uml_swimlane_product_list.png}
 
-\begin{itemize}
-\item
-  \emph{\textless insert runtime diagram or textual description of the
-  scenario\textgreater{}}
-\item
-  \emph{\textless insert description of the notable aspects of the
-  interactions between the building block instances depicted in this
-  diagram.\textgreater{}}
-\end{itemize}
+Explanation:
+\begin{enumerate}
+  \item Frontend request product list from backend.
+  \item The backend queries the database to retrieve all the products.
+  \item The database responds to the query with the products.
+  \item The backend packages the result of the query into a JSON response.
+  \item The backend sends the response to the frontend.
+  \item Since the backend response contains URLs to images rather than the images themselves, the frontend needs to fetch it from the BLOB Storage.
+  \item Read operations can be carried out anonymously on the images, therefore the BLOB storage responds with the image data.
+  \item Now the product list can be displayed in the frontend.
+\end{enumerate}
+
 
 \hypertarget{__runtime_scenario_2}{%
-\subsection{\textless Runtime Scenario
-2\textgreater{}}\label{__runtime_scenario_2}}
+\subsection{Cart Checkout Process}\label{__runtime_scenario_2}}
+\includegraphics{images/uml_swimlane_checkout.png}
 
-\hypertarget{_}{%
-\subsection{\ldots{}}\label{_}}
+Explanation:
+\begin{enumerate}
+  \item The user uses the frontend user interface to add items to the cart.
+  \item The user wants to start the checkout process.
+  \item The backend creates a checkout on the Stripe platform.
+  \item The Stripe platform handles the payment process such as accepting credit card information.
+  \item The backend confirms whether the payment with Stripe was successful.
+  \item The backend generates a template E-Mail containing an order confirmation with a receipt as a PDF attachment.
+  \item The backend forwards this E-Mail to the E-Mail Service, so that it can be sent to the user.
+  \item The E-Mail Service sends the order confirmation and receipt to the user's E-Mail address.
+  \item The backend confirms that the checkout was successful.
+  \item The transaction is shown as successful in the frontend user interface.
+\end{enumerate}
 
-\hypertarget{__runtime_scenario_n}{%
-\subsection{\textless Runtime Scenario
-n\textgreater{}}\label{__runtime_scenario_n}}
+\hypertarget{__runtime_scenario_3}{%
+\subsection{Creating/Updating/Deleting Products in Admin Panel}\label{__runtime_scenario_3}}
+\includegraphics{images/uml_swimlane_product_create_update_delete.png}
+
+Explanation:
+\begin{enumerate}
+  \item An administrator logs into the admin panel with admin credentials.
+  \item The administrator creates, updates and/or deletes product(s).
+  \item The backend performs input validation to e.g., prevent negative prices or invalid input formats.
+  \item The operation is carried out using the object relational mapping of the backend.
+  \item The object relational mapping syncs up with the database.
+  \item The database performs the required write operations.
+  \item The backend confirms, that the operation was successful.
+  \item The administrator now receives feedback, that the operation was successful.
+\end{enumerate}

@@ -1,9 +1,0 @@
-{
-    "appService.zipIgnorePattern": [
-        "node_modules{,/**}",
-        ".vscode{,/**}"
-    ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/827ab482-8818-49c9-8016-ece21eadd498/resourceGroups/LowTech/providers/Microsoft.Web/sites/LowTechFrontend",
-    "appService.deploySubpath": "frontend/webshop",
-    "postman.settings.dotenv-detection-notification-visibility": false
-}
