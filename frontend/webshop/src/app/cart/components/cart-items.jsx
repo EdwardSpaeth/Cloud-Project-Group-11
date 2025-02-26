@@ -4,10 +4,11 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { useCart } from "../../context/cart-context"
 
-export function CartItem({ id, name, price, quantity, pictureUrl }) {
+export function CartItem({ id, name, price, quantity, pictureUrl, stock }) {
   const { updateQuantity, removeFromCart } = useCart()
   const priceNum = typeof price === "number" ? price : parseFloat(price)
   const imagePath = `/images/${pictureUrl}`
+  const reachedStockLimit = quantity >= stock
 
   return (
     <motion.div
@@ -66,7 +67,8 @@ export function CartItem({ id, name, price, quantity, pictureUrl }) {
           <span className="w-8 text-center font-semibold">{quantity}</span>
           <button
             onClick={() => updateQuantity(id, quantity + 1)}
-            className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors text-sm font-medium"
+            disabled={reachedStockLimit}
+            className={`w-8 h-8 flex items-center justify-center rounded-md ${reachedStockLimit ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors text-sm font-medium'}`}
           >
             +
           </button>
@@ -74,6 +76,9 @@ export function CartItem({ id, name, price, quantity, pictureUrl }) {
             €{(priceNum * quantity).toFixed(2)}
           </span>
         </div>
+        {reachedStockLimit && (
+          <p className="text-sm text-red-500 mt-2">Stock limit reached</p>
+        )}
       </div>
     </motion.div >
   )
