@@ -9,7 +9,7 @@ from weasyprint import HTML
 from azure.communication.email import EmailClient
 import base64
 
-from mail_templates import EMAIL_TEMPLATE, RECEIPT_TEMPLATE
+from .mail_templates import EMAIL_TEMPLATE, RECEIPT_TEMPLATE
 from . import app, db
 from .entities import (
     Product,
