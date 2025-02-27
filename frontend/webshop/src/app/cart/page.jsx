@@ -70,7 +70,7 @@ export default function CartPage() {
             {/* Cart Items Section */}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item, index) => (
-                <CartItem key={item.id || index} {...item} />
+                <CartItem key={item.id || index} {...item} stock={item.stock} />
               ))}
             </div>
 

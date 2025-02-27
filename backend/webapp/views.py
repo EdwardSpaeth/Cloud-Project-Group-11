@@ -23,7 +23,7 @@ from .entities import (
 )
 
 @app.post("/products")
-def add_prod_to_list():
+def add_product():
     if not request.is_json:
         return jsonify({"message": "Data was not in json format."}), 400
 
