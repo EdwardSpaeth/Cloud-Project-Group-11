@@ -106,9 +106,12 @@ which is included in the backend response for any given product.
 
 
 \subsection{Important Interfaces}
-\subsubsection{Interfaces between Frontend and Backend}
+
 The frontend can communicate with the backend using a RESTful API.
 The following routes are used by the frontend:
+
+\subsubsection{/product API Endpoint}
+
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
@@ -152,6 +155,8 @@ The object contains the following fields:
 There is no product with an ID of 0. Instead, inputting ID 0 retrieves all the products in the shop catalog
 as a list of JSON objects.
 
+\subsubsection{/messages API Endpoint}
+
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
@@ -187,6 +192,8 @@ This endpoint is responsible for handling messages that customers can leave if t
 
 Unlike the product endpoint, the message endpoint does not require an ID when retrieving all messages via a GET request. This is because the admin can simply view all messages without the need for any specific identifier. However, an ID is required when the admin wants to delete a particular message using a DELETE request. The ID ensures that the correct message is deleted from the database, allowing for accurate and targeted operations.
 
+\subsubsection{/create-checkout-session API Ednpoint}
+
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
@@ -210,5 +217,25 @@ Unlike the product endpoint, the message endpoint does not require an ID when re
 %% TODO: Explanation of create-checkout-session here
 
 \subsubsection{Interface between Backend and Stripe}
+
+\begin{longtable}[]{@{}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Route}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Methods}
+\end{minipage} \\
+\midrule
+\endhead
+\begin{itemize}
+    \item /webhook
+\end{itemize} &
+\begin{itemize}
+    \item POST
+\end{itemize} \\
+\bottomrule
+\end{longtable}
 
 %% TODO: Explanation of interface between backend and stripe
