@@ -1,10 +1,24 @@
 \hypertarget{section-building-block-view}{%
 \section{5 Building Block View}\label{section-building-block-view}}
 
-\textbf{Content}
+\subsection{System White Box}
+\includegraphics{images/building_block_system_whitebox.png}
 
-This section shows the static decomposition of the system into building blocks (e.g. modules, components, subsystems, classes, interfaces, packages, libraries, frameworks, layers, partitions, tiers, functions, operations, \ldots) including their relationships and associations. It helps to maintain an overview of your source code by making its structure understandable through abstraction.
+\subsubsection{Motivation}
+We utilize a three-tier architecture for our system.
+This allows us to split the system into three tiers with different responsibility.
+The presentation tier is used as the interface between the users and the system.
+Meanwhile, the application tier is used to process requests from the presentation tier.
+Lastly, the data tier stores the actual data of the system.
 
+The advantage of such a distribution is greater separation of concerns,
+where tasks of each layer are clearly separated.
+Furthermore, having a middle layer between the presentation tier and the data tier,
+enhances reliability, since modifying operations have to go through the
+application tier, which can make sure to validate requests before any data is impacted.
+
+
+Now follows an explanation of the individual building blocks of the system.
 \subsection{Frontend}
 \subsubsection{Component-Based Frontend Architecture}
 The Vivendo webshop frontend follows a \textbf{component-based modular frontend design}. The different modules are interconnected to provide a seamless shopping experience. The primary technologies used include \textbf{Next.js, Tailwind CSS}, API integration and Context API for state management. This approach ensures:
@@ -36,7 +50,155 @@ The system consists of several modules:
     \item \textbf{Global Components}: Includes shared layout elements, styles and configurations.
 \end{itemize}
 
-
-%% ADD BACKEND BUILDING BLOCK VIEW PART / ARCHITECTURE HERE
-
 \subsection{Backend}
+\includegraphics{images/backend_building_block.png}
+
+The backend consists of the following elements:
+
+\begin{itemize}
+    \item \textbf{Docker Container}: Runs the backend web app.
+    \item \textbf{Container Registry}: Hosts the images used by the Docker container.
+    \item \textbf{Container Apps Environment}: Manages the Docker container in regard to e.g., replicas and load balancing.
+\end{itemize}
+
+The Docker container consists of the following elements:
+
+\begin{itemize}
+    \item \textbf{Python Web App}: Contains all the functions of the backend.
+    \item \textbf{Gunicorn}: Serves the python web app, allowing for multiple “workers”, 
+    i.e., threads, making use of the multiple CPU cores available from the container app.
+    \item \textbf{Microsoft ODBC 18 Driver for SQL Server}: The database driver is required in order to be able to connect to the SQL database on Azure.
+\end{itemize}
+
+The python web app consists of the following elements:
+
+\begin{itemize}
+    \item \textbf{Flask Web Framework}: Flask is a web framework for creating web applications in python.
+    We use it to simplify the development of the web app in python.
+    The only part the developer has to take care of, is the configuration and definition of HTTP routes.
+    The other parts such as routing, parsing of request data, and listening for connections is handled by Flask.
+    \item \textbf{SQLAlchemy Python Library}: The SQLAlchemy python library provides an SQL toolkit for e.g., 
+    connecting to databases and configuring connection properties.
+    For instance, we enable a connection pooling, which makes the backend maintain multiple connections,
+    which are periodically recycled. This prevents issues with stale connections.
+    \item \textbf{Stripe}: We integrate the Stripe payment processing platform, so that customers can use said platform
+    to pay for products, rather than us having to deal with e.g., 
+    accepting credit payments or other payment methods.
+\end{itemize}
+
+\subsection{E-Mail Service}
+%% TODO: Write something about the E-Mail Service
+
+\subsection{Database}
+We use an Azure SQL database for storing our data.
+The database schema can be described with the following
+entity-relationship-diagram:
+\includegraphics{images/db_er_diagram.png}
+
+Interaction with the database go through the SQLAlchemy ORM of the backend.
+
+\subsection{Image Storage}
+We use an Azure Storage Account as a BLOB storage for our product images.
+Anonymous read requests are allowed for the product images,
+allowing the frontend to fetch a product image from the BLOB storage
+if it has the correct file name, 
+which is included in the backend response for any given product.
+
+
+\subsection{Important Interfaces}
+\subsubsection{Interfaces between Frontend and Backend}
+The frontend can communicate with the backend using a RESTful API.
+The following routes are used by the frontend:
+\begin{longtable}[]{@{}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Route}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Methods}
+\end{minipage} \\
+\midrule
+\endhead
+\begin{itemize}
+    \item /products
+    \item /products/<ID>
+\end{itemize} &
+\begin{itemize}
+  \item GET
+  \item POST
+  \item PUT
+  \item DELETE
+\end{itemize} \\
+\bottomrule
+\end{longtable}
+
+This route concerns itself with products. The admin panel has access to POST, PUT, and DELETE operations, 
+while the webshop only has access to GET. GET returns a JSON object containing information about
+the product with the given ID.
+The object contains the following fields:
+\begin{itemize}
+    \item \textit{id}: Identifier for the product
+    \item \textit{name}: Name of the product. Example: “Modern Sofa”.
+    \item \textit{category}: Category of the product. Example: “Sofas”.
+    \item \textit{price}: Unit price of the product. Example: “999.99”.
+    \item \textit{currency}: Currency symbol. Example: “€”.
+    \item \textit{description}: Detailed description of the product. Example: “A sleek and luxurious sofa that \dots”.
+    \item \textit{brand}: Brand producing the product. Example: “Furniture LLC”.
+    \item \textit{materials}: A list of materials the product is made out of. Example: “[Fabric]”.
+    \item \textit{colors}: A list of colors of the product. Example: “[gray]”.
+    \item \textit{pictureUrl}: The file name under which our BLOB storage stores the product image. Example: “modern-sofa.webp”.
+\end{itemize}
+There is no product with an ID of 0. Instead, inputting ID 0 retrieves all the products in the shop catalog
+as a list of JSON objects.
+
+\begin{longtable}[]{@{}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Route}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Methods}
+\end{minipage} \\
+\midrule
+\endhead
+\begin{itemize}
+    \item /messages
+    \item /messages/<ID>
+\end{itemize} &
+\begin{itemize}
+    \item GET
+    \item POST
+    \item DELETE
+\end{itemize} \\
+\bottomrule
+\end{longtable}
+
+%% TODO: Explanation of messages route here
+
+\begin{longtable}[]{@{}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
+    >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Route}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Methods}
+\end{minipage} \\
+\midrule
+\endhead
+\begin{itemize}
+    \item /create-checkout-session
+\end{itemize} &
+\begin{itemize}
+    \item POST
+\end{itemize} \\
+\bottomrule
+\end{longtable}
+
+%% TODO: Explanation of create-checkout-session here
+
+\subsubsection{Interface between Backend and Stripe}
+
+%% TODO: Explanation of interface between backend and stripe
