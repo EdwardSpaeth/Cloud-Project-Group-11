@@ -1,0 +1,82 @@
+Table "PRODUCTS" {
+  "productID" INT [pk, increment]
+  "productName" VARCHAR(100) [not null]
+  "productPicture" VARCHAR(1000)
+  "productCategory" VARCHAR(100) [not null]
+  "productCurrency" VARCHAR(10) [not null]
+  "productPrice" DECIMAL(7,2) [not null]
+  "productBrand" VARCHAR(100) [not null]
+  "productDescription" VARCHAR(1000)
+  "productStock" INT [not null]
+  "productSupplier" VARCHAR(128) [not null]
+}
+
+Table "PRODUCTCOLORS" {
+  "productID" INT [not null]
+  "colorName" VARCHAR(50) [not null]
+
+  Indexes {
+    (productID, colorName) [pk]
+  }
+}
+
+Table "PRODUCTMATERIALS" {
+  "productID" INT [not null]
+  "materialName" VARCHAR(50) [not null]
+
+  Indexes {
+    (productID, materialName) [pk]
+  }
+}
+
+Table "CUSTOMERS" {
+  "customerID" INT [pk, increment]
+  "customerFirstName" VARCHAR(100) [not null]
+  "customerLastName" VARCHAR(100) [not null]
+  "customerAddress" VARCHAR(200) [not null]
+  "customerEmail" VARCHAR(100) [not null]
+  "customerPhoneNumber" VARCHAR(25)
+}
+
+Table "ORDERS" {
+  "orderID" INT [pk, increment]
+  "orderStatus" VARCHAR(100) [not null]
+  "orderPaymentMethod" VARCHAR(100) [not null]
+  "customerID" INT [not null]
+}
+
+Table "ORDERITEMS" {
+  "productID" INT [not null]
+  "orderID" INT [not null]
+  "quantity" INT
+
+  Indexes {
+    (orderID, productID) [pk]
+  }
+}
+
+Table "SUPPLIERS" {
+  "supplierID" INT [pk, increment]
+  "supplierName" VARCHAR(100) [not null]
+  "supplierAddress" VARCHAR(200)
+}
+
+Table "MESSAGES" {
+  "messageID" SERIAL [pk]
+  "messageName" VARCHAR(100) [not null]
+  "messageEmail" VARCHAR(100) [not null]
+  "messageSubject" VARCHAR(150) [not null]
+  "messageText" VARCHAR(2000) [not null]
+}
+
+Ref:"SUPPLIERS"."supplierID" < "PRODUCTS"."productSupplier"
+
+Ref:"PRODUCTS"."productID" < "PRODUCTCOLORS"."productID"
+
+Ref:"PRODUCTS"."productID" < "PRODUCTMATERIALS"."productID"
+
+Ref:"CUSTOMERS"."customerID" < "ORDERS"."customerID"
+
+Ref:"ORDERS"."orderID" < "ORDERITEMS"."orderID"
+
+Ref:"PRODUCTS"."productID" < "ORDERITEMS"."productID"
