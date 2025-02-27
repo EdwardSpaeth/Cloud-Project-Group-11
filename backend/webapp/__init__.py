@@ -12,11 +12,10 @@ CORS(
 
 app.config["SQLALCHEMY_DATABASE_URI"] = get_database_connection_string()
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_size": 5,
-    "max_overflow": 10,
+    "pool_size": 2,
+    "max_overflow": 2,
     "pool_recycle": 900,
     "pool_pre_ping": True,
-    "pool_timeout": 30
 }
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
