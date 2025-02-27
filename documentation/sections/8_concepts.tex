@@ -5,58 +5,20 @@
 
 This section describes overall, principal regulations and solution ideas that are relevant in multiple parts (= crosscutting) of our system and its architecture. Such concepts and decisions are often related to multiple building blocks and can include many different topics, such as
 
-\subsection{Backend}
-\subsubsection{Domain Model \& Data Structures}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.55\textwidth]{images/uml_backend.png}
-    \caption{Backend Domain Model}
-    \label{fig:doman-model-backend}
-\end{figure}
-
-Figure \ref{fig:doman-model-backend} illustrates the main structure of the backend. As discussed in Section \ref{section-solution-strategy}, the backend is designed to be lightweight, with no specific design pattern applied. There is an association between the view and entity layers, as the view script interacts with the entity classes when saving data to the database.
-
-The init script, as the name suggests, initializes the app variable, which is required throughout other scripts in the backend.
-
-The entities script defines classes that represent the database tables. These data structures are then utilized within the views script to perform CRUD operations.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{images/code_entity_example.png}
-    \caption{Example of an database entity}
-    \label{fig:db-entity}
-\end{figure}
-
-Figure \ref{fig:db-entity} displays the entity object representing the Product table. This data structure allows us to store and manage the various products offered by Vivendo. Similar entity objects are used for all tables in the database to ensure consistent handling of data.
-
-\subsubsection{Implementation rules}
-\textbf{JSON Validation Concept}
-
-In the views script, each endpoint begins by checking whether the incoming request object is in JSON format. This serves two main purposes: first, it ensures that the data follows the agreed-upon format; second, it simplifies data handling for the backend developer. Once the data format is verified, the appropriate actions are taken based on the type of operation.
-
-\textbf{Single Responsibility Concept}
-
-Another key principle followed in the backend was ensuring that each function performs only one operation at a time. Although Flask allows handling multiple CRUD operations within a single function by specifying them in the route decorator and filtering requests using if-statements, this approach was avoided. Instead, each CRUD operation was assigned its own function to maintain a clear and organized backend code structure.
-
-\textbf{Response Messaging Concept}
-
-Thirdly, if any exception occurs during the processing of the request data, either an HTTP 400 error (for bad requests) or an HTTP 500 error (for internal server issues) is returned to the frontend, along with a detailed message. This message is used to inform the user that an issue has occurred and to provide more context, ensuring they are aware that something went wrong. In cases where the request is successfully processed, an HTTP 200 status code is returned, accompanied by a message or some data from the database confirming that the operation was completed successfully, tailored to the specific action performed.
+\begin{itemize}
+  \item
+    models, especially domain models
+  \item
+    architecture or design patterns
+  \item
+    rules for using specific technology
+  \item
+    principal, often technical decisions of an overarching nature
+  \item
+    implementation rules
+  \end{itemize}
 
 \subsection{Frontend}
-
-\begin{itemize}
-\item
-  models, especially domain models
-\item
-  architecture or design patterns
-\item
-  rules for using specific technology
-\item
-  principal, often technical decisions of an overarching nature
-\item
-  implementation rules
-\end{itemize}
 
 \subsubsection{Domain Model \& Data Structures}
 The Vivendo Webshop frontend relies on several key data models that keep information consistent across different parts of the application:
@@ -101,3 +63,41 @@ React error boundaries catch unexpected exceptions in key components, preventing
 \end{itemize}
 
 These decisions ensure that the our frontend remains flexible and performant through maintaining an architecture that is adaptable as the platform evolves.
+
+\subsection{Backend}
+\subsubsection{Domain Model \& Data Structures}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.55\textwidth]{images/uml_backend.png}
+    \caption{Backend Domain Model}
+    \label{fig:doman-model-backend}
+\end{figure}
+
+Figure \ref{fig:doman-model-backend} illustrates the main structure of the backend. As discussed in Section \ref{section-solution-strategy}, the backend is designed to be lightweight, with no specific design pattern applied. There is an association between the view and entity layers, as the view script interacts with the entity classes when saving data to the database.
+
+The init script, as the name suggests, initializes the app variable, which is required throughout other scripts in the backend.
+
+The entities script defines classes that represent the database tables. These data structures are then utilized within the views script to perform CRUD operations.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/code_entity_example.png}
+    \caption{Example of an database entity}
+    \label{fig:db-entity}
+\end{figure}
+
+Figure \ref{fig:db-entity} displays the entity object representing the Product table. This data structure allows us to store and manage the various products offered by Vivendo. Similar entity objects are used for all tables in the database to ensure consistent handling of data.
+
+\subsubsection{Implementation rules}
+\textbf{JSON Validation Concept}
+
+In the views script, each endpoint begins by checking whether the incoming request object is in JSON format. This serves two main purposes: first, it ensures that the data follows the agreed-upon format; second, it simplifies data handling for the backend developer. Once the data format is verified, the appropriate actions are taken based on the type of operation.
+
+\textbf{Single Responsibility Concept}
+
+Another key principle followed in the backend was ensuring that each function performs only one operation at a time. Although Flask allows handling multiple CRUD operations within a single function by specifying them in the route decorator and filtering requests using if-statements, this approach was avoided. Instead, each CRUD operation was assigned its own function to maintain a clear and organized backend code structure.
+
+\textbf{Response Messaging Concept}
+
+Thirdly, if any exception occurs during the processing of the request data, either an HTTP 400 error (for bad requests) or an HTTP 500 error (for internal server issues) is returned to the frontend, along with a detailed message. This message is used to inform the user that an issue has occurred and to provide more context, ensuring they are aware that something went wrong. In cases where the request is successfully processed, an HTTP 200 status code is returned, accompanied by a message or some data from the database confirming that the operation was completed successfully, tailored to the specific action performed.
