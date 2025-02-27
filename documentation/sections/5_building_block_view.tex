@@ -175,7 +175,17 @@ as a list of JSON objects.
 \bottomrule
 \end{longtable}
 
-%% TODO: Explanation of messages route here
+This endpoint is responsible for handling messages that customers can leave if they have questions or any other issues. Customers can submit their messages through a POST request on the contact page of the website. Once submitted, the admin can view all the messages via a GET request. Both the GET and POST requests follow a similar JSON structure, which includes the following fields:
+
+\begin{itemize}
+    \item \textit{id}: Identifier for the message (only accessible for GET request. POST requests add a new message to the database, hence the id is created at that point).
+    \item \textit{name}: Name of the person who wants to get in contact with the vivendo staff.
+    \item \textit{email}: E-Mail address of that person, so that the admin can answer the request of the person.
+    \item \textit{subject}: A title for the request.
+    \item \textit{message}: The request the person has. This field can have up to 1000 characters.
+\end{itemize}
+
+Unlike the product endpoint, the message endpoint does not require an ID when retrieving all messages via a GET request. This is because the admin can simply view all messages without the need for any specific identifier. However, an ID is required when the admin wants to delete a particular message using a DELETE request. The ID ensures that the correct message is deleted from the database, allowing for accurate and targeted operations.
 
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
