@@ -2,14 +2,11 @@
 \section{5 Building Block View}\label{section-building-block-view}}
 In this chapter, we present the building block view of our application, illustrating how each component is structured and integrated within the system. The aim is to provide a comprehensive overview of the major software building blocks, focusing on their responsibilities and interactions.
 \subsection{System White Box}
-
-\begin{figure}[H]
+\begin{figure}[!h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/building_block_system_whitebox.png}
-    \caption{System White Box View}
-    \label{fig:system-whiteBox}
+    \includegraphics[width=\textwidth]{images/building_block_system_whitebox.png}
+    \caption{Whie Box View of the System}
 \end{figure}
-
 
 \subsubsection{Motivation}
 We utilize a three-tier architecture for our system.
@@ -60,9 +57,14 @@ The system consists of several modules:
 \end{itemize}
 
 \subsection{Backend}
-\includegraphics{images/backend_building_block.png}
+\begin{figure}[!h!]
+    \centering
+    \includegraphics[width=\textwidth]{images/backend_building_block.png}
+    \caption{Backend Building Block View}
+    \label{fig:backend_building_block_view}
+\end{figure}
 
-The backend consists of the following elements:
+The backend, whose building block view can be seen in fig. \ref{fig:backend_building_block_view}, consists of the following elements:
 
 \begin{itemize}
     \item \textbf{Docker Container}: Runs the backend web app.
@@ -100,9 +102,14 @@ The python web app consists of the following elements:
 
 \subsection{Database}
 We use an Azure SQL database for storing our data.
-The database schema can be described with the following
-entity-relationship-diagram:
-\includegraphics{images/db_er_diagram.png}
+The database schema can be described with the
+entity-relationship diagram seen in fig. \ref{fig:db_er_diagram}.
+\begin{figure}[!h!]
+    \centering
+    \includegraphics[width=\textwidth]{images/db_er_diagram.png}
+    \caption{Database Entity-Relationship Diagram}
+    \label{fig:db_er_diagram}
+\end{figure}
 
 Interaction with the database go through the SQLAlchemy ORM of the backend.
 
