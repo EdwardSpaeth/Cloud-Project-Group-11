@@ -1,8 +1,15 @@
 \hypertarget{section-building-block-view}{%
 \section{5 Building Block View}\label{section-building-block-view}}
-
+In this chapter, we present the building block view of our application, illustrating how each component is structured and integrated within the system. The aim is to provide a comprehensive overview of the major software building blocks, focusing on their responsibilities and interactions.
 \subsection{System White Box}
-\includegraphics{images/building_block_system_whitebox.png}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/building_block_system_whitebox.png}
+    \caption{System White Box View}
+    \label{fig:system-whiteBox}
+\end{figure}
+
 
 \subsubsection{Motivation}
 We utilize a three-tier architecture for our system.
@@ -28,14 +35,16 @@ The Vivendo webshop frontend follows a \textbf{component-based modular frontend 
     \item Better maintainability and scalability.
     \item Efficient state and API management.
 \end{itemize}
-The architectural overview is depicted in the figure below:
+The architectural overview is depicted in the figure \ref{fig:architecture} below.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{images/New_frontend_architecture.png}
+    \makebox[\textwidth][c]{
+      \includegraphics[width=1.3\textwidth]{images/New_frontend_architecture.png}
+    }
     \caption{Component-Based Frontend Architecture}
     \label{fig:architecture}
-\end{figure}
+  \end{figure}  
 
 \subsubsection{Core Frontend Modules and Interactions}
 The system consists of several modules:
