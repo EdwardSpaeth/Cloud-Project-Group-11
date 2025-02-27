@@ -13,7 +13,7 @@ by using a pay-as-you-go method of billing, rather than investing into our own h
 
 We chose to go forward with Microsoft Azure as our Cloud Service Provider, because they offer advanced features,
 which we can make good use of, 
- being reliable and easy to deploy with.
+being reliable and easy to deploy with.
 
 Now follow rationales for select services, where multiple Azure offerings could have been considered instead.
 
@@ -22,9 +22,9 @@ Now follow rationales for select services, where multiple Azure offerings could 
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
 \toprule
 \begin{minipage}[b]{\linewidth}\raggedright
-Component
+\textbf{Component}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Rationale
+\textbf{Rationale}
 \end{minipage} \\
 \midrule
 \endhead
@@ -51,9 +51,9 @@ Otherwise, we could have opted for non-relational database SaaS offering such as
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
 \toprule
 \begin{minipage}[b]{\linewidth}\raggedright
-Component
+\textbf{Component}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Quality and/or Performance Feature(s)
+\textbf{Quality and/or Performance Feature(s)}
 \end{minipage} \\
 \midrule
 \endhead
@@ -86,4 +86,44 @@ making it so that our mailing service is highly available.
 \end{longtable}
 
 \subsubsection{Mapping}
-(Mapping from components in deployment view to components in building block view!)
+Now follows a mapping of components in the building block view to components in the deployment view:
+
+\subsubsection{Quality and/or Performance Features}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Component in Building Block View}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Component in Deployment View}
+\end{minipage} \\
+\midrule
+\endhead
+Frontend & 
+\begin{itemize}
+  \item App Service
+  \item Application Insights
+\end{itemize} \\ \hline
+Backend & 
+\begin{itemize}
+  \item Container App
+  \item Container Apps Environment
+  \item Container Registry
+\end{itemize} \\ \hline
+E-Mail Service &
+\begin{itemize}
+  \item Communication Service
+\end{itemize} \\ \hline
+Database &
+\begin{itemize}
+  \item SQL Server
+  \item SQL Database
+\end{itemize} \\ \hline
+\bottomrule
+Image Storage &
+\begin{itemize}
+  \item Storage Account
+\end{itemize} \\
+\bottomrule
+\end{longtable}
