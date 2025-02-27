@@ -192,7 +192,7 @@ This endpoint is responsible for handling messages that customers can leave if t
 
 Unlike the product endpoint, the message endpoint does not require an ID when retrieving all messages via a GET request. This is because the admin can simply view all messages without the need for any specific identifier. However, an ID is required when the admin wants to delete a particular message using a DELETE request. The ID ensures that the correct message is deleted from the database, allowing for accurate and targeted operations.
 
-\subsubsection{/create-checkout-session API Ednpoint}
+\subsubsection{/create-checkout-session API Endpoint}
 
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
@@ -216,7 +216,7 @@ Unlike the product endpoint, the message endpoint does not require an ID when re
 
 %% TODO: Explanation of create-checkout-session here
 
-\subsubsection{Interface between Backend and Stripe}
+\subsubsection{/webhook API Endpoint}
 
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
