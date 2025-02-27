@@ -11,8 +11,9 @@ CREATE TABLE PRODUCTS (
     productBrand        VARCHAR(100)  NOT NULL,
     productDescription  VARCHAR(1000),
     productStock        INT NOT NULL,
-    productSupplier     VARCHAR(128) NOT NULL
+    productSupplier     VARCHAR(128) NOT NULL,
     PRIMARY KEY(productID)
+    FOREIGN KEY(productSupplier) REFERENCES SUPPLIERS(supplierID)
 );
 
 -- Table containing colors of the products.
