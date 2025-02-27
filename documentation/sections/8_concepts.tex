@@ -67,18 +67,19 @@ These decisions ensure that the our frontend remains flexible and performant thr
 \subsection{Backend}
 \subsubsection{Domain Model \& Data Structures}
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.55\textwidth]{images/uml_backend.png}
     \caption{Backend Domain Model}
     \label{fig:doman-model-backend}
 \end{figure}
 
-Figure \ref{fig:doman-model-backend} illustrates the main structure of the backend. As discussed in Section \ref{section-solution-strategy}, the backend is designed to be lightweight, with no specific design pattern applied. There is an association between the view and entity layers, as the view script interacts with the entity classes when saving data to the database.
+Figure \ref{fig:doman-model-backend} illustrates the main structure of the backend. As discussed in section \ref{section-solution-strategy}, the backend is designed to be lightweight, with no specific design pattern applied. There is an association between the view and entity layers, as the view script interacts with the entity classes when saving data to the database.
 
 The init script, as the name suggests, initializes the app variable, which is required throughout other scripts in the backend.
 
 The entities script defines classes that represent the database tables. These data structures are then utilized within the views script to perform CRUD operations.
+\newpage
 
 \begin{figure}[h]
     \centering
@@ -89,15 +90,17 @@ The entities script defines classes that represent the database tables. These da
 
 Figure \ref{fig:db-entity} displays the entity object representing the Product table. This data structure allows us to store and manage the various products offered by Vivendo. Similar entity objects are used for all tables in the database to ensure consistent handling of data.
 
-\subsubsection{Implementation rules}
-\textbf{JSON Validation Concept}
+\subsubsection{User Experience Concept}
+While the backend does not directly influence the look and feel of the user interface, it plays an important role in enhancing the overall user experience by providing clear and informative push notifications. These messages notify users when an action is successful or unsuccessful, helping to keep them informed throughout their interaction with the system.
 
+Additionally, the frontend interacts with the backend through RESTful API endpoints, allowing users to retrieve data in JSON format. This seamless integration between frontend and backend ensures that data is delivered efficiently and consistently to improve the user experience.
+
+\subsubsection{Implementation rules}
+\textbf{JSON Validation Concept} \\
 In the views script, each endpoint begins by checking whether the incoming request object is in JSON format. This serves two main purposes: first, it ensures that the data follows the agreed-upon format; second, it simplifies data handling for the backend developer. Once the data format is verified, the appropriate actions are taken based on the type of operation.
 
-\textbf{Single Responsibility Concept}
-
+\textbf{Single Responsibility Concept} \\
 Another key principle followed in the backend was ensuring that each function performs only one operation at a time. Although Flask allows handling multiple CRUD operations within a single function by specifying them in the route decorator and filtering requests using if-statements, this approach was avoided. Instead, each CRUD operation was assigned its own function to maintain a clear and organized backend code structure.
 
-\textbf{Response Messaging Concept}
-
+\textbf{Response Messaging Concept} \\
 Thirdly, if any exception occurs during the processing of the request data, either an HTTP 400 error (for bad requests) or an HTTP 500 error (for internal server issues) is returned to the frontend, along with a detailed message. This message is used to inform the user that an issue has occurred and to provide more context, ensuring they are aware that something went wrong. In cases where the request is successfully processed, an HTTP 200 status code is returned, accompanied by a message or some data from the database confirming that the operation was completed successfully, tailored to the specific action performed.
