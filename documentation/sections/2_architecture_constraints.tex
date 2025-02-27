@@ -1,25 +1,30 @@
-\hypertarget{section-architecture-constraints}{%
-\section{2 Architecture Constraints}\label{section-architecture-constraints}}
+\section{Constraints}
 
-\textbf{Contents}
+\subsection{Technical Constraints}
+The Webshop system is built with the following fixed technologies:
 
-Any requirement that constraints software architects in their freedom of
-design and implementation decisions or decision about the development
-process. These constraints sometimes go beyond individual systems and
-are valid for whole organizations and companies.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Category} & \textbf{Chosen Technology} \\ \hline
+\textbf{Frontend} & Next.js (React Framework) with Tailwind CSS \\ \hline
+\textbf{Backend} & Python Flask (REST API implementation) \\ \hline
+\textbf{Database} & Microsoft Azure SQL Database \\ \hline
+\textbf{Storage} & Azure Blob Storage for product images \\ \hline
+\textbf{Hosting} & Azure App Services and Azure Container Apps \\ \hline
+\textbf{Authentication} & No authentication required (demo version) \\ \hline
+\textbf{Version Control} & GitHub repository with structured commit history \\ \hline
+\textbf{Scalability} & Azure auto-scaling and load balancing \\ \hline
+\end{tabular}
+\caption{Technical Constraints for Webshop Development}
+\label{tab:constraints}
+\end{table}
 
-\textbf{Motivation}
+\subsection{Organizational Constraints}
+\begin{itemize}
+    \item \textbf{Cloud Provider:} The project is hosted on \textbf{Microsoft Azure}.
+    \item \textbf{Project Deadline:} The \textbf{final report, presentation, and demo must be submitted by 28.02.2025}.
+    \item \textbf{Team Contribution Evaluation:} Each member’s work is tracked through \textbf{GitHub commits}.
+\end{itemize}
 
-Architects should know exactly where they are free in their design
-decisions and where they must adhere to constraints. Constraints must
-always be dealt with; they may be negotiable, though.
-
-\textbf{Form}
-
-Simple tables of constraints with explanations. If needed you can
-subdivide them into technical constraints, organizational and political
-constraints and conventions (e.g. programming or versioning guidelines,
-documentation or naming conventions)
-
-See \href{https://docs.arc42.org/section-2/}{Architecture Constraints}
-in the arc42 documentation.
