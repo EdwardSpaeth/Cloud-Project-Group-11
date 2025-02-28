@@ -14,12 +14,12 @@ app.config["SQLALCHEMY_DATABASE_URI"] = get_database_connection_string()
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_size": 2,
     "max_overflow": 2,
-    "pool_recycle": 900,
+    "pool_recycle": 4 * 60 * 60,
     "pool_pre_ping": True,
 }
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db: SQLAlchemy = SQLAlchemy(app, engine_options={"pool_recycle": 900, "pool_pre_ping": True})
+db: SQLAlchemy = SQLAlchemy(app)
 with app.app_context():
     db.reflect()
     
