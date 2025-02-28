@@ -1,5 +1,5 @@
 \hypertarget{section-concepts}{%
-\section{8 Crosscutting Concepts and Architectural Decisions}\label{section-concepts}}
+\section{Crosscutting Concepts and Architectural Decisions}\label{section-concepts}}
 
 \textbf{Content}
 
@@ -69,26 +69,25 @@ These decisions ensure that the our frontend remains flexible and performant thr
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.55\textwidth]{images/uml_backend.png}
+    \includegraphics[width=0.9\textwidth]{images/uml_backend.png}
     \caption{Backend Domain Model}
     \label{fig:doman-model-backend}
 \end{figure}
 
-Figure \ref{fig:doman-model-backend} illustrates the main structure of the backend. As discussed in section \ref{section-solution-strategy}, the backend is designed to be lightweight, with no specific design pattern applied. There is an association between the view and entity layers, as the view script interacts with the entity classes when saving data to the database.
+Figure \ref{fig:doman-model-backend} illustrates the main structure of the backend. As discussed in Section \ref{section-solution-strategy}, the backend is designed to be lightweight, with no specific design pattern applied. There is an association between the view and entity layers, as the view script interacts with the entity classes when saving data to the database.
 
 The init script, as the name suggests, initializes the app variable, which is required throughout other scripts in the backend.
 
 The entities script defines classes that represent the database tables. These data structures are then utilized within the views script to perform CRUD operations.
-\newpage
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/code_entity_example.png}
-    \caption{Example of an database entity}
+    \includegraphics[width=\textwidth]{images/code_entity_example.png}
+    \caption{Structure of Product Entity}
     \label{fig:db-entity}
 \end{figure}
 
-Figure \ref{fig:db-entity} displays the entity object representing the Product table. This data structure allows us to store and manage the various products offered by Vivendo. Similar entity objects are used for all tables in the database to ensure consistent handling of data.
+Figure \ref{fig:db-entity} displays the entity object representing the Product table. This data structure allows us to store and manage the various products offered by the Vivendo webshop. Similar entity objects are used for all tables in the database to ensure consistent handling of data.
 
 \subsubsection{User Experience Concept}
 While the backend does not directly influence the look and feel of the user interface, it plays an important role in enhancing the overall user experience by providing clear and informative push notifications. These messages notify users when an action is successful or unsuccessful, helping to keep them informed throughout their interaction with the system.
