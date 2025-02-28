@@ -236,7 +236,7 @@ The \texttt{/create-checkout-session} API endpoint is the backend's entry point 
 \bottomrule
 \end{longtable}
 
-The endpoint accepts POST requests from the frontend, which submits a JSON payload containing the cart details—such as item names, quantities, prices, and the customer's email. Upon receiving the request, the backend performs the following steps:
+The endpoint accepts POST requests from the frontend, which submits a JSON payload containing the cart details such as item names, quantities, prices, and the customer's email. Upon receiving the request, the backend performs the following steps:
 \begin{enumerate}
     \item \textbf{Validation:} Ensures required fields (e.g., items and email) are present and valid. If not, it returns a \texttt{400 Bad Request} response with an error message.
     \item \textbf{Stripe Session Creation:} Constructs a Stripe Checkout session using the Stripe API. Cart items are transformed into line items, with prices converted to cents and the currency set to EUR. Success and cancel URLs are dynamically generated from the request's origin (e.g., \texttt{http://frontend-domain/success}), and metadata including the \texttt{order\_id} is attached. The customer's email is also embedded for receipt purposes.

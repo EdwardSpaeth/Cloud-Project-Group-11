@@ -3,11 +3,11 @@
 
 \textbf{Contents}
 
-This section defines the scope and context of the Webshop system, a platform designed to display products to users, process payments, and confirm orders. The system retrieves product data from an Azure-hosted database, integrates with Stripe for payment processing, and uses an Azure email service to send order confirmations. It outlines the external entities—users, the Azure database, Stripe, and the Azure email service—and specifies the business and technical interfaces connecting them to the Webshop.
+This section defines the scope and context of the Webshop system, a platform designed to display products to users, process payments, and confirm orders. The system retrieves product data from an Azure-hosted database, integrates with Stripe for payment processing, and uses an Azure email service to send order confirmations. It outlines the external entities users, the Azure database, Stripe, and the Azure email service and specifies the business and technical interfaces connecting them to the Webshop.
 
 \textbf{Motivation}
 
-Understanding the Webshop's and its external entities' interfaces is crucial for stakeholders to make informed architectural decisions. Clear boundaries ensure alignment on what the system handles (e.g., product display and payment) versus what it relies on externally (e.g., payment processing via Stripe), guiding both development and deployment decisions.
+Understanding the Webshop's and its external entities interfaces is crucial for stakeholders to make informed architectural decisions. Clear boundaries ensure alignment on what the system handles (e.g., product display and payment) versus what it relies on externally (e.g., payment processing via Stripe), guiding both development and deployment decisions.
 
 \textbf{Form}
 
@@ -22,7 +22,7 @@ The Webshop system interacts with several external entities: (1) Users, who brow
 
 \textbf{Motivation}
 
-Defining these interactions ensures stakeholders understand the Webshop’s core business functions—displaying products, processing orders, and confirming purchases and its dependencies on external systems for data, payments, and notifications.
+Defining these interactions ensures stakeholders understand the Webshop’s core business functions displaying products, processing orders, and confirming purchases and its dependencies on external systems for data, payments, and notifications.
 
 \textbf{Form}
 
@@ -63,7 +63,7 @@ This subsection details the technical interfaces connecting the Webshop system t
 \textbf{Motivation}
 
 Understanding these technical interfaces is critical for infrastructure designers and developers to ensure reliable connectivity, secure data transmission, and scalable deployment of the Webshop. It informs decisions about hosting, network configuration, and integration with external services like Stripe and Azure.
-
+\newpage
 \textbf{Form}
 
 The UML deployment diagram below illustrates the Webshop’s technical architecture and its connections to external entities. The table maps the domain-specific inputs and outputs to their technical channels and protocols.

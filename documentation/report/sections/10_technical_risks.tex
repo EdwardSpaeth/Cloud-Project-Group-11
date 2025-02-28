@@ -20,8 +20,8 @@ The technical risks and debts are presented in a bulleted list, ordered by prior
   \item \textbf{Security Vulnerabilities in Payment Integration (Medium Priority)}: Improper configuration of Stripe’s API or Azure’s security settings could expose payment data or user information to breaches, violating privacy regulations or user trust.  
     \textit{Measures}: Implement regular security audits, use Azure’s security features (e.g., Key Vault), and follow Stripe’s security best practices, including PCI DSS compliance.
 
-  \item \textbf{Downtime Due to Azure Service Outages (Medium Priority)}: Reliance on Azure’s infrastructure poses a risk of downtime if Azure experiences regional outages or if geo-redundancy isn’t configured properly, affecting the 99.9\% uptime goal.  
-    \textit{Measures}: Configure Azure’s geo-redundant backups and disaster recovery options, monitor Azure SLAs (e.g., 99.95\%–99.99\% uptime), and implement failover strategies.
+  \item \textbf{Downtime Due to Azure Service Outages (Medium Priority)}: Reliance on Azure’s infrastructure poses a risk of downtime if Azure experiences regional outages or if geo-redundancy isn’t configured properly, affecting the 99.99\% uptime goal.  
+    \textit{Measures}: Configure Azure’s geo-redundant backups and disaster recovery options, monitor Azure SLAs, and implement failover strategies.
 
   \item \textbf{Limited Frontend Maintainability Due to Rapid Prototyping (Low Priority)}: The Next.js frontend, developed quickly with React Context and Tailwind CSS, may have tightly coupled components or inconsistent code patterns, making future updates time-consuming.  
     \textit{Measures}: Refactor critical components to improve modularity, document code patterns, and adopt a style guide for Tailwind CSS and React.
