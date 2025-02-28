@@ -2,50 +2,53 @@
 \section{1 Introduction and Goals}\label{section-introduction-and-goals}}
 
 \subsection{Overview}
-This project focuses on developing a \textbf{Webshop system} for \textbf{LowTech GmbH} using \textbf{cloud computing}. The objective is to create a \textbf{fully functional e-commerce platform} that is \textbf{scalable, highly available, and responsive}. The system follows a \textbf{Three-Tier Architecture} and is deployed on \textbf{Microsoft Azure}, leveraging cloud services for hosting, storage, and computing power.
+This project focuses on developing a webshop system for the LowTech GmbH using cloud computing. The objective is to create a fully functional e-commerce platform that is scalable, highly available, and responsive. The system follows a Three-Tier Architecture and is deployed on Microsoft Azure, leveraging cloud services for hosting, storage, and computing power.
 
 \subsection{Project Scope and Requirements}
 The Webshop system is designed to meet the following key requirements:
 
 \begin{itemize}
-    \item \textbf{High Availability:} The system should have a \textbf{99.99\% uptime}, ensuring minimal downtime.
-    \item \textbf{Scalability:} It should dynamically scale to handle increased user traffic.
-    \item \textbf{User-Friendly Interface:} The frontend should be \textbf{fast, responsive, and accessible on multiple devices}.
-    \item \textbf{Separation of Concerns:}
+    \item \textbf{High Availability}: The system should have a 99.9\% uptime, ensuring minimal downtime.
+    \item \textbf{Scalability}: It should dynamically scale to handle increased user traffic.
+    \item \textbf{User-Friendly Interface}: The frontend should be fast, responsive, and accessible on multiple devices.
+    \item \textbf{Separation of Concerns}:
     \begin{itemize}
-        \item \textbf{Frontend (User Interface):} Built using \textbf{Next.js} and \textbf{Tailwind CSS}.
-        \item \textbf{Backend (Logic and APIs):} Implemented using \textbf{Python Flask}, providing business logic and API endpoints.
-        \item \textbf{Database (Data Storage):} Uses \textbf{Microsoft Azure SQL Database} for structured storage of product, order, and inventory data.
+        \item \textbf{Frontend (User Interface)}: Built using Next.js and Tailwind CSS.
+        \item \textbf{Backend (Logic and APIs)}: Implemented using Python Flask, providing business logic and API endpoints.
+        \item \textbf{Database (Data Storage)}: Uses Microsoft Azure SQL Database for structured storage of product, order, and inventory data.
     \end{itemize}
-    \item \textbf{Cloud-Based Deployment:} The system is hosted on \textbf{Microsoft Azure}, using its cloud services for computation and storage.
-    \item \textbf{Payment System Integration:} The Webshop integrates with \textbf{Stripe API} for payment processing.
-    \item \textbf{Modern Development Practices:} The project follows \textbf{best practices}, including \textbf{GitHub version control} and \textbf{CI/CD pipelines}.
+    \item \textbf{Cloud-Based Deployment}: The system is hosted on Microsoft Azure, using its cloud services for computation and storage.
+    \item \textbf{Payment System Integration}: The Webshop integrates with Stripe API for payment processing.
+    \item \textbf{Modern Development Practices}: The project follows best practices, including GitHub version control.
 \end{itemize}
 
 \subsection{Quality Goals}
-The system prioritizes the following \textbf{quality attributes}:
+The system prioritizes the following quality attributes:
 
 \begin{enumerate}
-    \item \textbf{Availability and Reliability:} Ensuring \textbf{99.99\% uptime} with \textbf{Azure Load Balancer and failover mechanisms}.
-    \item \textbf{Scalability and Performance:} Supporting \textbf{horizontal scaling} using \textbf{Azure Container Apps}.
-    \item \textbf{Security and Compliance:} Protecting data using \textbf{Azure’s encryption and identity management}.
-    \item \textbf{Maintainability and Extensibility:} Using \textbf{modular architecture} to facilitate future improvements.
-    \item \textbf{User Experience and Accessibility:} Delivering a \textbf{smooth and optimized shopping experience} across different devices.
+    \item \textbf{Availability and Reliability}: Ensuring 99.9\% with Azure Load Balancer and failover mechanisms.
+    \item \textbf{Scalability and Performance}: Supporting horizontal scaling using Azure Container Apps.
+    \item \textbf{Security and Compliance}: Protecting data using Azure’s encryption and identity management.
+    \item \textbf{Maintainability and Extensibility}: Using modular architecture to facilitate future improvements.
+    \item \textbf{User Experience and Accessibility}: Delivering a smooth and optimized shopping experience across different devices.
 \end{enumerate}
 
 \subsection{Stakeholders}
 The key stakeholders in the project are:
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Role} & \textbf{Who They Are} & \textbf{What They Expect} \\ \hline
-\textbf{CEO} & LowTech GmbH CEO & A modern, reliable cloud-based Webshop. \\ \hline
-\textbf{Development Team} & Project Team & Implementing the Webshop with cloud best practices. \\ \hline
-\textbf{End Users} & Customers & A fast and smooth shopping experience. \\ \hline
-\textbf{Cloud Provider} & Microsoft Azure & Hosting, scaling, and security management. \\ \hline
-\end{tabular}
-\caption{Stakeholders and their expectations}
-\label{tab:stakeholders}
-\end{table}
+\begin{center}
+    
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.6\textwidth}|}
+            \hline
+            \textbf{Role} & \textbf{Who They Are} & \textbf{What They Expect} \\ \hline
+            \textbf{CEO} & LowTech GmbH CEO & A modern, reliable cloud-based Webshop. \\ \hline
+            \textbf{Development Team} & Project Team & Implementing the Webshop with cloud best practices. \\ \hline
+            \textbf{End Users} & Customers & A fast and smooth shopping experience. \\ \hline
+            \textbf{Cloud Provider} & Microsoft Azure & Hosting, scaling, and security management. \\ \hline
+        \end{tabular}
+        \caption{Stakeholders and their expectations}
+        \label{tab:stakeholders}
+    \end{table}
+\end{center}
