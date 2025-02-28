@@ -98,7 +98,11 @@ The python web app consists of the following elements:
 \end{itemize}
 
 \subsection{E-Mail Service}
-%% TODO: Write something about the E-Mail Service
+The Email Service is a standalone microservice designed to handle email notifications for customers in the system. Its primary task is to send confirmation emails containing the receipt in PDF format. Implemented in Python, the Email Service uses the Azure Communication Service for reliable email delivery.
+
+The workflow starts when a customer places an order through the front-end application. The front-end submits the order details, including items, quantities, prices, and customer email, to the backend via a secure API call. The backend initiates a payment request using Stripe's Checkout API. Upon successful payment, Stripe notifies the backend via a webhook event (payment\_intent.succeeded), confirming the transaction.
+
+After receiving and validating the Stripe webhook, the backend triggers the email service by sending a request containing the order ID and customer email. The Email Service retrieves the order details from the backend, generates a PDF receipt encapsulating the order information, and constructs an email with the PDF receipt attached. This email is then sent to the customer using the Azure Communication Service.
 
 \subsection{Database}
 We use an Azure SQL database for storing our data.
@@ -210,6 +214,8 @@ Unlike the product endpoint, the message endpoint does not require an ID when re
 
 \subsubsection{/create-checkout-session API Endpoint}
 
+The \texttt{/create-checkout-session} API endpoint is the backend's entry point for initiating the payment process, facilitating the transition from a customer's cart submission to Stripe's hosted checkout experience. It handles the creation of a Stripe Checkout session and ensures order details are persisted for downstream processing.
+
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
@@ -221,37 +227,54 @@ Unlike the product endpoint, the message endpoint does not require an ID when re
 \end{minipage} \\
 \midrule
 \endhead
-\begin{itemize}
-    \item /create-checkout-session
+\begin{itemize}\itemsep0em
+    \item \texttt{/create-checkout-session}
 \end{itemize} &
-\begin{itemize}
-    \item POST
+\begin{itemize}\itemsep0em
+    \item \texttt{POST}
 \end{itemize} \\
 \bottomrule
 \end{longtable}
 
-%% TODO: Explanation of create-checkout-session here
+The endpoint accepts POST requests from the frontend, which submits a JSON payload containing the cart details—such as item names, quantities, prices, and the customer's email. Upon receiving the request, the backend performs the following steps:
+\begin{enumerate}
+    \item \textbf{Validation:} Ensures required fields (e.g., items and email) are present and valid. If not, it returns a \texttt{400 Bad Request} response with an error message.
+    \item \textbf{Stripe Session Creation:} Constructs a Stripe Checkout session using the Stripe API. Cart items are transformed into line items, with prices converted to cents and the currency set to EUR. Success and cancel URLs are dynamically generated from the request's origin (e.g., \texttt{http://frontend-domain/success}), and metadata including the \texttt{order\_id} is attached. The customer's email is also embedded for receipt purposes.
+    \item \textbf{Response:} Returns a \texttt{200 OK} response with the Stripe session ID, which the frontend uses to redirect the customer to Stripe's checkout page. If an error occurs (e.g., Stripe API failure), it rolls back the database transaction and returns a \texttt{500 Internal Server Error}.
+\end{enumerate}
+
+Once the session ID is received, the frontend leverages the \texttt{Stripe.js} library to redirect the customer to Stripe's hosted checkout page, where payment is completed. The endpoint's role concludes here, with payment confirmation handled asynchronously via the \texttt{/webhook} endpoint.
 
 \subsubsection{/webhook API Endpoint}
 
+The \texttt{/webhook} API endpoint enables the backend to receive asynchronous event notifications from Stripe, facilitating real-time processing of payment outcomes. It serves as the critical link between Stripe’s payment system and the backend’s notification workflows.
+
 \begin{longtable}[]{@{}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3333}}
     >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6667}}@{}}
-\toprule
-\begin{minipage}[b]{\linewidth}\raggedright
-\textbf{Route}
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-\textbf{Methods}
-\end{minipage} \\
-\midrule
-\endhead
-\begin{itemize}
-    \item /webhook
-\end{itemize} &
-\begin{itemize}
-    \item POST
-\end{itemize} \\
-\bottomrule
+    \toprule
+    \begin{minipage}[b]{\linewidth}\raggedright
+    \textbf{Route}
+    \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+    \textbf{Methods}
+    \end{minipage} \\
+    \midrule
+    \endhead
+    \begin{itemize}
+        \item \texttt{/webhook}
+    \end{itemize} &
+    \begin{itemize}
+        \item \texttt{POST}
+    \end{itemize} \\
+    \bottomrule
 \end{longtable}
 
-%% TODO: Explanation of interface between backend and stripe
+The endpoint processes POST requests from Stripe, which delivers event data in JSON format whenever a payment-related action occurs, such as the \texttt{payment\_intent.succeeded} event indicating a successful transaction. The backend handles these requests as follows:
+\begin{enumerate}
+    \item \textbf{Validation:} Verifies the request’s authenticity by checking the \texttt{Stripe-Signature} header against the \texttt{STRIPE\_WEBHOOK\_SECRET} environment variable. If invalid, it returns a \texttt{400 Bad Request} response.
+    \item \textbf{Event Processing:} Extracts essential data from the payload, including the payment intent ID, amount received (in cents), customer email, and metadata (e.g., \texttt{order\_id}). 
+    \item \textbf{Notification Trigger:} Initiates the Email Service by dispatching a request with the \texttt{order\_id} and customer email, then returns a \texttt{200 OK} response to Stripe.
+\end{enumerate}
+
+This interface ensures secure and reliable communication with Stripe, leveraging the webhook’s event-driven nature to synchronize payment status with backend operations.
+
